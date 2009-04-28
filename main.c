@@ -42,8 +42,6 @@ int nuevo_estado[CANT_ESTADOS - 1][CANT_ENTRADAS] = {{4, 2, 9, 11, 7, 30, 5, 17,
 FILE *archivo;
 int yylex();
 
-
-
 int main(int argc,char * argv[])
 {
     if(argc != 2){
@@ -145,17 +143,17 @@ int yylex(){
     int columna = 0 ;
 	int estado = 0;
 	int estado_final = CANT_ESTADOS - 1;
+	int token = -1;
     char c;
 	while (estado != estado_final)
     {
         c = fgetc(archivo);
         columna = get_evento(c);
-        //(*proceso [estado] [columna]) ();
+        //token = (*funciones[estado][columna])(c);
         estado = nuevo_estado [estado] [columna];
     }
-    //unget (c)
-    //modifica la variable yylval
+    ungetc(c,archivo);
 
-    return 0;
+    return token;
 }
 
