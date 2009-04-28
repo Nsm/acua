@@ -67,7 +67,7 @@ int main(int argc,char * argv[])
 
 int get_evento (char c){
     //aca deberia hacerse un if por cada columna en la tabla de funciones que retorne el numero para el evneto correspondiente
-    if(c >= 'a' && c <= 'Z') //letra
+    if((c >= 'a' && c<= 'z') || (c>='A' && c <= 'Z')) //letra
     {
         return 0;
     }else if(c >= '0' && c <= '9')
@@ -142,20 +142,20 @@ int get_evento (char c){
 
 
 int yylex(){
-
+    int columna = 0 ;
 	int estado = 0;
 	int estado_final = CANT_ESTADOS - 1;
-/*
-	while (estado != estado final)
+    char c;
+	while (estado != estado_final)
     {
-        columna = get_evento (c);
-        (*proceso [estado] [columna]) ();
+        c = fgetc(archivo);
+        columna = get_evento(c);
+        //(*proceso [estado] [columna]) ();
         estado = nuevo_estado [estado] [columna];
-        get (c);
     }
-    unget (c)
-    modifica la variable yylval
-    */
+    //unget (c)
+    //modifica la variable yylval
+
     return 0;
 }
 
