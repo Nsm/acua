@@ -2,3 +2,7 @@ bin/*
 obj/*
 doc/.~*
 acua.layout
+.cproject
+.project
+Debug/*
+
