@@ -199,11 +199,20 @@ int main(int argc,char * argv[])
     while(!feof(archivo)){
         tipoToken = yylex();
         if(tipoToken != -1){
-        	printf("\nReconocido token tipo: %s valor: %s\n",getTypeString(tipoToken),valor);
+        	printf("\nReconocido token tipo: %s\n",getTypeString(tipoToken));
         }
     }
 
     fclose(archivo);
+
+    //se imprime la tabla de simbolos
+    simbolo * actual;
+	actual = tablaSimbolos;
+	while(actual != NULL){
+	    printf("\nValor:%s Tipo: %i\n",actual->nombre,actual->tipo);
+		actual = actual->siguiente;
+	}
+
     return 0;
 }
 
@@ -670,9 +679,8 @@ int contComment(char c){
 int endId(char c){
 	if(!reservedWord(valor)){
 		//identificador
-		printf("Reconocido el id: %s",valor);
 		int tipoToken = 1;
-		if((yyval = searchSimbol(valor,tipoToken)) != -1){
+		if((yyval = searchSimbol(valor,tipoToken)) == -1){
 			yyval = addToSimbolTable(valor,tipoToken);
 		}
 		return tipoToken;
@@ -683,8 +691,7 @@ int endId(char c){
 	}
 }
 int endNumber(char c){
-    printf("Reconocido Number: %s",valor);
-    if((yyval = searchSimbol(valor,2)) != -1){
+    if((yyval = searchSimbol(valor,2)) == -1){
         yyval = addToSimbolTable(valor,2);
     }
     return 2;
@@ -727,7 +734,7 @@ int endOr(char c){
 }
 int endString(char c){
 	int tipoToken = 15;
-	if((yyval = searchSimbol(valor,tipoToken)) != -1){
+	if((yyval = searchSimbol(valor,tipoToken)) == -1){
 		yyval = addToSimbolTable(valor,tipoToken);
 	}
     return tipoToken;
