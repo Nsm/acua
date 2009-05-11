@@ -174,6 +174,7 @@ int yylex();
 
 struct simbolo{
 	char nombre[30];
+	int tipo;
 	int posicion;
 	simbolo *siguiente;
 };
@@ -306,10 +307,10 @@ int yylex(){
     return token;
 }
 
-int searchSimbol(char * name){
+int searchSimbol(char * name, int tipo){
 	simbolo * actual;
 	actual = tablaSimbolos;
-	while(strcmp(actual->nombre,name) != 0 && actual != NULL){
+	while(actual != NULL && strcmp(actual->nombre,name) != 0 && (actual->tipo != tipo)){
 		actual = actual->siguiente;
 	}
 	if(actual != NULL){
@@ -319,10 +320,11 @@ int searchSimbol(char * name){
 	}
 }
 
-int addToSimbolTable(char * name){
+int addToSimbolTable(char * name, int tipo){
 	//agrega un nuevo simbolo a la lista
 	simbolo * nuevo = new simbolo;
 	strcpy(nuevo->nombre,name);
+	nuevo->tipo = tipo;
 	nuevo->siguiente = tablaSimbolos;
 	if(tablaSimbolos != NULL){
 		nuevo->posicion = tablaSimbolos->posicion + 1;
@@ -669,10 +671,11 @@ int endId(char c){
 	if(!reservedWord(valor)){
 		//identificador
 		printf("Reconocido el id: %s",valor);
-		if((yyval = searchSimbol(valor)) != -1){
-			yyval = addToSimbolTable(valor);
+		int tipoToken = 1;
+		if((yyval = searchSimbol(valor,tipoToken)) != -1){
+			yyval = addToSimbolTable(valor,tipoToken);
 		}
-		return 1;
+		return tipoToken;
 	}else{
 		//palabra reservada
 		int tipoToken = reservedWord(valor);
@@ -719,7 +722,11 @@ int endOr(char c){
     return 14;
 }
 int endString(char c){
-    return 15;
+	int tipoToken = 15;
+	if((yyval = searchSimbol(valor,tipoToken)) != -1){
+		yyval = addToSimbolTable(valor,tipoToken);
+	}
+    return tipoToken;
 }
 int endSemicolon(char c){
     return 16;
