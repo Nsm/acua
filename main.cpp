@@ -174,12 +174,14 @@ int yylex();
 
 struct simbolo{
 	char nombre[30];
+	int posicion;
 	simbolo *siguiente;
 };
 
 simbolo * tablaSimbolos = NULL;
 
-char yyval[30];
+char valor[30];
+int yyval;
 
 int main(int argc,char * argv[])
 {
@@ -196,7 +198,7 @@ int main(int argc,char * argv[])
     while(!feof(archivo)){
         tipoToken = yylex();
         if(tipoToken != -1){
-        	printf("\nReconocido token tipo: %s valor: %s\n",getTypeString(tipoToken),yyval);
+        	printf("\nReconocido token tipo: %s valor: %s\n",getTypeString(tipoToken),valor);
         }
     }
 
@@ -304,15 +306,33 @@ int yylex(){
     return token;
 }
 
-void addToSimbolTable(char * name){
+int searchSimbol(char * name){
+	simbolo * actual;
+	actual = tablaSimbolos;
+	while(strcmp(actual->nombre,name) != 0 && actual != NULL){
+		actual = actual->siguiente;
+	}
+	if(actual != NULL){
+		return actual->posicion;
+	}else{
+		return -1;
+	}
+}
+
+int addToSimbolTable(char * name){
 	//agrega un nuevo simbolo a la lista
 	simbolo * nuevo = new simbolo;
 	strcpy(nuevo->nombre,name);
+	nuevo->siguiente = tablaSimbolos;
 	if(tablaSimbolos != NULL){
-		nuevo->siguiente = tablaSimbolos;
+		nuevo->posicion = tablaSimbolos->posicion + 1;
+	}else{
+		nuevo->posicion = 0;
 	}
 	tablaSimbolos = nuevo;
+	return nuevo->posicion;
 }
+
 
 //Funcion auxiliar para mejorar el debug
 char* getTypeString(int tipoToken){
@@ -427,135 +447,135 @@ char* getTypeString(int tipoToken){
 
 
 int startId(char c){
-	memset(yyval,'\0',sizeof(yyval));
-	yyval[strlen(yyval)] = c;
+	memset(valor,'\0',sizeof(valor));
+	valor[strlen(valor)] = c;
     return 0;
 }
 int startNumber(char c){
-	memset(yyval,'\0',sizeof(yyval));
-	yyval[strlen(yyval)] = c;
+	memset(valor,'\0',sizeof(valor));
+	valor[strlen(valor)] = c;
     return 0;
 }
 int startSum(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 
 }
 int startSubstraction(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startMultiplication(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startDivision(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startAutoSum(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startAutoSubstraction(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startAutoMultiplication(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startAutoDivision(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startAsignation(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startNegation(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startAnd(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startOr(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startString(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	memset(valor,'\0',sizeof(valor));
     return 0;
 }
 int startSemicolon(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startComma(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startSeparator(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startLower(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startUpper(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startBracket(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startRightBracket(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startBrace(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startRightBrace(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startEqual(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startEqualLower(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startEqualUpper(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startNotEqual(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int startComment(char c){
-	memset(yyval,'\0',sizeof(yyval));
+	yyval = -1;
     return 0;
 }
 int contId(char c){
-	if(strlen(yyval) <= 30){
-		yyval[strlen(yyval)] = c;
+	if(strlen(valor) <= 30){
+		valor[strlen(valor)] = c;
 		return 0;
 	}else{
-		printf("\nError de sintaxis: identificador demasiado largo %s... solo se permiten 30 caracteres\n",yyval);
+		printf("\nError de sintaxis: identificador demasiado largo %s... solo se permiten 30 caracteres\n",valor);
 		exit(1);
 	}
 }
 int contNumber(char c){
-	yyval[strlen(yyval)] = c;
+	valor[strlen(valor)] = c;
     return 0;
 }
 int contSum(char c){
@@ -595,8 +615,13 @@ int contOr(char c){
     return 0;
 }
 int contString(char c){
-	yyval[strlen(yyval)] = c;
-    return 0;
+	if(strlen(valor) <= 30){
+		valor[strlen(valor)] = c;
+		return 0;
+	}else{
+		printf("\nError de sintaxis: string demasiado largo %s... solo se permiten 30 caracteres\n",valor);
+		exit(1);
+	}
 }
 int contSemicolon(char c){
     return 0;
@@ -641,15 +666,16 @@ int contComment(char c){
     return 0;
 }
 int endId(char c){
-	if(!reservedWord(yyval)){
+	if(!reservedWord(valor)){
 		//identificador
-		printf("Reconocido el id: %s",yyval);
-		addToSimbolTable(yyval);
+		printf("Reconocido el id: %s",valor);
+		if((yyval = searchSimbol(valor)) != -1){
+			yyval = addToSimbolTable(valor);
+		}
 		return 1;
 	}else{
 		//palabra reservada
-		int tipoToken = reservedWord(yyval);
-		memset(yyval,'\0',sizeof(yyval));
+		int tipoToken = reservedWord(valor);
 		return tipoToken;
 	}
 }
