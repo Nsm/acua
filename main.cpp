@@ -295,7 +295,9 @@ int yylex(){
         token = (*funciones[estado][columna])(c);
         estado = nuevo_estado [estado] [columna];
     }
-	if(!feof(archivo)){
+	if(token != 15){
+		//se retorna el ultimo caracter leido al archivo porque no forma parte
+		//de este token. Salvo cuando el token es un string (la ultima comilla no debe volver al archivo)
 		ungetc(c,archivo);
 	}
 
@@ -544,8 +546,13 @@ int startComment(char c){
     return 0;
 }
 int contId(char c){
-	yyval[strlen(yyval)] = c;
-    return 0;
+	if(strlen(yyval) <= 30){
+		yyval[strlen(yyval)] = c;
+		return 0;
+	}else{
+		printf("\nError de sintaxis: identificador demasiado largo %s... solo se permiten 30 caracteres\n",yyval);
+		exit(1);
+	}
 }
 int contNumber(char c){
 	yyval[strlen(yyval)] = c;
