@@ -680,6 +680,10 @@ int endId(char c){
 	}
 }
 int endNumber(char c){
+    printf("Reconocido Number: %s",valor);
+    if((yyval = searchSimbol(valor,2)) != -1){
+        yyval = addToSimbolTable(valor,2);
+    }
     return 2;
 }
 int endSum(char c){
