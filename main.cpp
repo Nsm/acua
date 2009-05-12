@@ -208,8 +208,9 @@ int main(int argc,char * argv[])
     //se imprime la tabla de simbolos
     simbolo * actual;
 	actual = tablaSimbolos;
+	printf("\nTabla de simbolos:\n");
 	while(actual != NULL){
-	    printf("\nValor:%s Tipo: %i\n",actual->nombre,actual->tipo);
+	    printf("\nValor:%s Tipo: %s\n",actual->nombre,getTypeString(actual->tipo));
 		actual = actual->siguiente;
 	}
 
@@ -300,13 +301,25 @@ int yylex(){
 	int token = -1;
     char c;
     //mientras el estado sea distinto del final y no se de que estamos en el estado inicial y el archivo llego a su fin entonces iteramos sobre los estados
-	while (estado != estado_final && !(estado == 0 && feof(archivo)))
+	while (estado != estado_final  && !feof(archivo))
     {
         c = fgetc(archivo);
         columna = get_evento(c);
         token = (*funciones[estado][columna])(c);
         estado = nuevo_estado [estado] [columna];
     }
+
+	if(feof(archivo)){
+		if(estado == 0){
+			return -1;
+		}else if(estado != estado_final){
+			printf("Error de sintaxis, fin del archivo inesperado\n");
+			exit(1);
+		}else{
+			return token;
+		}
+	}
+
 	if(token != 15){
 		//se retorna el ultimo caracter leido al archivo porque no forma parte
 		//de este token. Salvo cuando el token es un string (la ultima comilla no debe volver al archivo)
