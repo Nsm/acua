@@ -463,6 +463,12 @@ char* getTypeString(int tipoToken){
 		case 34:
 			return "Display";
 			break;
+		case 35:
+			return "Float";
+			break;
+		case 36:
+			return "String";
+			break;
 		default:
 			return "";
 			break;
@@ -815,6 +821,10 @@ int reservedWord(char * id){
 		return 33;
 	}else if(strcmp(id,"display") == 0){
 		return 34;
+	}else if(strcmp(id,"float") == 0){
+		return 35;
+	}else if(strcmp(id,"string") == 0){
+		return 36;
 	}else{
 		return 0;
 	}
