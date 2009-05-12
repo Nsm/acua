@@ -165,7 +165,9 @@ int (* funciones[CANT_ESTADOS - 1][CANT_ENTRADAS])(char) = {
 {endSeparator, endSeparator, endSeparator, endSeparator, endSeparator, endSeparator, endSeparator, endSeparator, endSeparator, endSeparator, endSeparator, endSeparator, endSeparator, endSeparator, endSeparator, endSeparator, endSeparator, endSeparator, endSeparator, endSeparator, endSeparator, endSeparator},
 {endComma, endComma, endComma, endComma, endComma, endComma, endComma, endComma, endComma, endComma, endComma, endComma, endComma, endComma, endComma, endComma, endComma, endComma, endComma, endComma, endComma, endComma},
 {endDivision, endDivision, endDivision, endDivision, startComment, endDivision, startAutoDivision, endDivision, endDivision, endDivision, endDivision, endDivision, endDivision, endDivision, endDivision, endDivision, endDivision, endDivision, endDivision, endDivision, endDivision, endDivision},
-{endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision}};
+{endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision, endAutoDivision},
+{nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing},
+{nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing}};
 
 
 
@@ -332,7 +334,7 @@ int yylex(){
 int searchSimbol(char * name, int tipo){
 	simbolo * actual;
 	actual = tablaSimbolos;
-	while(actual != NULL && strcmp(actual->nombre,name) != 0 && (actual->tipo != tipo)){
+	while(actual != NULL && !(strcmp(actual->nombre,name) == 0 && (actual->tipo == tipo))){
 		actual = actual->siguiente;
 	}
 	if(actual != NULL){
@@ -462,6 +464,12 @@ char* getTypeString(int tipoToken){
 			break;
 		case 34:
 			return "Display";
+			break;
+		case 35:
+			return "Float";
+			break;
+		case 36:
+			return "String";
 			break;
 		default:
 			return "";
@@ -815,6 +823,10 @@ int reservedWord(char * id){
 		return 33;
 	}else if(strcmp(id,"display") == 0){
 		return 34;
+	}else if(strcmp(id,"float") == 0){
+		return 35;
+	}else if(strcmp(id,"string") == 0){
+		return 36;
 	}else{
 		return 0;
 	}
