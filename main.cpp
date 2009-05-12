@@ -332,7 +332,7 @@ int yylex(){
 int searchSimbol(char * name, int tipo){
 	simbolo * actual;
 	actual = tablaSimbolos;
-	while(actual != NULL && strcmp(actual->nombre,name) != 0 && (actual->tipo != tipo)){
+	while(actual != NULL && !(strcmp(actual->nombre,name) == 0 && (actual->tipo == tipo))){
 		actual = actual->siguiente;
 	}
 	if(actual != NULL){
