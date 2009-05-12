@@ -370,82 +370,82 @@ char* getTypeString(int tipoToken){
 			return "Number";
 			break;
 		case 3:
-			return "Sum";
+			return "Sum (+)";
 			break;
 		case 4:
-			return "Substraction";
+			return "Substraction (-)";
 			break;
 		case 5:
-			return "Multiplication";
+			return "Multiplication (*)";
 			break;
 		case 6:
-			return "Division";
+			return "Division (/)";
 			break;
 		case 7:
-			return "AutoSum";
+			return "AutoSum (+=)";
 			break;
 		case 8:
-			return "AutoSubstraction";
+			return "AutoSubstraction (-=)";
 			break;
 		case 9:
-			return "AutoMultiplication";
+			return "AutoMultiplication (*=)";
 			break;
 		case 10:
-			return "AutoDivision";
+			return "AutoDivision (/=)";
 			break;
 		case 11:
-			return "Asignation";
+			return "Asignation (=)";
 			break;
 		case 12:
-			return "Negation";
+			return "Negation (!=)";
 			break;
 		case 13:
-			return "And";
+			return "And (&&)";
 			break;
 		case 14:
-			return "Or";
+			return "Or (||)";
 			break;
 		case 15:
 			return "String";
 			break;
 		case 16:
-			return "Semicolon";
+			return "Semicolon (;)";
 			break;
 		case 17:
-			return "Comma";
+			return "Comma (,)";
 			break;
 		case 18:
-			return "Separator";
+			return "Separator (:)";
 			break;
 		case 19:
-			return "Lower";
+			return "Lower (<)";
 			break;
 		case 20:
-			return "Upper";
+			return "Upper (>)";
 			break;
 		case 21:
-			return "Bracket";
+			return "Bracket (()";
 			break;
 		case 22:
-			return "RightBracket";
+			return "RightBracket ())";
 			break;
 		case 23:
-			return "Brace";
+			return "Brace ({)";
 			break;
 		case 24:
-			return "RightBrace";
+			return "RightBrace (})";
 			break;
 		case 25:
-			return "Equal";
+			return "Equal (==)";
 			break;
 		case 26:
-			return "EqualLower";
+			return "EqualLower (<=)";
 			break;
 		case 27:
-			return "EqualUpper";
+			return "EqualUpper (>=)";
 			break;
 		case 28:
-			return "NotEqual";
+			return "NotEqual (!=)";
 			break;
 		case 29:
 			return "Comment";
