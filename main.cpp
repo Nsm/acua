@@ -4,6 +4,42 @@
 
 #define CANT_ESTADOS  35
 #define CANT_ENTRADAS  22
+#define ID 1
+#define NUMBER 2
+#define SUM 3
+#define SUBSTRACTION 4
+#define MULTIPLICATION 5
+#define DIVISION 6
+#define AUTOSUM 7
+#define AUTOSUBSTRACTION 8
+#define AUTOMULTIPLICATION 9
+#define AUTODIVISION 10
+#define AUTOASIGNATION 11
+#define NEGATION 12
+#define AND 13
+#define OR 14
+#define STRING 15
+#define SEMICOLON 16
+#define COMMA 17
+#define SEPARATOR 18
+#define LOWER 19
+#define UPPER 20
+#define BRACKET 21
+#define RIGHTBRACKET 22
+#define BRACE 23
+#define RIGHTBRACE 24
+#define EQUAL 25
+#define EQUALLOWER 26
+#define EQUALUPPER 27
+#define NOTEQUAL 28
+#define COMMENT 29
+#define IF 30
+#define ELSE 31
+#define WHILE 32
+#define DEFINE 33
+#define DISPLAY 34
+#define TYPEFLOAT 35
+#define TYPESTRING 36
 
 int nuevo_estado[CANT_ESTADOS - 1][CANT_ENTRADAS] = {{4, 2, 9, 11, 7, 30, 5, 17, 23, 21, 1, 27, 29, 28, 13, 15, 19, 20, 25, 26, 3, 0},
 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 34, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -700,7 +736,7 @@ int contComment(char c){
 int endId(char c){
 	if(!reservedWord(valor)){
 		//identificador
-		int tipoToken = 1;
+		int tipoToken = ID;
 		if((yyval = searchSimbol(valor,tipoToken)) == -1){
 			yyval = addToSimbolTable(valor,tipoToken);
 		}
@@ -715,92 +751,92 @@ int endNumber(char c){
     if((yyval = searchSimbol(valor,2)) == -1){
         yyval = addToSimbolTable(valor,2);
     }
-    return 2;
+    return NUMBER;
 }
 int endSum(char c){
-    return 3;
+    return SUM;
 }
 int endSubstraction(char c){
-    return 4;
+    return SUBSTRACTION;
 }
 int endMultiplication(char c){
-    return 5;
+    return MULTIPLICATION;
 }
 int endDivision(char c){
-    return 6;
+    return DIVISION;
 }
 int endAutoSum(char c){
-    return 7;
+    return AUTOSUM;
 }
 int endAutoSubstraction(char c){
-    return 8;
+    return AUTOSUBSTRACTION;
 }
 int endAutoMultiplication(char c){
-    return 9;
+    return AUTOMULTIPLICATION;
 }
 int endAutoDivision(char c){
-    return 10;
+    return AUTODIVISION;
 }
 int endAsignation(char c){
-    return 11;
+    return AUTOASIGNATION;
 }
 int endNegation(char c){
-    return 12;
+    return NEGATION;
 }
 int endAnd(char c){
-    return 13;
+    return AND;
 }
 int endOr(char c){
-    return 14;
+    return OR;
 }
 int endString(char c){
-	int tipoToken = 15;
+	int tipoToken = STRING;
 	if((yyval = searchSimbol(valor,tipoToken)) == -1){
 		yyval = addToSimbolTable(valor,tipoToken);
 	}
     return tipoToken;
 }
 int endSemicolon(char c){
-    return 16;
+    return SEMICOLON;
 }
 int endComma(char c){
-    return 17;
+    return COMMA;
 }
 int endSeparator(char c){
-    return 18;
+    return SEPARATOR;
 }
 int endLower(char c){
-    return 19;
+    return LOWER;
 }
 int endUpper(char c){
-    return 20;
+    return UPPER;
 }
 int endBracket(char c){
-    return 21;
+    return BRACKET;
 }
 int endRightBracket(char c){
-    return 22;
+    return RIGHTBRACKET;
 }
 int endBrace(char c){
-    return 23;
+    return BRACE;
 }
 int endRightBrace(char c){
-    return 24;
+    return RIGHTBRACE;
 }
 int endEqual(char c){
-    return 25;
+    return EQUAL;
 }
 int endEqualLower(char c){
-    return 26;
+    return EQUALLOWER;
 }
 int endEqualUpper(char c){
-    return 27;
+    return EQUALUPPER;
 }
 int endNotEqual(char c){
-    return 28;
+    return NOTEQUAL;
 }
 int endComment(char c){
-    return 29;
+    return COMMENT;
 }
 int error(char c){
 	printf("\nError de sintaxis: caracter no esperado '%c'\n",c);
@@ -814,19 +850,19 @@ int nothing(char c){
 
 int reservedWord(char * id){
 	if(strcmp(id,"if") == 0){
-		return 30;
+		return IF;
 	}else if(strcmp(id,"else") == 0){
-		return 31;
+		return ELSE;
 	}else if(strcmp(id,"while") == 0){
-		return 32;
+		return WHILE;
 	}else if(strcmp(id,"define") == 0){
-		return 33;
+		return DEFINE;
 	}else if(strcmp(id,"display") == 0){
-		return 34;
+		return DISPLAY;
 	}else if(strcmp(id,"float") == 0){
-		return 35;
+		return TYPEFLOAT;
 	}else if(strcmp(id,"string") == 0){
-		return 36;
+		return TYPESTRING;
 	}else{
 		return 0;
 	}
