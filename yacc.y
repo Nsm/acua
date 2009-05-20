@@ -242,6 +242,30 @@ int yyval;
 
 programa : NUMBER {printf( "programa: BEGIN salida END\n\n");};
 
+
+ programa : bloque_declaracion cuerpo;
+ cuerpo : sentencia | cuerpo sentencia | cuerpo comentario;
+ sentencia : asig fin_sentencia | desicion | ciclo_mientras | ciclo_hasta;
+ condicion : condicionsimple | condicionmultiple;
+ condicionsimple : expresion op_logico expresion;
+ condicionmultiple : op_not condicionsimple | condicionsimple op_or condicionsimple | condicionsimple op_and condicionsimple | condicionsimple op_not condicionsimple;
+ desicion : condicional p_abre condicion p_cierra inicio_bloque programa fin_bloque | condicional p_abre condicion p_cierra inicio_bloque programa fin_bloque sino inicio_bloque programa fin_bloque;
+ asig : identificador  op_asig  exp;
+ asig_especial : identificador  op_asig_suma  exp | identificador  op_asig_resta  exp | identificador  op_asig_multiplicacion  exp | identificador  op_asig_divicion  exp;
+ exp : exp  op_mas  termino;
+ exp : exp  op_menos  termino;
+ exp : termino;
+ termino : termino  op_mul  factor;
+ termino : termino  op_div  factor;
+ termino : factor;
+ factor : identificador | numero | p_abre  exp  p_cierra;
+ lista_variables : identificador | identificador separador_variables lista_variables;
+ declaracion : lista_variables  separador_declaracion  tipo_dato fin_sentencia | declaracion lista_variables  separador_declaracion  tipos_dato fin_sentencia;
+ bloque_declaracion : op_declaracion inicio_bloque declaracion fin_bloque;
+ ciclo_mientras : mientras p_abre condicion p_cierra inicio_bloque programa fin_bloque;
+ ciclo_hasta : inicio_hasta programa fin_hasta p_abre condicion p_cierra;
+ escribir : salida string
+
 %%
 
 /* CODIGO */
