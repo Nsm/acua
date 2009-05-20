@@ -859,6 +859,14 @@ int reservedWord(char * id){
 	}
 }
 
+
+void yyerror(char *s)
+{
+    fprintf(stderr,"%s\n",s);
+    return;
+}
+
+
 int main(int argc,char * argv[])
 {
     if(argc != 2){
@@ -879,3 +887,5 @@ int main(int argc,char * argv[])
 
     return 0;
 }
+
+
