@@ -136,6 +136,7 @@ int error(char c);
 int nothing(char c);
 int reservedWord(char * id);
 int yyparse();
+void yyerror(char *);
 char* getTypeString(int tipoToken);
 
 int (* funciones[CANT_ESTADOS - 1][CANT_ENTRADAS])(char) = {
@@ -385,125 +386,6 @@ int addToSimbolTable(char * name, int tipo){
 	tablaSimbolos = nuevo;
 	return nuevo->posicion;
 }
-
-
-//Funcion auxiliar para mejorar el debug
-char* getTypeString(int tipoToken){
-	switch (tipoToken) {
-		case 1:
-			return "Id";
-			break;
-		case 2:
-			return "Number";
-			break;
-		case 3:
-			return "Sum (+)";
-			break;
-		case 4:
-			return "Substraction (-)";
-			break;
-		case 5:
-			return "Multiplication (*)";
-			break;
-		case 6:
-			return "Division (/)";
-			break;
-		case 7:
-			return "AutoSum (+=)";
-			break;
-		case 8:
-			return "AutoSubstraction (-=)";
-			break;
-		case 9:
-			return "AutoMultiplication (*=)";
-			break;
-		case 10:
-			return "AutoDivision (/=)";
-			break;
-		case 11:
-			return "Asignation (=)";
-			break;
-		case 12:
-			return "Negation (!=)";
-			break;
-		case 13:
-			return "And (&&)";
-			break;
-		case 14:
-			return "Or (||)";
-			break;
-		case 15:
-			return "String";
-			break;
-		case 16:
-			return "Semicolon (;)";
-			break;
-		case 17:
-			return "Comma (,)";
-			break;
-		case 18:
-			return "Separator (:)";
-			break;
-		case 19:
-			return "Lower (<)";
-			break;
-		case 20:
-			return "Upper (>)";
-			break;
-		case 21:
-			return "Bracket (()";
-			break;
-		case 22:
-			return "RightBracket ())";
-			break;
-		case 23:
-			return "Brace ({)";
-			break;
-		case 24:
-			return "RightBrace (})";
-			break;
-		case 25:
-			return "Equal (==)";
-			break;
-		case 26:
-			return "EqualLower (<=)";
-			break;
-		case 27:
-			return "EqualUpper (>=)";
-			break;
-		case 28:
-			return "NotEqual (!=)";
-			break;
-		case 29:
-			return "Comment";
-			break;
-		case 30:
-			return "If";
-			break;
-		case 31:
-			return "Else";
-			break;
-		case 32:
-			return "While";
-			break;
-		case 33:
-			return "Define";
-			break;
-		case 34:
-			return "Display";
-			break;
-		case 35:
-			return "Float";
-			break;
-		case 36:
-			return "String";
-			break;
-		default:
-			return "";
-			break;
-	}
-}
-
 
 int startId(char c){
 	memset(valor,'\0',sizeof(valor));
