@@ -205,7 +205,7 @@ int yyval;
 %token AUTOSUBSTRACTION
 %token AUTOMULTIPLICATION
 %token AUTODIVISION
-%token AUTOASIGNATION
+%token ASIGNATION
 %token NEGATION
 %token AND
 %token OR
@@ -246,26 +246,27 @@ int yyval;
 
 
 
- programa : bloque_declaracion cuerpo {printf( "");};
+ programa : bloque_declaracion cuerpo {printf( "Reconocido el programa :)\n");};
+ | cuerpo {printf( "Reconocido el programa :)\n");};
 
+ cuerpo : sentencia {printf( "Reconocido el cuerpo\n");};
+ | cuerpo sentencia;
 
- cuerpo : sentencia {printf( "");};
- | cuerpo sentencia {printf( "");};
+ sentencia : asig SEMICOLON ;
+ | asig_especial SEMICOLON ;
+ | desicion ;
+ | mientras ;
+ | ciclo_hasta ;
+ | escribir SEMICOLON;
 
- sentencia : asig SEMICOLON {printf( "");};
- | asig_especial SEMICOLON {printf( "");};
- | desicion {printf( "");};
- | mientras {printf( "");};
- | ciclo_hasta {printf( "");};
- | escribir SEMICOLON {printf( "");};
+ comp_logico : LOWER ;
+ | UPPER ;
+ | EQUALLOWER ;
+ | EQUALUPPER ;
+ | EQUAL ;
 
- comp_logico : LOWER {printf( "");};
- | UPPER {printf( "");};
- | EQUALLOWER {printf( "");};
- | EQUALUPPER {printf( "");};
-
- condicion : condicionsimple {printf( "");};
- | condicionmultiple {printf( "");};
+ condicion : condicionsimple {printf( "Reconocida una condicion simple\n");};
+ | condicionmultiple {printf( "Reconocida una condicion multiple\n");};
 
  condicionsimple : exp comp_logico exp {printf( "");};
 
@@ -274,19 +275,19 @@ int yyval;
  | condicionsimple AND condicionsimple {printf( "");};
  | condicionsimple NEGATION condicionsimple {printf( "");};
 
- desicion : IF BRACKET condicion RIGHTBRACKET BRACE programa RIGHTBRACE {printf( "");};
- | IF BRACKET condicion RIGHTBRACKET BRACE programa RIGHTBRACE ELSE BRACE programa RIGHTBRACE {printf( "");};
+ desicion : IF BRACKET condicion RIGHTBRACKET BRACE cuerpo RIGHTBRACE {printf( "Reconocido un if\n");};
+ | IF BRACKET condicion RIGHTBRACKET BRACE cuerpo RIGHTBRACE ELSE BRACE cuerpo RIGHTBRACE {printf( "Reconocido un if\n");};
 
- asig : ID  EQUAL  exp {printf( "");};
+ asig : ID ASIGNATION exp {printf( "Reconocida una asignacion\n");};
 
- asig_especial : ID  AUTOSUM  exp {printf( "");};
- | ID  AUTOSUBSTRACTION  exp {printf( "");};
- | ID  AUTOMULTIPLICATION  exp {printf( "");};
- | ID  AUTODIVISION  exp {printf( "");};
+ asig_especial : ID  AUTOSUM  exp {printf( "Reconocida una asignacion especial\n");};
+ | ID  AUTOSUBSTRACTION  exp {printf( "Reconocida una asignacion especial\n");};
+ | ID  AUTOMULTIPLICATION  exp {printf( "Reconocida una asignacion especial\n");};
+ | ID  AUTODIVISION  exp {printf( "Reconocida una asignacion especial\n");};
 
- exp : exp  SUM  termino {printf( "");};
+ exp : exp  SUM  termino {printf( "Reconocida una suma\n");};
 
- exp : exp  SUBSTRACTION  termino {printf( "");};
+ exp : exp  SUBSTRACTION  termino {printf( "Reconocida una resta\n");};
 
  exp : termino {printf( "");};
 
@@ -308,13 +309,13 @@ int yyval;
  declaracion : lista_variables  SEPARATOR  tipo_dato SEMICOLON {printf( "");};
  | declaracion lista_variables  SEPARATOR  tipo_dato SEMICOLON {printf( "");};
 
- bloque_declaracion : DEFINE BRACE declaracion RIGHTBRACE {printf( "");};
+ bloque_declaracion : DEFINE BRACE declaracion RIGHTBRACE {printf( "Reconocido un bloque de declaracion\n");};
 
- mientras : WHILE BRACKET condicion RIGHTBRACKET BRACE programa RIGHTBRACE {printf( "");};
+ mientras : WHILE BRACKET condicion RIGHTBRACKET BRACE cuerpo RIGHTBRACE {printf( "Reconocido un while\n");};
 
- ciclo_hasta : REPEAT programa UNTIL BRACKET condicion RIGHTBRACKET {printf( "");};
+ ciclo_hasta : REPEAT cuerpo UNTIL BRACKET condicion RIGHTBRACKET {printf( "Reconocido un Until\n");};
 
- escribir : DISPLAY STRING {printf( "");};
+ escribir : DISPLAY STRING {printf( "Reconocido un display\n");};
 
 %%
 
@@ -724,7 +725,7 @@ int endAutoDivision(char c){
     return AUTODIVISION;
 }
 int endAsignation(char c){
-    return AUTOASIGNATION;
+    return ASIGNATION;
 }
 int endNegation(char c){
     return NEGATION;
@@ -828,6 +829,7 @@ void yyerror(char *s)
 
 int main(int argc,char * argv[])
 {
+	printf("Bienvenido al compilador: acua\n");
     if(argc != 2){
         printf("\nDebe pasar el nombre del archivo como parametro\n");
         exit(1);
@@ -838,9 +840,9 @@ int main(int argc,char * argv[])
     }
 
     int tipoToken;
-    while(!feof(archivo)){
+    //while(!feof(archivo)){
         yyparse();
-    }
+    //}
 
     fclose(archivo);
 

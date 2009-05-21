@@ -14,7 +14,7 @@
 #define AUTOSUBSTRACTION 8
 #define AUTOMULTIPLICATION 9
 #define AUTODIVISION 10
-#define AUTOASIGNATION 11
+#define ASIGNATION 11
 #define NEGATION 12
 #define AND 13
 #define OR 14
@@ -780,7 +780,7 @@ int endAutoDivision(char c){
     return AUTODIVISION;
 }
 int endAsignation(char c){
-    return AUTOASIGNATION;
+    return ASIGNATION;
 }
 int endNegation(char c){
     return NEGATION;
