@@ -230,6 +230,7 @@ int yyval;
 %token DISPLAY
 %token TYPEFLOAT
 %token TYPESTRING
+%token REPEATUNTIL
 
 
 %start programa  /* DEFINE EL START SYMBOL*/
@@ -240,31 +241,75 @@ int yyval;
 %%
 
 
-programa : NUMBER {printf( "programa: BEGIN salida END\n\n");};
 
 
- programa : bloque_declaracion cuerpo;
- cuerpo : sentencia | cuerpo sentencia | cuerpo comentario;
- sentencia : asig fin_sentencia | desicion | ciclo_mientras | ciclo_hasta;
- condicion : condicionsimple | condicionmultiple;
- condicionsimple : expresion op_logico expresion;
- condicionmultiple : op_not condicionsimple | condicionsimple op_or condicionsimple | condicionsimple op_and condicionsimple | condicionsimple op_not condicionsimple;
- desicion : condicional p_abre condicion p_cierra inicio_bloque programa fin_bloque | condicional p_abre condicion p_cierra inicio_bloque programa fin_bloque sino inicio_bloque programa fin_bloque;
- asig : identificador  op_asig  exp;
- asig_especial : identificador  op_asig_suma  exp | identificador  op_asig_resta  exp | identificador  op_asig_multiplicacion  exp | identificador  op_asig_divicion  exp;
- exp : exp  op_mas  termino;
- exp : exp  op_menos  termino;
- exp : termino;
- termino : termino  op_mul  factor;
- termino : termino  op_div  factor;
- termino : factor;
- factor : identificador | numero | p_abre  exp  p_cierra;
- lista_variables : identificador | identificador separador_variables lista_variables;
- declaracion : lista_variables  separador_declaracion  tipo_dato fin_sentencia | declaracion lista_variables  separador_declaracion  tipos_dato fin_sentencia;
- bloque_declaracion : op_declaracion inicio_bloque declaracion fin_bloque;
- ciclo_mientras : mientras p_abre condicion p_cierra inicio_bloque programa fin_bloque;
- ciclo_hasta : inicio_hasta programa fin_hasta p_abre condicion p_cierra;
- escribir : salida string
+
+ programa : bloque_declaracion cuerpo {printf( "");};
+
+
+ cuerpo : sentencia {printf( "");};
+ | cuerpo sentencia {printf( "");};
+
+ sentencia : asig SEMICOLON {printf( "");};
+ | desicion {printf( "");};
+ | WHILE {printf( "");};
+ | ciclo_hasta {printf( "");};
+
+ comp_logico : LOWER {printf( "");};
+ | UPPER {printf( "");};
+ | EQUALLOWER {printf( "");};
+ | EQUALUPPER {printf( "");};
+ | LOWER {printf( "");};
+
+ condicion : condicionsimple {printf( "");};
+ | condicionmultiple {printf( "");};
+
+ condicionsimple : exp comp_logico exp {printf( "");};
+
+ condicionmultiple : NEGATION condicionsimple {printf( "");};
+ | condicionsimple OR condicionsimple {printf( "");};
+ | condicionsimple AND condicionsimple {printf( "");};
+ | condicionsimple NEGATION condicionsimple {printf( "");};
+
+ desicion : IF BRACKET condicion RIGHTBRACKET BRACE programa RIGHTBRACE {printf( "");};
+ | IF BRACKET condicion RIGHTBRACKET BRACE programa RIGHTBRACE ELSE BRACE programa RIGHTBRACE {printf( "");};
+
+ asig : ID  EQUAL  exp {printf( "");};
+
+ asig_especial : ID  AUTOSUM  exp {printf( "");};
+ | ID  AUTOSUBSTRACTION  exp {printf( "");};
+ | ID  AUTOMULTIPLICATION  exp {printf( "");};
+ | ID  AUTODIVISION  exp {printf( "");};
+
+ exp : exp  SUM  termino {printf( "");};
+
+ exp : exp  SUBSTRACTION  termino {printf( "");};
+
+ exp : termino {printf( "");};
+
+ termino : termino  MULTIPLICATION  factor {printf( "");};
+
+ termino : termino  DIVISION  factor {printf( "");};
+
+ termino : factor {printf( "");};
+
+ factor : ID {printf( "");};
+ | NUMBER {printf( "");};
+ | BRACKET  exp  RIGHTBRACKET {printf( "");};
+
+ lista_variables : ID {printf( "");};
+ | ID separador_variables lista_variables {printf( "");};
+
+ declaracion : lista_variables  separador_declaracion  tipo_dato SEMICOLON {printf( "");};
+ | declaracion lista_variables  separador_declaracion  tipos_dato SEMICOLON {printf( "");};
+
+ bloque_declaracion : op_declaracion BRACE declaracion RIGHTBRACE {printf( "");};
+
+ mientras : WHILE BRACKET condicion RIGHTBRACKET BRACE programa RIGHTBRACE {printf( "");};
+
+ ciclo_hasta : inicio_hasta programa fin_hasta BRACKET condicion RIGHTBRACKET {printf( "");};
+
+ escribir : salida  STRING {printf( "");};
 
 %%
 
