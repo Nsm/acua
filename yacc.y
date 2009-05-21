@@ -313,7 +313,7 @@ int yyval;
 
  mientras : WHILE BRACKET condicion RIGHTBRACKET BRACE cuerpo RIGHTBRACE {printf( "Reconocido un while\n");};
 
- ciclo_hasta : REPEAT cuerpo UNTIL BRACKET condicion RIGHTBRACKET {printf( "Reconocido un Until\n");};
+ ciclo_hasta : REPEAT BRACE cuerpo RIGHTBRACE UNTIL BRACKET condicion RIGHTBRACKET {printf( "Reconocido un Until\n");};
 
  escribir : DISPLAY STRING {printf( "Reconocido un display\n");};
 
