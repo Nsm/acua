@@ -231,7 +231,8 @@ int yyval;
 %token DISPLAY
 %token TYPEFLOAT
 %token TYPESTRING
-%token REPEATUNTIL
+%token REPEAT
+%token UNTIL
 
 
 %start programa  /* DEFINE EL START SYMBOL*/
@@ -252,15 +253,16 @@ int yyval;
  | cuerpo sentencia {printf( "");};
 
  sentencia : asig SEMICOLON {printf( "");};
+ | asig_especial SEMICOLON {printf( "");};
  | desicion {printf( "");};
- | WHILE {printf( "");};
+ | mientras {printf( "");};
  | ciclo_hasta {printf( "");};
+ | escribir SEMICOLON {printf( "");};
 
  comp_logico : LOWER {printf( "");};
  | UPPER {printf( "");};
  | EQUALLOWER {printf( "");};
  | EQUALUPPER {printf( "");};
- | LOWER {printf( "");};
 
  condicion : condicionsimple {printf( "");};
  | condicionmultiple {printf( "");};
@@ -294,23 +296,25 @@ int yyval;
 
  termino : factor {printf( "");};
 
+ tipo_dato : TYPESTRING | TYPEFLOAT;
+
  factor : ID {printf( "");};
  | NUMBER {printf( "");};
  | BRACKET  exp  RIGHTBRACKET {printf( "");};
 
  lista_variables : ID {printf( "");};
- | ID separador_variables lista_variables {printf( "");};
+ | ID COMMA lista_variables {printf( "");};
 
- declaracion : lista_variables  separador_declaracion  tipo_dato SEMICOLON {printf( "");};
- | declaracion lista_variables  separador_declaracion  tipos_dato SEMICOLON {printf( "");};
+ declaracion : lista_variables  SEPARATOR  tipo_dato SEMICOLON {printf( "");};
+ | declaracion lista_variables  SEPARATOR  tipo_dato SEMICOLON {printf( "");};
 
- bloque_declaracion : op_declaracion BRACE declaracion RIGHTBRACE {printf( "");};
+ bloque_declaracion : DEFINE BRACE declaracion RIGHTBRACE {printf( "");};
 
  mientras : WHILE BRACKET condicion RIGHTBRACKET BRACE programa RIGHTBRACE {printf( "");};
 
- ciclo_hasta : inicio_hasta programa fin_hasta BRACKET condicion RIGHTBRACKET {printf( "");};
+ ciclo_hasta : REPEAT programa UNTIL BRACKET condicion RIGHTBRACKET {printf( "");};
 
- escribir : salida  STRING {printf( "");};
+ escribir : DISPLAY STRING {printf( "");};
 
 %%
 
@@ -797,7 +801,11 @@ int reservedWord(char * id){
 		return ELSE;
 	}else if(strcmp(id,"while") == 0){
 		return WHILE;
-	}else if(strcmp(id,"define") == 0){
+    }else if(strcmp(id,"repeat") == 0){
+		return REPEAT;
+    }else if(strcmp(id,"until") == 0){
+		return UNTIL;
+    }else if(strcmp(id,"define") == 0){
 		return DEFINE;
 	}else if(strcmp(id,"display") == 0){
 		return DISPLAY;

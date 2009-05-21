@@ -40,6 +40,8 @@
 #define DISPLAY 34
 #define TYPEFLOAT 35
 #define TYPESTRING 36
+#define REPEAT 37
+#define UNTIL 38
 
 int nuevo_estado[CANT_ESTADOS - 1][CANT_ENTRADAS] = {{4, 2, 9, 11, 7, 30, 5, 17, 23, 21, 1, 27, 29, 28, 13, 15, 19, 20, 25, 26, 3, 0},
 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 34, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -855,6 +857,10 @@ int reservedWord(char * id){
 		return ELSE;
 	}else if(strcmp(id,"while") == 0){
 		return WHILE;
+    }else if(strcmp(id,"repeat") == 0){
+		return REPEAT;
+    }else if(strcmp(id,"until") == 0){
+		return UNTIL;
 	}else if(strcmp(id,"define") == 0){
 		return DEFINE;
 	}else if(strcmp(id,"display") == 0){
