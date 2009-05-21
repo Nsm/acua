@@ -1,0 +1,79 @@
+Reglas lexicas: 
+
+<digito> ::= 1|2|3|4|5|6|7|8|9|0
+<numero> ::= <numero_real> | <numero_negativo>
+<numero_nat> ::= <digito><numero_nat> | <digito> 
+<numero_real> ::= <numero_nat>.<numero_nat> | <numero_nat> | <numero_nat>. | .<numero_nat>
+<numero_negativo> ::= -<numero_real>
+
+<comentario> ::= <inicio_comentario><caracteres><fin_comentario> | <inicio_comentario><comentario><fin_comentario>
+
+<caracter> ::= a|b|c|d|e|f|g|h|i|j|k|l|m|n|ñ|o|p|q|r|s|t|u|v|w|x|y|z
+<string> ::= "<caracteres>" 
+<caracteres> ::= <caracteres><caracter> | <caracter>  | <caracteres><digito> | <digito>
+
+<identificador> ::= <caracter> | <identificador><caracter> | <identificador><digito>
+
+<op_asig> ::= =
+<op_mas> ::= +
+<op_menos> ::= -
+<op_mul> ::= *
+<op_asig_suma> ::= +=
+<op_asig_resta> ::= -=
+<op_asig_multiplicacion> ::= *=
+<op_asig_division> ::= /=
+<op_div> ::= /
+<p_abre> ::= (
+<p_cierra> ::= )
+<op_menor> ::= <
+<op_mayor> ::= >
+<op_menorigual> ::= <=
+<op_mayorigual> ::= >=
+<op_igual> ::= ==
+<comp_logico> ::= <op_menor>|<op_mayor|<op_menorigual>|<op_mayorigual>|<op_igual>
+<op_or> ::== ||
+<op_and> ::= &&
+<op_not> ::= !
+<tipo_float> ::= float
+<tipo_string> ::= string
+<tipo> ::= <tipo_float> | <tipo_string>
+<inicio_bloque> ::= {
+<fin_bloque> ::= }
+<fin_sentencia> ::= ;
+<condicional> ::= if
+<sino> ::= else
+<mientras> ::= while
+<op_declaracion> ::= define
+<separador_declaracion> ::= :
+<separador_variables> ::= ,
+<inicio_comentario> ::= /*
+<fin_comentario> ::= */
+<salida> ::= display
+<fin_hasta> ::= until
+<inicio_hasta> ::= repeat
+
+Reglas sintacticas:
+
+<programa> ::= <bloque_declaracion><cuerpo>
+<cuerpo> ::= <sentencia> | <cuerpo><sentencia> 
+
+<sentencia> ::=	<asig><fin_sentencia> | <desicion> | <ciclo_mientras> | <ciclo_hasta>
+<condicion> ::= <condicionsimple> | <condicionmultiple>
+<condicionsimple> ::= <exp><comp_logico><exp>
+<condicionmultiple> ::= <op_not><condicionsimple>|<condicionsimple><op_or><condicionsimple>|<condicionsimple><op_and><condicionsimple>|<condicionsimple><op_not><condicionsimple>
+<desicion> ::= <condicional><p_abre><condicion><p_cierra><inicio_bloque><programa><fin_bloque>|<condicional><p_abre><condicion><p_cierra><inicio_bloque><programa><fin_bloque><sino><inicio_bloque><programa><fin_bloque>
+<asig> ::= <identificador> <op_asig> <exp>
+<asig_especial> ::= <identificador> <op_asig_suma> <exp> | <identificador> <op_asig_resta> <exp> | <identificador> <op_asig_multiplicacion> <exp> | <identificador> <op_asig_divicion> <exp> 
+<exp> ::= <exp> <op_mas> <termino> 
+<exp> ::= <exp> <op_menos> <termino> 
+<exp> ::= <termino>
+<termino> ::= <termino> <op_mul> <factor> 
+<termino> ::= <termino> <op_div> <factor> 
+<termino> ::= <factor>
+<factor> ::= <identificador> | <numero> | <p_abre> <exp> <p_cierra>
+<lista_variables> ::= <identificador> | <identificador><separador_variables><lista_variables>
+<declaracion> ::= <lista_variables> <separador_declaracion> <tipo_dato><fin_sentencia> | <declaracion><lista_variables> <separador_declaracion> <tipos_dato><fin_sentencia>
+<bloque_declaracion> ::= <op_declaracion><inicio_bloque><declaracion><fin_bloque>
+<ciclo_mientras> ::= <mientras><p_abre><condicion><p_cierra><inicio_bloque><programa><fin_bloque>
+<ciclo_hasta> ::= <inicio_hasta><programa><fin_hasta><p_abre><condicion><p_cierra>
+<escribir> ::= <salida> <string>
