@@ -231,6 +231,7 @@ int yyval;
 %token DISPLAY
 %token TYPEFLOAT
 %token TYPESTRING
+%token REPEATUNTIL
 
 
 %start programa  /* DEFINE EL START SYMBOL*/
@@ -241,7 +242,75 @@ int yyval;
 %%
 
 
-programa : NUMBER {printf( "programa: BEGIN salida END\n\n");};
+
+
+
+ programa : bloque_declaracion cuerpo {printf( "");};
+
+
+ cuerpo : sentencia {printf( "");};
+ | cuerpo sentencia {printf( "");};
+
+ sentencia : asig SEMICOLON {printf( "");};
+ | desicion {printf( "");};
+ | WHILE {printf( "");};
+ | ciclo_hasta {printf( "");};
+
+ comp_logico : LOWER {printf( "");};
+ | UPPER {printf( "");};
+ | EQUALLOWER {printf( "");};
+ | EQUALUPPER {printf( "");};
+ | LOWER {printf( "");};
+
+ condicion : condicionsimple {printf( "");};
+ | condicionmultiple {printf( "");};
+
+ condicionsimple : exp comp_logico exp {printf( "");};
+
+ condicionmultiple : NEGATION condicionsimple {printf( "");};
+ | condicionsimple OR condicionsimple {printf( "");};
+ | condicionsimple AND condicionsimple {printf( "");};
+ | condicionsimple NEGATION condicionsimple {printf( "");};
+
+ desicion : IF BRACKET condicion RIGHTBRACKET BRACE programa RIGHTBRACE {printf( "");};
+ | IF BRACKET condicion RIGHTBRACKET BRACE programa RIGHTBRACE ELSE BRACE programa RIGHTBRACE {printf( "");};
+
+ asig : ID  EQUAL  exp {printf( "");};
+
+ asig_especial : ID  AUTOSUM  exp {printf( "");};
+ | ID  AUTOSUBSTRACTION  exp {printf( "");};
+ | ID  AUTOMULTIPLICATION  exp {printf( "");};
+ | ID  AUTODIVISION  exp {printf( "");};
+
+ exp : exp  SUM  termino {printf( "");};
+
+ exp : exp  SUBSTRACTION  termino {printf( "");};
+
+ exp : termino {printf( "");};
+
+ termino : termino  MULTIPLICATION  factor {printf( "");};
+
+ termino : termino  DIVISION  factor {printf( "");};
+
+ termino : factor {printf( "");};
+
+ factor : ID {printf( "");};
+ | NUMBER {printf( "");};
+ | BRACKET  exp  RIGHTBRACKET {printf( "");};
+
+ lista_variables : ID {printf( "");};
+ | ID separador_variables lista_variables {printf( "");};
+
+ declaracion : lista_variables  separador_declaracion  tipo_dato SEMICOLON {printf( "");};
+ | declaracion lista_variables  separador_declaracion  tipos_dato SEMICOLON {printf( "");};
+
+ bloque_declaracion : op_declaracion BRACE declaracion RIGHTBRACE {printf( "");};
+
+ mientras : WHILE BRACKET condicion RIGHTBRACKET BRACE programa RIGHTBRACE {printf( "");};
+
+ ciclo_hasta : inicio_hasta programa fin_hasta BRACKET condicion RIGHTBRACKET {printf( "");};
+
+ escribir : salida  STRING {printf( "");};
 
 %%
 
