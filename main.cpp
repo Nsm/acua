@@ -360,7 +360,7 @@ int yylex(){
 		}
 	}
 
-	if(token != 15){
+	if(token != STRING){
 		//se retorna el ultimo caracter leido al archivo porque no forma parte
 		//de este token. Salvo cuando el token es un string (la ultima comilla no debe volver al archivo)
 		ungetc(c,archivo);
