@@ -8,6 +8,8 @@
 
 #define CANT_ESTADOS  35
 #define CANT_ENTRADAS  22
+#define CUERPO 1
+#define PROGRAMA 2
 
 int nuevo_estado[CANT_ESTADOS - 1][CANT_ENTRADAS] = {{4, 2, 9, 11, 7, 30, 5, 17, 23, 21, 1, 27, 29, 28, 13, 15, 19, 20, 25, 26, 3, 0},
 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 34, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -191,6 +193,18 @@ simbolo * tablaSimbolos = NULL;
 
 char valor[30];
 
+struct nodo{
+	int identificador;
+	bool simbolo;
+	nodo *derecha;
+	nodo *izquierda;
+};
+
+nodo* programa, *cuerpo, *sentencia, *condicion, *condicionsimple,*condicionmultiple, *desicion, *asig, *asig_especial, *exp, *termino, *tipo_dato, *factor, *lista_variables, *declaracion ,*bloque_declaracion, *mientras,*ciclo_hasta,*escribir;
+
+nodo * crearNodo(int operacion, nodo * izquierda, nodo * derecha);
+nodo * crearHoja(int numeroSimbolo);
+
 %}
 
 
@@ -245,81 +259,97 @@ char valor[30];
 
 
 
- programa : bloque_declaracion cuerpo {printf( "Reconocido el programa :)\n");};
- | cuerpo {printf( "Reconocido el programa :)\n");};
+ programa : bloque_declaracion cuerpo {printf( "Reconocido el programa :)\n");programa = crearNodo(PROGRAMA,bloque_declaracion,cuerpo);};
+ | cuerpo {printf( "Reconocido el programa :)\n");programa = cuerpo;};
 
- cuerpo : sentencia {printf( "Reconocido el cuerpo\n");};
- | cuerpo sentencia;
+ cuerpo : sentencia {printf( "Reconocido el cuerpo\n");cuerpo = sentencia;};
+ | cuerpo sentencia {cuerpo = crearNodo(CUERPO,cuerpo,sentencia);};
 
- sentencia : asig SEMICOLON ;
- | asig_especial SEMICOLON ;
- | desicion ;
- | mientras ;
- | ciclo_hasta ;
- | escribir SEMICOLON;
+ sentencia : asig SEMICOLON {sentencia = asig;};
+ | asig_especial SEMICOLON {sentencia = asig_especial;};
+ | desicion {sentencia = desicion;};
+ | mientras {sentencia = mientras;};
+ | ciclo_hasta {sentencia = ciclo_hasta;};
+ | escribir SEMICOLON {sentencia = escribir;};
 
- comp_logico : LOWER ;
- | UPPER ;
- | EQUALLOWER ;
- | EQUALUPPER ;
- | EQUAL ;
+ 
+ condicion : condicionsimple {printf( "Reconocida una condicion simple\n"); condicion = condicionsimple;};
+ | condicionmultiple {printf( "Reconocida una condicion multiple\n");condicion = condicionmultiple;};
 
- condicion : condicionsimple {printf( "Reconocida una condicion simple\n");};
- | condicionmultiple {printf( "Reconocida una condicion multiple\n");};
+ condicionsimple : exp LOWER exp ;
+ | exp UPPER exp;
+ | exp EQUALLOWER exp;
+ | exp EQUALUPPER exp;
+ | exp EQUAL exp; 
+ 
+ condicionmultiple : NEGATION condicionsimple {condicionmultiple = crearNodo(NEGATION,NULL,condicionsimple);};
+ | condicionsimple OR condicionsimple {};
+ | condicionsimple AND condicionsimple {};
+ | condicionsimple NEGATION condicionsimple {};
 
- condicionsimple : exp comp_logico exp {printf( "");};
-
- condicionmultiple : NEGATION condicionsimple {printf( "");};
- | condicionsimple OR condicionsimple {printf( "");};
- | condicionsimple AND condicionsimple {printf( "");};
- | condicionsimple NEGATION condicionsimple {printf( "");};
-
- desicion : IF BRACKET condicion RIGHTBRACKET BRACE cuerpo RIGHTBRACE {printf( "Reconocido un if\n");};
+ desicion : IF BRACKET condicion RIGHTBRACKET BRACE cuerpo RIGHTBRACE {printf( "Reconocido un if\n");desicion = crearNodo(IF,condicion,cuerpo);};
  | IF BRACKET condicion RIGHTBRACKET BRACE cuerpo RIGHTBRACE ELSE BRACE cuerpo RIGHTBRACE {printf( "Reconocido un if\n");};
 
- asig : ID ASIGNATION exp {printf( "Reconocida una asignacion\n");};
+ asig : ID ASIGNATION exp {printf( "Reconocida una asignacion\n");asig = crearNodo(ASIGNATION,crearHoja(yyval),exp);};
 
- asig_especial : ID  AUTOSUM  exp {printf( "Reconocida una asignacion especial\n");};
- | ID  AUTOSUBSTRACTION  exp {printf( "Reconocida una asignacion especial\n");};
- | ID  AUTOMULTIPLICATION  exp {printf( "Reconocida una asignacion especial\n");};
- | ID  AUTODIVISION  exp {printf( "Reconocida una asignacion especial\n");};
+ asig_especial : ID  AUTOSUM  exp {printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTOSUM,crearHoja(yyval),exp);};
+ | ID  AUTOSUBSTRACTION  exp {printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTOSUBSTRACTION,crearHoja(yyval),exp);};
+ | ID  AUTOMULTIPLICATION  exp {printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTOMULTIPLICATION,crearHoja(yyval),exp);};
+ | ID  AUTODIVISION  exp {printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTODIVISION,crearHoja(yyval),exp);};
 
- exp : exp  SUM  termino {printf( "Reconocida una suma\n");};
+ exp : exp  SUM  termino {printf( "Reconocida una suma\n"); exp = crearNodo(SUM,exp,termino);};
 
- exp : exp  SUBSTRACTION  termino {printf( "Reconocida una resta\n");};
+ exp : exp  SUBSTRACTION  termino {printf( "Reconocida una resta\n");exp = crearNodo(SUBSTRACTION,exp,termino);};
 
- exp : termino {printf( "");};
+ exp : termino {exp = termino;};
 
- termino : termino  MULTIPLICATION  factor {printf( "");};
+ termino : termino  MULTIPLICATION  factor {crearNodo(MULTIPLICATION,termino,factor);};
 
- termino : termino  DIVISION  factor {printf( "");};
+ termino : termino  DIVISION  factor {crearNodo(DIVISION,termino,factor);};
 
- termino : factor {printf( "");};
+ termino : factor {termino = factor;};
 
  tipo_dato : TYPESTRING | TYPEFLOAT;
 
- factor : ID {printf( "");};
- | NUMBER {printf( "");};
- | BRACKET  exp  RIGHTBRACKET {printf( "");};
+ factor : ID {factor = crearHoja(yyval);};
+ | NUMBER {factor = crearHoja(yyval);};
+ | BRACKET  exp  RIGHTBRACKET {factor = crearHoja(yyval);};
 
- lista_variables : ID {printf( "");};
- | ID COMMA lista_variables {printf( "");};
+ lista_variables : ID {lista_variables = crearHoja(yyval);};
+ | lista_variables COMMA ID {crearNodo(COMMA,lista_variables,crearHoja(yyval));};
 
- declaracion : lista_variables  SEPARATOR  tipo_dato SEMICOLON {printf( "");};
- | declaracion lista_variables  SEPARATOR  tipo_dato SEMICOLON {printf( "");};
+ declaracion : lista_variables  SEPARATOR  tipo_dato SEMICOLON {declaracion = crearNodo(SEPARATOR,lista_variables,tipo_dato);};
+ | declaracion lista_variables  SEPARATOR  tipo_dato SEMICOLON {};
 
- bloque_declaracion : DEFINE BRACE declaracion RIGHTBRACE {printf( "Reconocido un bloque de declaracion\n");};
+ bloque_declaracion : DEFINE BRACE declaracion RIGHTBRACE {bloque_declaracion = declaracion;};
 
- mientras : WHILE BRACKET condicion RIGHTBRACKET BRACE cuerpo RIGHTBRACE {printf( "Reconocido un while\n");};
+ mientras : WHILE BRACKET condicion RIGHTBRACKET BRACE cuerpo RIGHTBRACE {mientras = crearNodo(WHILE,condicion,cuerpo);};
 
- ciclo_hasta : REPEAT BRACE cuerpo RIGHTBRACE UNTIL BRACKET condicion RIGHTBRACKET {printf( "Reconocido un Until\n");};
+ ciclo_hasta : REPEAT BRACE cuerpo RIGHTBRACE UNTIL BRACKET condicion RIGHTBRACKET {ciclo_hasta = crearNodo(REPEAT,cuerpo,condicion);};
 
- escribir : DISPLAY STRING {printf( "Reconocido un display\n");};
+ escribir : DISPLAY STRING {printf( "Reconocido un display\n");crearNodo(DISPLAY,NULL,crearHoja(yyval));};
 
 %%
 
 /* CODIGO */
 
+nodo * crearNodo(int operacion, nodo * izquierda, nodo * derecha){
+	nodo * nuevoNodo = new nodo;
+	nuevoNodo->izquierda = izquierda;
+	nuevoNodo->derecha = derecha;
+	nuevoNodo->identificador = operacion;
+	nuevoNodo->simbolo = false;
+	return nuevoNodo;
+}
+
+nodo * crearHoja(int numeroSimbolo){
+	nodo * nuevoNodo = new nodo;
+	nuevoNodo->izquierda = NULL;
+	nuevoNodo->derecha = NULL;
+	nuevoNodo->identificador = numeroSimbolo;
+	nuevoNodo->simbolo = true;
+	return nuevoNodo;
+}
 
 int get_evento (char c){
     //aca deberia hacerse un if por cada columna en la tabla de funciones que retorne el numero para el evneto correspondiente

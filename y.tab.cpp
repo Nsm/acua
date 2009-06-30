@@ -39,6 +39,8 @@ static int yygrowstack(void);
 
 #define CANT_ESTADOS  35
 #define CANT_ENTRADAS  22
+#define CUERPO 1
+#define PROGRAMA 2
 
 int nuevo_estado[CANT_ESTADOS - 1][CANT_ENTRADAS] = {{4, 2, 9, 11, 7, 30, 5, 17, 23, 21, 1, 27, 29, 28, 13, 15, 19, 20, 25, 26, 3, 0},
 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 34, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -222,7 +224,19 @@ simbolo * tablaSimbolos = NULL;
 
 char valor[30];
 
-#line 225 "y.tab.cpp"
+struct nodo{
+	int identificador;
+	bool simbolo;
+	nodo *derecha;
+	nodo *izquierda;
+};
+
+nodo* programa, *cuerpo, *sentencia, *condicion, *condicionsimple,*condicionmultiple, *desicion, *asig, *asig_especial, *exp, *termino, *tipo_dato, *factor, *lista_variables, *declaracion ,*bloque_declaracion, *mientras,*ciclo_hasta,*escribir;
+
+nodo * crearNodo(int operacion, nodo * izquierda, nodo * derecha);
+nodo * crearHoja(int numeroSimbolo);
+
+#line 239 "y.tab.cpp"
 #define ID 257
 #define NUMBER 258
 #define SUM 259
@@ -264,119 +278,119 @@ char valor[30];
 #define YYERRCODE 256
 static const short yylhs[] = {                           -1,
     0,    0,    2,    2,    3,    3,    3,    3,    3,    3,
-   10,   10,   10,   10,   10,   11,   11,   12,   13,   13,
-   13,   13,    6,    6,    4,    5,    5,    5,    5,   14,
-   14,   14,   15,   15,   15,   17,   17,   16,   16,   16,
-   18,   18,   19,   19,    1,    7,    8,    9,
+   10,   10,   11,   11,   11,   11,   11,   12,   12,   12,
+   12,    6,    6,    4,    5,    5,    5,    5,   13,   13,
+   13,   14,   14,   14,   16,   16,   15,   15,   15,   17,
+   17,   18,   18,    1,    7,    8,    9,
 };
 static const short yylen[] = {                            2,
     2,    1,    1,    2,    2,    2,    1,    1,    1,    2,
-    1,    1,    1,    1,    1,    1,    1,    3,    2,    3,
-    3,    3,    7,   11,    3,    3,    3,    3,    3,    3,
-    3,    1,    3,    3,    1,    1,    1,    1,    1,    3,
-    1,    3,    4,    5,    4,    7,    8,    2,
+    1,    1,    3,    3,    3,    3,    3,    2,    3,    3,
+    3,    7,   11,    3,    3,    3,    3,    3,    3,    3,
+    1,    3,    3,    1,    1,    1,    1,    1,    3,    1,
+    3,    4,    5,    4,    7,    8,    2,
 };
 static const short yydefred[] = {                         0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    3,
     0,    0,    7,    8,    9,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,   48,    0,    0,    4,    5,    6,
-   10,   38,   39,    0,    0,    0,   35,    0,    0,    0,
-    0,    0,    0,    0,   17,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,   19,    0,    0,    0,
-    0,   11,   12,   15,   13,   14,    0,    0,    0,    0,
-   45,    0,    0,   40,    0,    0,   33,   34,    0,   22,
-   21,   20,    0,    0,   42,   37,   36,    0,    0,    0,
-    0,    0,   43,    0,    0,    0,   46,   44,    0,    0,
-   47,    0,    0,   24,
+    0,    0,    0,    0,   47,    0,    0,    4,    5,    6,
+   10,   37,   38,    0,    0,    0,   34,    0,    0,    0,
+    0,    0,    0,    0,   12,    0,    0,   40,    0,    0,
+    0,    0,    0,    0,    0,    0,   18,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,   44,
+    0,    0,   39,    0,    0,   32,   33,    0,   21,   20,
+   19,    0,    0,    0,    0,    0,    0,   41,   36,   35,
+    0,    0,    0,    0,    0,   42,    0,    0,    0,   45,
+   43,    0,    0,   46,    0,    0,   23,
 };
 static const short yydgoto[] = {                          7,
-    8,    9,   10,   11,   12,   13,   14,   15,   16,   67,
-   43,   44,   45,   46,   36,   37,   88,   49,   50,
+    8,    9,   10,   11,   12,   13,   14,   15,   16,   43,
+   44,   45,   46,   36,   37,   91,   49,   50,
 };
 static const short yysindex[] = {                      -245,
- -149, -258, -237, -251, -212, -218,    0, -223, -223,    0,
- -200, -198,    0,    0,    0, -196, -231, -231, -231, -231,
- -231, -219, -219, -176,    0, -223, -223,    0,    0,    0,
-    0,    0,    0, -231, -249, -239,    0, -249, -249, -249,
- -249, -231, -186, -132,    0, -246, -185, -178, -172, -248,
- -233, -175, -231, -231, -231, -231,    0, -181, -231, -231,
- -231,    0,    0,    0,    0,    0, -231, -174, -176, -240,
-    0, -167, -171,    0, -239, -239,    0,    0, -223,    0,
-    0,    0, -249, -223,    0,    0,    0, -163, -240, -158,
- -224, -189,    0, -147, -219, -161,    0,    0, -139, -150,
-    0, -223, -180,    0,
+ -241, -268, -266, -262, -252, -221,    0, -198, -198,    0,
+ -206, -202,    0,    0,    0, -192, -201, -201, -201, -201,
+ -201, -230, -230, -170,    0, -198, -198,    0,    0,    0,
+    0,    0,    0, -201, -220, -188,    0, -220, -220, -220,
+ -220, -201, -189, -157,    0, -246, -185,    0, -190, -247,
+ -226, -244, -201, -201, -201, -201,    0, -183, -201, -201,
+ -201, -201, -201, -201, -201, -201, -181, -156, -172,    0,
+ -108, -191,    0, -188, -188,    0,    0, -198,    0,    0,
+    0, -220, -220, -220, -220, -220, -198,    0,    0,    0,
+ -155, -172, -144, -225, -211,    0, -149, -230, -150,    0,
+    0, -139, -136,    0, -198, -186,    0,
 };
 static const short yyrindex[] = {                         0,
-    0,    0,    0,    0,    0,    0,    0,    0,  143,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,  153,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,  145,    0,    0,    0,
-    0,    0,    0,    0, -126, -148,    0, -123, -116, -200,
- -115,    0,    0, -120,    0,    0,    0, -111,    0,    0,
+    0,    0,    0,    0,    0,    0,  157,    0,    0,    0,
+    0,    0,    0,    0, -113, -154,    0, -109,  -93,  -85,
+  -84,    0,    0,  -89,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0, -128, -108,    0,    0,    0,    0,
-    0,    0, -253,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    1,    0,    0,    0,    0,
-    0,    0,    0,    0,
+    0,    0,    0, -134, -114,    0,    0,    0,    0,    0,
+    0, -138, -118,  -98,  -95,  -92,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    1,    0,
+    0,    0,    0,    0,    0,    0,    0,
 };
 static const short yygindex[] = {                         0,
-    0,   -6,   -9,    0,    0,    0,    0,    0,    0,    0,
-  -20,   29,    0,  -13,   26,   31,   70,  -19,    0,
+    0,   -6,   -9,    0,    0,    0,    0,    0,    0,  -20,
+   49,    0,  -13,  128,  129,   98,  141,    0,
 };
 #define YYTABLESIZE 294
 static const short yytable[] = {                         28,
-   23,   27,   47,   35,   38,   39,   40,   41,   48,   53,
-   54,    1,   53,   54,   18,   18,   18,   28,   22,   51,
-   52,   55,   56,    1,   18,   32,   33,   24,   62,   63,
-   72,   71,    1,    1,   64,   65,   66,   32,   33,   23,
-    2,   28,    3,    4,    5,   34,   73,    6,   42,   85,
-   86,   87,    2,   83,    3,   96,    5,   34,   25,    6,
-   26,    2,    2,    3,    3,    5,    5,    1,    6,    6,
-   57,   29,   91,   30,   99,   31,    1,   92,   75,   76,
-   48,   28,   28,   53,   54,   77,   78,   80,   81,   82,
-   97,   58,   68,   28,   69,  103,    2,   79,    3,  104,
-    5,   70,   74,    6,   84,    2,   89,    3,   93,    5,
-   32,   32,    6,   17,   18,   19,   20,   21,   95,   32,
-   32,   32,   90,   32,   98,  100,   32,   32,  102,   32,
-   30,   30,   32,   32,   32,   59,   60,   61,  101,   30,
-   30,   30,    2,   30,    1,   26,   30,   30,   27,   30,
-   31,   31,   30,   30,   30,   28,   25,   16,   94,   31,
-   31,   31,   41,   31,    0,    0,   31,   31,    0,   31,
-    0,    0,   31,   31,   31,    0,    0,    0,    0,    0,
+   22,   27,   47,   35,   38,   39,   40,   41,   22,   48,
+   23,    1,   53,   54,   53,   54,   24,   28,   25,   51,
+   52,   17,   18,   19,   20,   21,   32,   33,   62,   63,
+    1,    1,   70,   73,   64,   65,   66,   42,   53,   54,
+    2,   28,    3,    4,    5,    1,   34,    6,   82,   83,
+   84,   85,   86,   72,   99,   32,   33,   26,    1,    2,
+    2,    3,    3,    5,    5,   29,    6,    6,  100,   30,
+    1,   94,   55,   56,    2,   34,    3,  102,    5,   31,
+   95,    6,   68,   69,   28,   28,   48,    2,   58,    3,
+   57,    5,   67,  107,    6,   78,   28,   87,  106,    2,
+   88,    3,   93,    5,   31,   31,    6,   79,   80,   81,
+   59,   60,   61,   31,   31,   31,   96,   31,   89,   90,
+   31,   31,  101,   31,   29,   29,   31,   31,   31,   13,
+   13,   13,   98,   29,   29,   29,  103,   29,  104,   13,
+   29,   29,  105,   29,   30,   30,   29,   29,   29,   14,
+   14,   14,    2,   30,   30,   30,    1,   30,   25,   14,
+   30,   30,   26,   30,   68,   92,   30,   30,   30,   17,
+   17,   17,   15,   15,   15,   16,   16,   16,   27,   17,
+   74,   75,   15,   76,   77,   16,   28,   24,   11,   97,
+   71,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,   22,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,   23,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-   23,    0,    0,    0,    0,    0,   23,    0,   23,    0,
-   23,    0,    0,   23,
+   22,    0,    0,    0,    0,    0,   22,    0,   22,    0,
+   22,    0,    0,   22,
 };
 static const short yycheck[] = {                          9,
-    0,    8,   23,   17,   18,   19,   20,   21,  257,  259,
-  260,  257,  259,  260,  268,  269,  270,   27,  277,   26,
-   34,  261,  262,  257,  278,  257,  258,  279,  275,  276,
-   50,  280,  257,  257,  281,  282,  283,  257,  258,  277,
-  286,   51,  288,  289,  290,  277,  280,  293,  268,   69,
-  291,  292,  286,   67,  288,  280,  290,  277,  271,  293,
-  279,  286,  286,  288,  288,  290,  290,  257,  293,  293,
-   42,  272,   79,  272,   95,  272,  257,   84,   53,   54,
-  257,   91,   92,  259,  260,   55,   56,   59,   60,   61,
-  280,  278,  278,  103,  273,  102,  286,  279,  288,  280,
-  290,  274,  278,  293,  279,  286,  274,  288,  272,  290,
-  259,  260,  293,  263,  264,  265,  266,  267,  277,  268,
-  269,  270,  294,  272,  272,  287,  275,  276,  279,  278,
-  259,  260,  281,  282,  283,  268,  269,  270,  278,  268,
-  269,  270,    0,  272,    0,  272,  275,  276,  272,  278,
-  259,  260,  281,  282,  283,  272,  272,  278,   89,  268,
-  269,  270,  274,  272,   -1,   -1,  275,  276,   -1,  278,
-   -1,   -1,  281,  282,  283,   -1,   -1,   -1,   -1,   -1,
-   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+    0,    8,   23,   17,   18,   19,   20,   21,  277,  257,
+  277,  257,  259,  260,  259,  260,  279,   27,  271,   26,
+   34,  263,  264,  265,  266,  267,  257,  258,  275,  276,
+  257,  257,  280,  278,  281,  282,  283,  268,  259,  260,
+  286,   51,  288,  289,  290,  257,  277,  293,   62,   63,
+   64,   65,   66,  280,  280,  257,  258,  279,  257,  286,
+  286,  288,  288,  290,  290,  272,  293,  293,  280,  272,
+  257,   78,  261,  262,  286,  277,  288,   98,  290,  272,
+   87,  293,  273,  274,   94,   95,  257,  286,  278,  288,
+   42,  290,  278,  280,  293,  279,  106,  279,  105,  286,
+  257,  288,  294,  290,  259,  260,  293,   59,   60,   61,
+  268,  269,  270,  268,  269,  270,  272,  272,  291,  292,
+  275,  276,  272,  278,  259,  260,  281,  282,  283,  268,
+  269,  270,  277,  268,  269,  270,  287,  272,  278,  278,
+  275,  276,  279,  278,  259,  260,  281,  282,  283,  268,
+  269,  270,    0,  268,  269,  270,    0,  272,  272,  278,
+  275,  276,  272,  278,  273,  274,  281,  282,  283,  268,
+  269,  270,  268,  269,  270,  268,  269,  270,  272,  278,
+   53,   54,  278,   55,   56,  278,  272,  272,  278,   92,
+   50,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
@@ -422,14 +436,13 @@ static const char *yyrule[] = {
 "sentencia : mientras",
 "sentencia : ciclo_hasta",
 "sentencia : escribir SEMICOLON",
-"comp_logico : LOWER",
-"comp_logico : UPPER",
-"comp_logico : EQUALLOWER",
-"comp_logico : EQUALUPPER",
-"comp_logico : EQUAL",
 "condicion : condicionsimple",
 "condicion : condicionmultiple",
-"condicionsimple : exp comp_logico exp",
+"condicionsimple : exp LOWER exp",
+"condicionsimple : exp UPPER exp",
+"condicionsimple : exp EQUALLOWER exp",
+"condicionsimple : exp EQUALUPPER exp",
+"condicionsimple : exp EQUAL exp",
 "condicionmultiple : NEGATION condicionsimple",
 "condicionmultiple : condicionsimple OR condicionsimple",
 "condicionmultiple : condicionsimple AND condicionsimple",
@@ -453,7 +466,7 @@ static const char *yyrule[] = {
 "factor : NUMBER",
 "factor : BRACKET exp RIGHTBRACKET",
 "lista_variables : ID",
-"lista_variables : ID COMMA lista_variables",
+"lista_variables : lista_variables COMMA ID",
 "declaracion : lista_variables SEPARATOR tipo_dato SEMICOLON",
 "declaracion : declaracion lista_variables SEPARATOR tipo_dato SEMICOLON",
 "bloque_declaracion : DEFINE BRACE declaracion RIGHTBRACE",
@@ -499,10 +512,27 @@ static short   *yyss;
 static short   *yysslim;
 static YYSTYPE *yyvs;
 static unsigned yystacksize;
-#line 320 "yacc.y"
+#line 333 "yacc.y"
 
 /* CODIGO */
 
+nodo * crearNodo(int operacion, nodo * izquierda, nodo * derecha){
+	nodo * nuevoNodo = new nodo;
+	nuevoNodo->izquierda = izquierda;
+	nuevoNodo->derecha = derecha;
+	nuevoNodo->identificador = operacion;
+	nuevoNodo->simbolo = false;
+	return nuevoNodo;
+}
+
+nodo * crearHoja(int numeroSimbolo){
+	nodo * nuevoNodo = new nodo;
+	nuevoNodo->izquierda = NULL;
+	nuevoNodo->derecha = NULL;
+	nuevoNodo->identificador = numeroSimbolo;
+	nuevoNodo->simbolo = true;
+	return nuevoNodo;
+}
 
 int get_evento (char c){
     //aca deberia hacerse un if por cada columna en la tabla de funciones que retorne el numero para el evneto correspondiente
@@ -1032,7 +1062,7 @@ int main(int argc,char * argv[])
 }
 
 
-#line 1035 "y.tab.cpp"
+#line 1065 "y.tab.cpp"
 /* allocate initial stack or double stack size, up to YYMAXDEPTH */
 static int yygrowstack(void)
 {
@@ -1220,142 +1250,166 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 248 "yacc.y"
-	{printf( "Reconocido el programa :)\n");}
+#line 262 "yacc.y"
+	{printf( "Reconocido el programa :)\n");programa = crearNodo(PROGRAMA,bloque_declaracion,cuerpo);}
 break;
 case 2:
-#line 249 "yacc.y"
-	{printf( "Reconocido el programa :)\n");}
+#line 263 "yacc.y"
+	{printf( "Reconocido el programa :)\n");programa = cuerpo;}
 break;
 case 3:
-#line 251 "yacc.y"
-	{printf( "Reconocido el cuerpo\n");}
+#line 265 "yacc.y"
+	{printf( "Reconocido el cuerpo\n");cuerpo = sentencia;}
 break;
-case 16:
-#line 267 "yacc.y"
-	{printf( "Reconocida una condicion simple\n");}
+case 4:
+#line 266 "yacc.y"
+	{cuerpo = crearNodo(CUERPO,cuerpo,sentencia);}
 break;
-case 17:
+case 5:
 #line 268 "yacc.y"
-	{printf( "Reconocida una condicion multiple\n");}
+	{sentencia = asig;}
+break;
+case 6:
+#line 269 "yacc.y"
+	{sentencia = asig_especial;}
+break;
+case 7:
+#line 270 "yacc.y"
+	{sentencia = desicion;}
+break;
+case 8:
+#line 271 "yacc.y"
+	{sentencia = mientras;}
+break;
+case 9:
+#line 272 "yacc.y"
+	{sentencia = ciclo_hasta;}
+break;
+case 10:
+#line 273 "yacc.y"
+	{sentencia = escribir;}
+break;
+case 11:
+#line 276 "yacc.y"
+	{printf( "Reconocida una condicion simple\n"); condicion = condicionsimple;}
+break;
+case 12:
+#line 277 "yacc.y"
+	{printf( "Reconocida una condicion multiple\n");condicion = condicionmultiple;}
 break;
 case 18:
-#line 270 "yacc.y"
-	{printf( "");}
+#line 285 "yacc.y"
+	{condicionmultiple = crearNodo(NEGATION,NULL,condicionsimple);}
 break;
 case 19:
-#line 272 "yacc.y"
-	{printf( "");}
+#line 286 "yacc.y"
+	{}
 break;
 case 20:
-#line 273 "yacc.y"
-	{printf( "");}
+#line 287 "yacc.y"
+	{}
 break;
 case 21:
-#line 274 "yacc.y"
-	{printf( "");}
+#line 288 "yacc.y"
+	{}
 break;
 case 22:
-#line 275 "yacc.y"
-	{printf( "");}
+#line 290 "yacc.y"
+	{printf( "Reconocido un if\n");desicion = crearNodo(IF,condicion,cuerpo);}
 break;
 case 23:
-#line 277 "yacc.y"
+#line 291 "yacc.y"
 	{printf( "Reconocido un if\n");}
 break;
 case 24:
-#line 278 "yacc.y"
-	{printf( "Reconocido un if\n");}
+#line 293 "yacc.y"
+	{printf( "Reconocida una asignacion\n");asig = crearNodo(ASIGNATION,crearHoja(yyval),exp);}
 break;
 case 25:
-#line 280 "yacc.y"
-	{printf( "Reconocida una asignacion\n");}
+#line 295 "yacc.y"
+	{printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTOSUM,crearHoja(yyval),exp);}
 break;
 case 26:
-#line 282 "yacc.y"
-	{printf( "Reconocida una asignacion especial\n");}
+#line 296 "yacc.y"
+	{printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTOSUBSTRACTION,crearHoja(yyval),exp);}
 break;
 case 27:
-#line 283 "yacc.y"
-	{printf( "Reconocida una asignacion especial\n");}
+#line 297 "yacc.y"
+	{printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTOMULTIPLICATION,crearHoja(yyval),exp);}
 break;
 case 28:
-#line 284 "yacc.y"
-	{printf( "Reconocida una asignacion especial\n");}
+#line 298 "yacc.y"
+	{printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTODIVISION,crearHoja(yyval),exp);}
 break;
 case 29:
-#line 285 "yacc.y"
-	{printf( "Reconocida una asignacion especial\n");}
+#line 300 "yacc.y"
+	{printf( "Reconocida una suma\n"); exp = crearNodo(SUM,exp,termino);}
 break;
 case 30:
-#line 287 "yacc.y"
-	{printf( "Reconocida una suma\n");}
+#line 302 "yacc.y"
+	{printf( "Reconocida una resta\n");exp = crearNodo(SUBSTRACTION,exp,termino);}
 break;
 case 31:
-#line 289 "yacc.y"
-	{printf( "Reconocida una resta\n");}
+#line 304 "yacc.y"
+	{exp = termino;}
 break;
 case 32:
-#line 291 "yacc.y"
-	{printf( "");}
+#line 306 "yacc.y"
+	{crearNodo(MULTIPLICATION,termino,factor);}
 break;
 case 33:
-#line 293 "yacc.y"
-	{printf( "");}
+#line 308 "yacc.y"
+	{crearNodo(DIVISION,termino,factor);}
 break;
 case 34:
-#line 295 "yacc.y"
-	{printf( "");}
+#line 310 "yacc.y"
+	{termino = factor;}
 break;
-case 35:
-#line 297 "yacc.y"
-	{printf( "");}
+case 37:
+#line 314 "yacc.y"
+	{factor = crearHoja(yyval);}
 break;
 case 38:
-#line 301 "yacc.y"
-	{printf( "");}
+#line 315 "yacc.y"
+	{factor = crearHoja(yyval);}
 break;
 case 39:
-#line 302 "yacc.y"
-	{printf( "");}
+#line 316 "yacc.y"
+	{factor = crearHoja(yyval);}
 break;
 case 40:
-#line 303 "yacc.y"
-	{printf( "");}
+#line 318 "yacc.y"
+	{lista_variables = crearHoja(yyval);}
 break;
 case 41:
-#line 305 "yacc.y"
-	{printf( "");}
+#line 319 "yacc.y"
+	{crearNodo(COMMA,lista_variables,crearHoja(yyval));}
 break;
 case 42:
-#line 306 "yacc.y"
-	{printf( "");}
+#line 321 "yacc.y"
+	{declaracion = crearNodo(SEPARATOR,lista_variables,tipo_dato);}
 break;
 case 43:
-#line 308 "yacc.y"
-	{printf( "");}
+#line 322 "yacc.y"
+	{}
 break;
 case 44:
-#line 309 "yacc.y"
-	{printf( "");}
+#line 324 "yacc.y"
+	{bloque_declaracion = declaracion;}
 break;
 case 45:
-#line 311 "yacc.y"
-	{printf( "Reconocido un bloque de declaracion\n");}
+#line 326 "yacc.y"
+	{mientras = crearNodo(WHILE,condicion,cuerpo);}
 break;
 case 46:
-#line 313 "yacc.y"
-	{printf( "Reconocido un while\n");}
+#line 328 "yacc.y"
+	{ciclo_hasta = crearNodo(REPEAT,cuerpo,condicion);}
 break;
 case 47:
-#line 315 "yacc.y"
-	{printf( "Reconocido un Until\n");}
+#line 330 "yacc.y"
+	{printf( "Reconocido un display\n");crearNodo(DISPLAY,NULL,crearHoja(yyval));}
 break;
-case 48:
-#line 317 "yacc.y"
-	{printf( "Reconocido un display\n");}
-break;
-#line 1358 "y.tab.cpp"
+#line 1412 "y.tab.cpp"
     }
     yyssp -= yym;
     yystate = *yyssp;
