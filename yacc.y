@@ -1,10 +1,14 @@
 
 
 %{
-
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string>
+#include <sstream>
+#include <iostream>
+
+using namespace std;
 
 #define CANT_ESTADOS  35
 #define CANT_ENTRADAS  22
@@ -182,8 +186,10 @@ int (* funciones[CANT_ESTADOS - 1][CANT_ENTRADAS])(char) = {
 FILE *archivo;
 int yylex();
 
+//TABLA DE SIMBOLOS
+
 struct simbolo{
-	char nombre[30];
+	char nombre[40];
 	int tipo;
 	int posicion;
 	simbolo *siguiente;
@@ -193,7 +199,9 @@ simbolo * tablaSimbolos = NULL;
 
 simbolo * getSimbolo(int id);
 
-char valor[30];
+char valor[40];
+
+//ARBOL
 
 struct nodo{
 	int identificador;
@@ -207,6 +215,27 @@ nodo* programa;
 nodo * crearNodo(int operacion, nodo * izquierda, nodo * derecha);
 nodo * crearHoja(int numeroSimbolo);
 
+
+//GENERACION DE ASSEMBLER
+
+struct resultado{
+	string codigo;
+	int tipo;
+	string variable;
+};
+
+int auxiliarCount = 0;
+
+resultado * generarAssemblerSimbolo(nodo * n);
+resultado * generarAssemblerSum(resultado * izquierda, resultado * derecha);
+resultado * generarAssemblerAsignation(resultado * izquierda, resultado * derecha);
+resultado * generarAssemblerSubstraction(resultado * izquierda, resultado * derecha);
+resultado * generarAssemblerMultiplication(resultado * izquierda, resultado * derecha);
+resultado * generarAssemblerDivision(resultado * izquierda, resultado * derecha);
+resultado * generarAssemblerAutoSum(resultado * derecha);
+resultado * generarAssemblerAutoSubstraction( resultado * derecha);
+resultado * generarAssemblerAutoMultiplication(resultado * derecha);
+resultado * generarAssemblerAutoDivision(resultado * derecha);
 %}
 
 %union{
@@ -267,7 +296,7 @@ nodo * crearHoja(int numeroSimbolo);
 
 
 
- programa : bloque_declaracion cuerpo {printf( "Reconocido el programa :)\n");programa = crearNodo(PROGRAMA,$1,$2);};
+ programa : bloque_declaracion cuerpo {printf( "Reconocido el programa :)\n");programa = $2;};
  | cuerpo {printf( "Reconocido el programa :)\n");programa = $1;};
 
  cuerpo : sentencia {printf( "Reconocido el cuerpo\n");$$ = $1;};
@@ -294,11 +323,11 @@ nodo * crearHoja(int numeroSimbolo);
  condicionmultiple : NEGATION condicionsimple {$$ = crearNodo(NEGATION,NULL,$2);};
  | condicionsimple OR condicionsimple {$$ = crearNodo(OR,$1,$3);};
  | condicionsimple AND condicionsimple {$$ = crearNodo(AND,$1,$3);};
- 
+
 
  desicion : IF BRACKET condicion RIGHTBRACKET BRACE cuerpo RIGHTBRACE {printf( "Reconocido un if\n");$$ = crearNodo(IF,$3,$6);};
 
- desicion_compuesta : desicion ELSE BRACE cuerpo RIGHTBRACE {printf( "Reconocido un if else\n"); $$ = crearNodo(ELSE,$1,$4);}; 
+ desicion_compuesta : desicion ELSE BRACE cuerpo RIGHTBRACE {printf( "Reconocido un if else\n"); $$ = crearNodo(ELSE,$1,$4);};
 
  asig : ID ASIGNATION exp {printf( "Reconocida una asignacion\n");$$ = crearNodo(ASIGNATION,crearHoja($1),$3);};
 
@@ -329,10 +358,10 @@ nodo * crearHoja(int numeroSimbolo);
  lista_variables : ID {$$ = crearHoja($1);};
  | lista_variables COMMA ID {$$ = crearNodo(COMMA,$1,crearHoja($3));};
 
- declaracion : lista_variables  SEPARATOR  tipo_dato SEMICOLON {$$ = crearNodo(SEPARATOR,$1,$3);};
+ declaracion : lista_variables  SEPARATOR  tipo_dato SEMICOLON {};
  | declaracion lista_variables  SEPARATOR  tipo_dato SEMICOLON {};
 
- bloque_declaracion : DEFINE BRACE declaracion RIGHTBRACE {$$ = $3;};
+ bloque_declaracion : DEFINE BRACE declaracion RIGHTBRACE {};
 
  mientras : WHILE BRACKET condicion RIGHTBRACKET BRACE cuerpo RIGHTBRACE {$$ = crearNodo(WHILE,$3,$6);};
 
@@ -489,6 +518,133 @@ void imprimirArbol(nodo * raiz){
 		}
 		imprimirArbol(raiz->derecha);
 	}
+}
+
+string getAuxVariable(){
+	auxiliarCount ++;
+	stringstream out;
+	out << auxiliarCount;
+	string s = "aux";
+	s += out.str();
+	return s;
+
+}
+
+resultado * generarAssembler(nodo * raiz){
+	if(raiz != NULL){
+		resultado * izquierda = generarAssembler(raiz->izquierda);
+		resultado * derecha = generarAssembler(raiz->derecha);
+		if(raiz->simbolo){
+			return generarAssemblerSimbolo(raiz);
+		}
+		switch(raiz->identificador){
+			case SUM:
+				return generarAssemblerSum(izquierda, derecha);
+				break;
+			case ASIGNATION:
+				return generarAssemblerAsignation(izquierda, derecha);
+				break;
+			case SUBSTRACTION:
+				return generarAssemblerSubstraction(izquierda, derecha);
+				break;
+			case MULTIPLICATION:
+				return generarAssemblerMultiplication(izquierda, derecha);
+				break;
+			case DIVISION:
+				return generarAssemblerDivision(izquierda, derecha);
+				break;
+			case AUTOSUM:
+				return generarAssemblerAutoSum(derecha);
+				break;
+			case AUTOSUBSTRACTION:
+				return generarAssemblerAutoSubstraction(derecha);
+				break;
+			case AUTOMULTIPLICATION:
+				return generarAssemblerAutoMultiplication(derecha);
+				break;
+			case AUTODIVISION:
+				return generarAssemblerAutoDivision(derecha);
+				break;
+			default:
+				return NULL;
+				break;
+		}
+	}else{
+		return NULL;
+	}
+}
+
+resultado * generarAssemblerSimbolo(nodo * n){
+	resultado * res = new resultado;
+	simbolo * sim = getSimbolo(n->identificador);
+	if(sim->tipo == TYPEFLOAT || sim->tipo == TYPESTRING || sim->tipo == ID){
+		res->codigo = "";
+		res->variable = sim->nombre;
+		res->tipo = sim->tipo;
+	}else if(sim->tipo == NUMBER){
+		string aux = getAuxVariable();
+		res->codigo = "MOV " + aux +", " + sim->nombre;
+		res->variable = aux;
+		res->tipo = TYPEFLOAT;
+	}
+	return res;
+}
+
+resultado * generarAssemblerSum(resultado * izquierda, resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = TYPEFLOAT;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + izquierda->variable;
+	res->codigo += "MOV R2, " + derecha->variable;
+	res->codigo += "ADD R1, R2";
+	string aux = getAuxVariable();
+	res->codigo += "MOV " + aux +", R1";
+	res->variable = aux;
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerAsignation(resultado * izquierda, resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = TYPEFLOAT;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + derecha->variable;
+	res->codigo += "MOV " + izquierda->variable + ", R1";
+	res->variable = izquierda->variable;
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerSubstraction(resultado * izquierda, resultado * derecha){
+
+}
+
+resultado * generarAssemblerMultiplication(resultado * izquierda, resultado * derecha){
+
+}
+
+resultado * generarAssemblerDivision(resultado * izquierda, resultado * derecha){
+
+}
+
+resultado * generarAssemblerAutoSum(resultado * derecha){
+
+}
+
+resultado * generarAssemblerAutoSubstraction( resultado * derecha){
+
+}
+
+resultado * generarAssemblerAutoMultiplication(resultado * derecha){
+
+}
+
+resultado * generarAssemblerAutoDivision(resultado * derecha){
+
 }
 
 int get_evento (char c){
@@ -771,8 +927,13 @@ int contId(char c){
 	}
 }
 int contNumber(char c){
-	valor[strlen(valor)] = c;
-    return 0;
+	if(strlen(valor) < 39){
+		valor[strlen(valor)] = c;
+		return 0;
+	}else{
+		printf("\nError de sintaxis: numero fuera de rango %s... \n",valor);
+		exit(1);
+	}
 }
 int contSum(char c){
     return 0;
@@ -876,6 +1037,11 @@ int endId(char c){
 	}
 }
 int endNumber(char c){
+	atof(valor);
+	if(errno){
+		printf("\nError de sintaxis: numero mal formado o fuera de rango '%s'\n",valor);
+		exit(1);
+	}
     if((yylval.ival = searchSimbol(valor,NUMBER)) == -1){
         yylval.ival = addToSimbolTable(valor,NUMBER);
     }
@@ -1020,15 +1186,15 @@ int main(int argc,char * argv[])
         exit(1);
     }
 
-    int tipoToken;
-    //while(!feof(archivo)){
-        yyparse();
-    //}
 
+    yyparse();
     fclose(archivo);
 
 	printf("\nArbol:\n");
 	imprimirArbol(programa);
+
+	resultado * res = generarAssembler(programa);
+	cout << res->codigo;
 
     return 0;
 }

@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -213,7 +214,7 @@ FILE *archivo;
 int yylex();
 
 struct simbolo{
-	char nombre[30];
+	char nombre[40];
 	int tipo;
 	int posicion;
 	simbolo *siguiente;
@@ -221,7 +222,7 @@ struct simbolo{
 
 simbolo * tablaSimbolos = NULL;
 
-char valor[30];
+char valor[40];
 int yylval.ival;
 
 int main(int argc,char * argv[])
@@ -645,8 +646,13 @@ int contId(char c){
 	}
 }
 int contNumber(char c){
-	valor[strlen(valor)] = c;
-    return 0;
+	if(strlen(valor) < 39){
+		valor[strlen(valor)] = c;
+		return 0;
+	}else{
+		printf("\nError de sintaxis: numero fuera de rango %s... \n",valor);
+		exit(1);
+	}
 }
 int contSum(char c){
     return 0;
@@ -750,8 +756,13 @@ int endId(char c){
 	}
 }
 int endNumber(char c){
-    if((yylval.ival = searchSimbol(valor,2)) == -1){
-        yylval.ival = addToSimbolTable(valor,2);
+	atof(valor);
+	if(errno){
+		printf("\nError de sintaxis: numero mal formado o fuera de rango '%s'\n",valor);
+		exit(1);
+	}
+    if((yylval.ival = searchSimbol(valor,NUMBER)) == -1){
+        yylval.ival = addToSimbolTable(valor,NUMBER);
     }
     return NUMBER;
 }
