@@ -222,7 +222,7 @@ struct simbolo{
 simbolo * tablaSimbolos = NULL;
 
 char valor[30];
-int yylval;
+int yylval.ival;
 
 int main(int argc,char * argv[])
 {
@@ -527,52 +527,52 @@ int startNumber(char c){
     return 0;
 }
 int startSum(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 
 }
 int startSubstraction(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startMultiplication(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startDivision(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startAutoSum(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startAutoSubstraction(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startAutoMultiplication(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startAutoDivision(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startAsignation(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startNegation(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startAnd(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startOr(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startString(char c){
@@ -580,59 +580,59 @@ int startString(char c){
     return 0;
 }
 int startSemicolon(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startComma(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startSeparator(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startLower(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startUpper(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startBracket(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startRightBracket(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startBrace(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startRightBrace(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startEqual(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startEqualLower(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startEqualUpper(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startNotEqual(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startComment(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int contId(char c){
@@ -739,8 +739,8 @@ int endId(char c){
 	if(!reservedWord(valor)){
 		//identificador
 		int tipoToken = ID;
-		if((yylval = searchSimbol(valor,tipoToken)) == -1){
-			yylval = addToSimbolTable(valor,tipoToken);
+		if((yylval.ival = searchSimbol(valor,tipoToken)) == -1){
+			yylval.ival = addToSimbolTable(valor,tipoToken);
 		}
 		return tipoToken;
 	}else{
@@ -750,8 +750,8 @@ int endId(char c){
 	}
 }
 int endNumber(char c){
-    if((yylval = searchSimbol(valor,2)) == -1){
-        yylval = addToSimbolTable(valor,2);
+    if((yylval.ival = searchSimbol(valor,2)) == -1){
+        yylval.ival = addToSimbolTable(valor,2);
     }
     return NUMBER;
 }
@@ -793,8 +793,8 @@ int endOr(char c){
 }
 int endString(char c){
 	int tipoToken = STRING;
-	if((yylval = searchSimbol(valor,tipoToken)) == -1){
-		yylval = addToSimbolTable(valor,tipoToken);
+	if((yylval.ival = searchSimbol(valor,tipoToken)) == -1){
+		yylval.ival = addToSimbolTable(valor,tipoToken);
 	}
     return tipoToken;
 }

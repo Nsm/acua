@@ -36,3 +36,8 @@
 #define TYPESTRING 292
 #define REPEAT 293
 #define UNTIL 294
+typedef union{
+	int  ival;
+	nodo *pval;
+} YYSTYPE;
+extern YYSTYPE yylval;

@@ -202,53 +202,59 @@ struct nodo{
 	nodo *izquierda;
 };
 
-nodo* programa, *cuerpo, *sentencia, *condicion, *condicionsimple,*condicionmultiple, *desicion, *asig, *asig_especial, *exp, *termino, *tipo_dato, *factor, *lista_variables, *declaracion ,*bloque_declaracion, *mientras,*ciclo_hasta,*escribir;
+nodo* programa;
 
 nodo * crearNodo(int operacion, nodo * izquierda, nodo * derecha);
 nodo * crearHoja(int numeroSimbolo);
 
 %}
 
+%union{
+	int  ival;
+	nodo *pval;
+}
 
-%token ID
-%token NUMBER
-%token SUM
-%token SUBSTRACTION
-%token MULTIPLICATION
-%token DIVISION
-%token AUTOSUM
-%token AUTOSUBSTRACTION
-%token AUTOMULTIPLICATION
-%token AUTODIVISION
-%token ASIGNATION
-%token NEGATION
-%token AND
-%token OR
-%token STRING
-%token SEMICOLON
-%token COMMA
-%token SEPARATOR
-%token LOWER
-%token UPPER
-%token BRACKET
-%token RIGHTBRACKET
-%token BRACE
-%token RIGHTBRACE
-%token EQUAL
-%token EQUALLOWER
-%token EQUALUPPER
-%token NOTEQUAL
-%token COMMENT
-%token IF
-%token ELSE
-%token WHILE
-%token DEFINE
-%token DISPLAY
-%token TYPEFLOAT
-%token TYPESTRING
-%token REPEAT
-%token UNTIL
 
+%token <ival> ID
+%token <ival> NUMBER
+%token <ival> SUM
+%token <ival> SUBSTRACTION
+%token <ival> MULTIPLICATION
+%token <ival> DIVISION
+%token <ival> AUTOSUM
+%token <ival> AUTOSUBSTRACTION
+%token <ival> AUTOMULTIPLICATION
+%token <ival> AUTODIVISION
+%token <ival> ASIGNATION
+%token <ival> NEGATION
+%token <ival> AND
+%token <ival> OR
+%token <ival> STRING
+%token <ival> SEMICOLON
+%token <ival> COMMA
+%token <ival> SEPARATOR
+%token <ival> LOWER
+%token <ival> UPPER
+%token <ival> BRACKET
+%token <ival> RIGHTBRACKET
+%token <ival> BRACE
+%token <ival> RIGHTBRACE
+%token <ival> EQUAL
+%token <ival> EQUALLOWER
+%token <ival> EQUALUPPER
+%token <ival> NOTEQUAL
+%token <ival> COMMENT
+%token <ival> IF
+%token <ival> ELSE
+%token <ival> WHILE
+%token <ival> DEFINE
+%token <ival> DISPLAY
+%token <ival> TYPEFLOAT
+%token <ival> TYPESTRING
+%token <ival> REPEAT
+%token <ival> UNTIL
+
+%type <pval> programa cuerpo sentencia condicion condicionsimple condicionmultiple desicion asig asig_especial exp termino tipo_dato factor lista_variables declaracion bloque_declaracion mientras ciclo_hasta escribir
 
 %start programa  /* DEFINE EL START SYMBOL*/
 
@@ -261,75 +267,76 @@ nodo * crearHoja(int numeroSimbolo);
 
 
 
- programa : bloque_declaracion cuerpo {printf( "Reconocido el programa :)\n");programa = crearNodo(PROGRAMA,bloque_declaracion,cuerpo);};
- | cuerpo {printf( "Reconocido el programa :)\n");programa = cuerpo;};
+ programa : bloque_declaracion cuerpo {printf( "Reconocido el programa :)\n");programa = crearNodo(PROGRAMA,$1,$2);};
+ | cuerpo {printf( "Reconocido el programa :)\n");programa = $1;};
 
- cuerpo : sentencia {printf( "Reconocido el cuerpo\n");cuerpo = sentencia;};
- | cuerpo sentencia {cuerpo = crearNodo(CUERPO,cuerpo,sentencia);};
+ cuerpo : sentencia {printf( "Reconocido el cuerpo\n");$$ = $1;};
+ | cuerpo sentencia {$$ = crearNodo(CUERPO,$1,$2);};
 
- sentencia : asig SEMICOLON {sentencia = asig;};
- | asig_especial SEMICOLON {sentencia = asig_especial;};
- | desicion {sentencia = desicion;};
- | mientras {sentencia = mientras;};
- | ciclo_hasta {sentencia = ciclo_hasta;};
- | escribir SEMICOLON {sentencia = escribir;};
+ sentencia : asig SEMICOLON {$$ = $1;};
+ | asig_especial SEMICOLON {$$ = $1;};
+ | desicion {$$ = $1;};
+ | mientras {$$ = $1;};
+ | ciclo_hasta {$$ = $1;};
+ | escribir SEMICOLON {$$ = $1;};
 
 
- condicion : condicionsimple {printf( "Reconocida una condicion simple\n"); condicion = condicionsimple;};
- | condicionmultiple {printf( "Reconocida una condicion multiple\n");condicion = condicionmultiple;};
+ condicion : condicionsimple {printf( "Reconocida una condicion simple\n"); $$ = $1;};
+ | condicionmultiple {printf( "Reconocida una condicion multiple\n");$$ = $1;};
 
- condicionsimple : exp LOWER exp ;
- | exp UPPER exp;
- | exp EQUALLOWER exp;
- | exp EQUALUPPER exp;
- | exp EQUAL exp;
+ condicionsimple : exp LOWER exp {$$ = crearNodo(LOWER,$1,$3);};
+ | exp UPPER exp {$$ = crearNodo(UPPER,$1,$3);};
+ | exp EQUALLOWER exp {$$ = crearNodo(EQUALLOWER,$1,$3);};
+ | exp EQUALUPPER exp {$$ = crearNodo(EQUALUPPER,$1,$3);};
+ | exp EQUAL exp {$$ = crearNodo(EQUAL,$1,$3);};
 
- condicionmultiple : NEGATION condicionsimple {condicionmultiple = crearNodo(NEGATION,NULL,condicionsimple);};
- | condicionsimple OR condicionsimple {};
- | condicionsimple AND condicionsimple {};
- | condicionsimple NEGATION condicionsimple {};
+ condicionmultiple : NEGATION condicionsimple {$$ = crearNodo(NEGATION,NULL,$2);};
+ | condicionsimple OR condicionsimple {$$ = crearNodo(OR,$1,$3);};
+ | condicionsimple AND condicionsimple {$$ = crearNodo(AND,$1,$3);};
+ 
 
- desicion : IF BRACKET condicion RIGHTBRACKET BRACE cuerpo RIGHTBRACE {printf( "Reconocido un if\n");desicion = crearNodo(IF,condicion,cuerpo);};
+ desicion : IF BRACKET condicion RIGHTBRACKET BRACE cuerpo RIGHTBRACE {printf( "Reconocido un if\n");$$ = crearNodo(IF,$3,$6);};
  | IF BRACKET condicion RIGHTBRACKET BRACE cuerpo RIGHTBRACE ELSE BRACE cuerpo RIGHTBRACE {printf( "Reconocido un if\n");};
 
- asig : ID ASIGNATION exp {printf( "Reconocida una asignacion\n");asig = crearNodo(ASIGNATION,crearHoja($1),exp);};
+ asig : ID ASIGNATION exp {printf( "Reconocida una asignacion\n");$$ = crearNodo(ASIGNATION,crearHoja($1),$3);};
 
- asig_especial : ID  AUTOSUM  exp {printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTOSUM,crearHoja($1),exp);};
- | ID  AUTOSUBSTRACTION  exp {printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTOSUBSTRACTION,crearHoja($1),exp);};
- | ID  AUTOMULTIPLICATION  exp {printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTOMULTIPLICATION,crearHoja($1),exp);};
- | ID  AUTODIVISION  exp {printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTODIVISION,crearHoja($1),exp);};
+ asig_especial : ID  AUTOSUM  exp {printf( "Reconocida una asignacion especial\n");$$ = crearNodo(AUTOSUM,crearHoja($1),$3);};
+ | ID  AUTOSUBSTRACTION  exp {printf( "Reconocida una asignacion especial\n");$$ = crearNodo(AUTOSUBSTRACTION,crearHoja($1),$3);};
+ | ID  AUTOMULTIPLICATION  exp {printf( "Reconocida una asignacion especial\n");$$ = crearNodo(AUTOMULTIPLICATION,crearHoja($1),$3);};
+ | ID  AUTODIVISION  exp {printf( "Reconocida una asignacion especial\n");$$ = crearNodo(AUTODIVISION,crearHoja($1),$3);};
 
- exp : exp  SUM  termino {printf( "Reconocida una suma\n"); exp = crearNodo(SUM,exp,termino);};
+ exp : exp  SUM  termino {printf( "Reconocida una suma\n"); $$ = crearNodo(SUM,$1,$3);};
 
- exp : exp  SUBSTRACTION  termino {printf( "Reconocida una resta\n");exp = crearNodo(SUBSTRACTION,exp,termino);};
+ exp : exp  SUBSTRACTION  termino {printf( "Reconocida una resta\n");$$ = crearNodo(SUBSTRACTION,$1,$3);};
 
- exp : termino {exp = termino;};
+ exp : termino {$$ = $1;};
 
- termino : termino  MULTIPLICATION  factor {printf( "Reconocida una multiplicacion\n"); termino = crearNodo(MULTIPLICATION,termino,factor);};
+ termino : termino  MULTIPLICATION  factor {printf( "Reconocida una multiplicacion\n"); $$ = crearNodo(MULTIPLICATION,$1,$3);};
 
- termino : termino  DIVISION  factor {printf( "Reconocida una division\n"); termino = crearNodo(DIVISION,termino,factor);};
+ termino : termino  DIVISION  factor {printf( "Reconocida una division\n"); $$ = crearNodo(DIVISION,$1,$3);};
 
- termino : factor {termino = factor;};
+ termino : factor {$$ = $1;};
 
- tipo_dato : TYPESTRING | TYPEFLOAT;
+ tipo_dato : TYPESTRING {$$ = crearHoja($1);};
+ | TYPEFLOAT {$$ = crearHoja($1);};
 
- factor : ID {factor = crearHoja($1);};
- | NUMBER {factor = crearHoja($1);};
- | BRACKET  exp  RIGHTBRACKET {factor = exp;};
+ factor : ID {$$ = crearHoja($1);};
+ | NUMBER {$$ = crearHoja($1);};
+ | BRACKET  exp  RIGHTBRACKET {$$ = $2;};
 
- lista_variables : ID {lista_variables = crearHoja($1);};
- | lista_variables COMMA ID {crearNodo(COMMA,lista_variables,crearHoja($3));};
+ lista_variables : ID {$$ = crearHoja($1);};
+ | lista_variables COMMA ID {$$ = crearNodo(COMMA,$1,crearHoja($3));};
 
- declaracion : lista_variables  SEPARATOR  tipo_dato SEMICOLON {declaracion = crearNodo(SEPARATOR,lista_variables,tipo_dato);};
+ declaracion : lista_variables  SEPARATOR  tipo_dato SEMICOLON {$$ = crearNodo(SEPARATOR,$1,$3);};
  | declaracion lista_variables  SEPARATOR  tipo_dato SEMICOLON {};
 
- bloque_declaracion : DEFINE BRACE declaracion RIGHTBRACE {bloque_declaracion = declaracion;};
+ bloque_declaracion : DEFINE BRACE declaracion RIGHTBRACE {$$ = $3;};
 
- mientras : WHILE BRACKET condicion RIGHTBRACKET BRACE cuerpo RIGHTBRACE {mientras = crearNodo(WHILE,condicion,cuerpo);};
+ mientras : WHILE BRACKET condicion RIGHTBRACKET BRACE cuerpo RIGHTBRACE {$$ = crearNodo(WHILE,$3,$6);};
 
- ciclo_hasta : REPEAT BRACE cuerpo RIGHTBRACE UNTIL BRACKET condicion RIGHTBRACKET {ciclo_hasta = crearNodo(REPEAT,cuerpo,condicion);};
+ ciclo_hasta : REPEAT BRACE cuerpo RIGHTBRACE UNTIL BRACKET condicion RIGHTBRACKET {$$ = crearNodo(REPEAT,$3,$7);};
 
- escribir : DISPLAY STRING {printf( "Reconocido un display\n");escribir = crearNodo(DISPLAY,NULL,crearHoja($2));};
+ escribir : DISPLAY STRING {printf( "Reconocido un display\n");$$ = crearNodo(DISPLAY,NULL,crearHoja($2));};
 
 %%
 
@@ -644,52 +651,52 @@ int startNumber(char c){
     return 0;
 }
 int startSum(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 
 }
 int startSubstraction(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startMultiplication(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startDivision(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startAutoSum(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startAutoSubstraction(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startAutoMultiplication(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startAutoDivision(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startAsignation(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startNegation(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startAnd(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startOr(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startString(char c){
@@ -697,59 +704,59 @@ int startString(char c){
     return 0;
 }
 int startSemicolon(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startComma(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startSeparator(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startLower(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startUpper(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startBracket(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startRightBracket(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startBrace(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startRightBrace(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startEqual(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startEqualLower(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startEqualUpper(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startNotEqual(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int startComment(char c){
-	yylval = -1;
+	yylval.ival = -1;
     return 0;
 }
 int contId(char c){
@@ -856,8 +863,8 @@ int endId(char c){
 	if(!reservedWord(valor)){
 		//identificador
 		int tipoToken = ID;
-		if((yylval = searchSimbol(valor,tipoToken)) == -1){
-			yylval = addToSimbolTable(valor,tipoToken);
+		if((yylval.ival = searchSimbol(valor,tipoToken)) == -1){
+			yylval.ival = addToSimbolTable(valor,tipoToken);
 		}
 		return tipoToken;
 	}else{
@@ -867,8 +874,8 @@ int endId(char c){
 	}
 }
 int endNumber(char c){
-    if((yylval = searchSimbol(valor,NUMBER)) == -1){
-        yylval = addToSimbolTable(valor,NUMBER);
+    if((yylval.ival = searchSimbol(valor,NUMBER)) == -1){
+        yylval.ival = addToSimbolTable(valor,NUMBER);
     }
     return NUMBER;
 }
@@ -910,8 +917,8 @@ int endOr(char c){
 }
 int endString(char c){
 	int tipoToken = STRING;
-	if((yylval = searchSimbol(valor,tipoToken)) == -1){
-		yylval = addToSimbolTable(valor,tipoToken);
+	if((yylval.ival = searchSimbol(valor,tipoToken)) == -1){
+		yylval.ival = addToSimbolTable(valor,tipoToken);
 	}
     return tipoToken;
 }
