@@ -222,7 +222,7 @@ struct simbolo{
 simbolo * tablaSimbolos = NULL;
 
 char valor[30];
-int yyval;
+int yylval;
 
 int main(int argc,char * argv[])
 {
@@ -401,112 +401,112 @@ int addToSimbolTable(char * name, int tipo){
 //Funcion auxiliar para mejorar el debug
 char* getTypeString(int tipoToken){
 	switch (tipoToken) {
-		case 1:
+		case ID:
 			return "Id";
 			break;
-		case 2:
+		case NUMBER:
 			return "Number";
 			break;
-		case 3:
+		case SUM:
 			return "Sum (+)";
 			break;
-		case 4:
+		case SUBSTRACTION:
 			return "Substraction (-)";
 			break;
-		case 5:
+		case MULTIPLICATION:
 			return "Multiplication (*)";
 			break;
-		case 6:
+		case DIVISION:
 			return "Division (/)";
 			break;
-		case 7:
+		case AUTOSUM:
 			return "AutoSum (+=)";
 			break;
-		case 8:
+		case AUTOSUBSTRACTION:
 			return "AutoSubstraction (-=)";
 			break;
-		case 9:
+		case AUTOMULTIPLICATION:
 			return "AutoMultiplication (*=)";
 			break;
-		case 10:
+		case AUTODIVISION:
 			return "AutoDivision (/=)";
 			break;
-		case 11:
+		case ASIGNATION:
 			return "Asignation (=)";
 			break;
-		case 12:
+		case NEGATION:
 			return "Negation (!=)";
 			break;
-		case 13:
+		case AND:
 			return "And (&&)";
 			break;
-		case 14:
+		case OR:
 			return "Or (||)";
 			break;
-		case 15:
+		case STRING:
 			return "String";
 			break;
-		case 16:
+		case SEMICOLON:
 			return "Semicolon (;)";
 			break;
-		case 17:
+		case COMMA:
 			return "Comma (,)";
 			break;
-		case 18:
+		case SEPARATOR:
 			return "Separator (:)";
 			break;
-		case 19:
+		case LOWER:
 			return "Lower (<)";
 			break;
-		case 20:
+		case UPPER:
 			return "Upper (>)";
 			break;
-		case 21:
+		case BRACKET:
 			return "Bracket (()";
 			break;
-		case 22:
+		case RIGHTBRACKET:
 			return "RightBracket ())";
 			break;
-		case 23:
+		case BRACE:
 			return "Brace ({)";
 			break;
-		case 24:
+		case RIGHTBRACE:
 			return "RightBrace (})";
 			break;
-		case 25:
+		case EQUAL:
 			return "Equal (==)";
 			break;
-		case 26:
+		case EQUALLOWER:
 			return "EqualLower (<=)";
 			break;
-		case 27:
+		case EQUALUPPER:
 			return "EqualUpper (>=)";
 			break;
-		case 28:
+		case NOTEQUAL:
 			return "NotEqual (!=)";
 			break;
-		case 29:
+		case COMMENT:
 			return "Comment";
 			break;
-		case 30:
+		case IF:
 			return "If";
 			break;
-		case 31:
+		case ELSE:
 			return "Else";
 			break;
-		case 32:
+		case WHILE:
 			return "While";
 			break;
-		case 33:
+		case DEFINE:
 			return "Define";
 			break;
-		case 34:
+		case DISPLAY:
 			return "Display";
 			break;
-		case 35:
+		case TYPEFLOAT:
 			return "Float";
 			break;
-		case 36:
+		case TYPESTRING:
 			return "String";
 			break;
 		default:
@@ -527,52 +527,52 @@ int startNumber(char c){
     return 0;
 }
 int startSum(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 
 }
 int startSubstraction(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startMultiplication(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startDivision(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startAutoSum(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startAutoSubstraction(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startAutoMultiplication(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startAutoDivision(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startAsignation(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startNegation(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startAnd(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startOr(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startString(char c){
@@ -580,59 +580,59 @@ int startString(char c){
     return 0;
 }
 int startSemicolon(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startComma(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startSeparator(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startLower(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startUpper(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startBracket(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startRightBracket(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startBrace(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startRightBrace(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startEqual(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startEqualLower(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startEqualUpper(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startNotEqual(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startComment(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int contId(char c){
@@ -739,8 +739,8 @@ int endId(char c){
 	if(!reservedWord(valor)){
 		//identificador
 		int tipoToken = ID;
-		if((yyval = searchSimbol(valor,tipoToken)) == -1){
-			yyval = addToSimbolTable(valor,tipoToken);
+		if((yylval = searchSimbol(valor,tipoToken)) == -1){
+			yylval = addToSimbolTable(valor,tipoToken);
 		}
 		return tipoToken;
 	}else{
@@ -750,8 +750,8 @@ int endId(char c){
 	}
 }
 int endNumber(char c){
-    if((yyval = searchSimbol(valor,2)) == -1){
-        yyval = addToSimbolTable(valor,2);
+    if((yylval = searchSimbol(valor,2)) == -1){
+        yylval = addToSimbolTable(valor,2);
     }
     return NUMBER;
 }
@@ -793,8 +793,8 @@ int endOr(char c){
 }
 int endString(char c){
 	int tipoToken = STRING;
-	if((yyval = searchSimbol(valor,tipoToken)) == -1){
-		yyval = addToSimbolTable(valor,tipoToken);
+	if((yylval = searchSimbol(valor,tipoToken)) == -1){
+		yylval = addToSimbolTable(valor,tipoToken);
 	}
     return tipoToken;
 }

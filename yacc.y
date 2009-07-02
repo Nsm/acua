@@ -191,6 +191,8 @@ struct simbolo{
 
 simbolo * tablaSimbolos = NULL;
 
+simbolo * getSimbolo(int id);
+
 char valor[30];
 
 struct nodo{
@@ -272,7 +274,7 @@ nodo * crearHoja(int numeroSimbolo);
  | ciclo_hasta {sentencia = ciclo_hasta;};
  | escribir SEMICOLON {sentencia = escribir;};
 
- 
+
  condicion : condicionsimple {printf( "Reconocida una condicion simple\n"); condicion = condicionsimple;};
  | condicionmultiple {printf( "Reconocida una condicion multiple\n");condicion = condicionmultiple;};
 
@@ -280,8 +282,8 @@ nodo * crearHoja(int numeroSimbolo);
  | exp UPPER exp;
  | exp EQUALLOWER exp;
  | exp EQUALUPPER exp;
- | exp EQUAL exp; 
- 
+ | exp EQUAL exp;
+
  condicionmultiple : NEGATION condicionsimple {condicionmultiple = crearNodo(NEGATION,NULL,condicionsimple);};
  | condicionsimple OR condicionsimple {};
  | condicionsimple AND condicionsimple {};
@@ -290,12 +292,12 @@ nodo * crearHoja(int numeroSimbolo);
  desicion : IF BRACKET condicion RIGHTBRACKET BRACE cuerpo RIGHTBRACE {printf( "Reconocido un if\n");desicion = crearNodo(IF,condicion,cuerpo);};
  | IF BRACKET condicion RIGHTBRACKET BRACE cuerpo RIGHTBRACE ELSE BRACE cuerpo RIGHTBRACE {printf( "Reconocido un if\n");};
 
- asig : ID ASIGNATION exp {printf( "Reconocida una asignacion\n");asig = crearNodo(ASIGNATION,crearHoja(yyval),exp);};
+ asig : ID ASIGNATION exp {printf( "Reconocida una asignacion\n");asig = crearNodo(ASIGNATION,crearHoja($1),exp);};
 
- asig_especial : ID  AUTOSUM  exp {printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTOSUM,crearHoja(yyval),exp);};
- | ID  AUTOSUBSTRACTION  exp {printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTOSUBSTRACTION,crearHoja(yyval),exp);};
- | ID  AUTOMULTIPLICATION  exp {printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTOMULTIPLICATION,crearHoja(yyval),exp);};
- | ID  AUTODIVISION  exp {printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTODIVISION,crearHoja(yyval),exp);};
+ asig_especial : ID  AUTOSUM  exp {printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTOSUM,crearHoja($1),exp);};
+ | ID  AUTOSUBSTRACTION  exp {printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTOSUBSTRACTION,crearHoja($1),exp);};
+ | ID  AUTOMULTIPLICATION  exp {printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTOMULTIPLICATION,crearHoja($1),exp);};
+ | ID  AUTODIVISION  exp {printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTODIVISION,crearHoja($1),exp);};
 
  exp : exp  SUM  termino {printf( "Reconocida una suma\n"); exp = crearNodo(SUM,exp,termino);};
 
@@ -303,20 +305,20 @@ nodo * crearHoja(int numeroSimbolo);
 
  exp : termino {exp = termino;};
 
- termino : termino  MULTIPLICATION  factor {crearNodo(MULTIPLICATION,termino,factor);};
+ termino : termino  MULTIPLICATION  factor {printf( "Reconocida una multiplicacion\n"); termino = crearNodo(MULTIPLICATION,termino,factor);};
 
- termino : termino  DIVISION  factor {crearNodo(DIVISION,termino,factor);};
+ termino : termino  DIVISION  factor {printf( "Reconocida una division\n"); termino = crearNodo(DIVISION,termino,factor);};
 
  termino : factor {termino = factor;};
 
  tipo_dato : TYPESTRING | TYPEFLOAT;
 
- factor : ID {factor = crearHoja(yyval);};
- | NUMBER {factor = crearHoja(yyval);};
- | BRACKET  exp  RIGHTBRACKET {factor = crearHoja(yyval);};
+ factor : ID {factor = crearHoja($1);};
+ | NUMBER {factor = crearHoja($1);};
+ | BRACKET  exp  RIGHTBRACKET {factor = exp;};
 
- lista_variables : ID {lista_variables = crearHoja(yyval);};
- | lista_variables COMMA ID {crearNodo(COMMA,lista_variables,crearHoja(yyval));};
+ lista_variables : ID {lista_variables = crearHoja($1);};
+ | lista_variables COMMA ID {crearNodo(COMMA,lista_variables,crearHoja($3));};
 
  declaracion : lista_variables  SEPARATOR  tipo_dato SEMICOLON {declaracion = crearNodo(SEPARATOR,lista_variables,tipo_dato);};
  | declaracion lista_variables  SEPARATOR  tipo_dato SEMICOLON {};
@@ -327,7 +329,7 @@ nodo * crearHoja(int numeroSimbolo);
 
  ciclo_hasta : REPEAT BRACE cuerpo RIGHTBRACE UNTIL BRACKET condicion RIGHTBRACKET {ciclo_hasta = crearNodo(REPEAT,cuerpo,condicion);};
 
- escribir : DISPLAY STRING {printf( "Reconocido un display\n");crearNodo(DISPLAY,NULL,crearHoja(yyval));};
+ escribir : DISPLAY STRING {printf( "Reconocido un display\n");escribir = crearNodo(DISPLAY,NULL,crearHoja($2));};
 
 %%
 
@@ -349,6 +351,135 @@ nodo * crearHoja(int numeroSimbolo){
 	nuevoNodo->identificador = numeroSimbolo;
 	nuevoNodo->simbolo = true;
 	return nuevoNodo;
+}
+
+//Funcion auxiliar para mejorar el debug
+char* getTypeString(int tipoToken){
+	switch (tipoToken) {
+		case ID:
+			return "Id";
+			break;
+		case NUMBER:
+			return "Number";
+			break;
+		case SUM:
+			return "Sum (+)";
+			break;
+		case SUBSTRACTION:
+			return "Substraction (-)";
+			break;
+		case MULTIPLICATION:
+			return "Multiplication (*)";
+			break;
+		case DIVISION:
+			return "Division (/)";
+			break;
+		case AUTOSUM:
+			return "AutoSum (+=)";
+			break;
+		case AUTOSUBSTRACTION:
+			return "AutoSubstraction (-=)";
+			break;
+		case AUTOMULTIPLICATION:
+			return "AutoMultiplication (*=)";
+			break;
+		case AUTODIVISION:
+			return "AutoDivision (/=)";
+			break;
+		case ASIGNATION:
+			return "Asignation (=)";
+			break;
+		case NEGATION:
+			return "Negation (!=)";
+			break;
+		case AND:
+			return "And (&&)";
+			break;
+		case OR:
+			return "Or (||)";
+			break;
+		case STRING:
+			return "String";
+			break;
+		case SEMICOLON:
+			return "Semicolon (;)";
+			break;
+		case COMMA:
+			return "Comma (,)";
+			break;
+		case SEPARATOR:
+			return "Separator (:)";
+			break;
+		case LOWER:
+			return "Lower (<)";
+			break;
+		case UPPER:
+			return "Upper (>)";
+			break;
+		case BRACKET:
+			return "Bracket (()";
+			break;
+		case RIGHTBRACKET:
+			return "RightBracket ())";
+			break;
+		case BRACE:
+			return "Brace ({)";
+			break;
+		case RIGHTBRACE:
+			return "RightBrace (})";
+			break;
+		case EQUAL:
+			return "Equal (==)";
+			break;
+		case EQUALLOWER:
+			return "EqualLower (<=)";
+			break;
+		case EQUALUPPER:
+			return "EqualUpper (>=)";
+			break;
+		case NOTEQUAL:
+			return "NotEqual (!=)";
+			break;
+		case COMMENT:
+			return "Comment";
+			break;
+		case IF:
+			return "If";
+			break;
+		case ELSE:
+			return "Else";
+			break;
+		case WHILE:
+			return "While";
+			break;
+		case DEFINE:
+			return "Define";
+			break;
+		case DISPLAY:
+			return "Display";
+			break;
+		case TYPEFLOAT:
+			return "Float";
+			break;
+		case TYPESTRING:
+			return "String";
+			break;
+		default:
+			return "";
+			break;
+	}
+}
+
+void imprimirArbol(nodo * raiz){
+	if(raiz != NULL){
+		imprimirArbol(raiz->izquierda);
+		if(raiz->simbolo){
+			printf("%d : %s\n",raiz->identificador,getSimbolo(raiz->identificador)->nombre);
+		}else{
+			printf("%s\n",getTypeString(raiz->identificador));
+		}
+		imprimirArbol(raiz->derecha);
+	}
 }
 
 int get_evento (char c){
@@ -475,6 +606,18 @@ int searchSimbol(char * name, int tipo){
 	}
 }
 
+simbolo * getSimbolo(int id){
+	simbolo * nodo = tablaSimbolos;
+	while(nodo->posicion > id){
+		nodo = nodo->siguiente;
+	}
+	if(nodo->posicion == id){
+		return nodo;
+	}else{
+		return NULL;
+	}
+}
+
 int addToSimbolTable(char * name, int tipo){
 	//agrega un nuevo simbolo a la lista
 	simbolo * nuevo = new simbolo;
@@ -501,52 +644,52 @@ int startNumber(char c){
     return 0;
 }
 int startSum(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 
 }
 int startSubstraction(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startMultiplication(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startDivision(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startAutoSum(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startAutoSubstraction(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startAutoMultiplication(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startAutoDivision(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startAsignation(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startNegation(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startAnd(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startOr(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startString(char c){
@@ -554,59 +697,59 @@ int startString(char c){
     return 0;
 }
 int startSemicolon(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startComma(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startSeparator(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startLower(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startUpper(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startBracket(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startRightBracket(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startBrace(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startRightBrace(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startEqual(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startEqualLower(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startEqualUpper(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startNotEqual(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startComment(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int contId(char c){
@@ -713,8 +856,8 @@ int endId(char c){
 	if(!reservedWord(valor)){
 		//identificador
 		int tipoToken = ID;
-		if((yyval = searchSimbol(valor,tipoToken)) == -1){
-			yyval = addToSimbolTable(valor,tipoToken);
+		if((yylval = searchSimbol(valor,tipoToken)) == -1){
+			yylval = addToSimbolTable(valor,tipoToken);
 		}
 		return tipoToken;
 	}else{
@@ -724,8 +867,8 @@ int endId(char c){
 	}
 }
 int endNumber(char c){
-    if((yyval = searchSimbol(valor,2)) == -1){
-        yyval = addToSimbolTable(valor,2);
+    if((yylval = searchSimbol(valor,NUMBER)) == -1){
+        yylval = addToSimbolTable(valor,NUMBER);
     }
     return NUMBER;
 }
@@ -767,8 +910,8 @@ int endOr(char c){
 }
 int endString(char c){
 	int tipoToken = STRING;
-	if((yyval = searchSimbol(valor,tipoToken)) == -1){
-		yyval = addToSimbolTable(valor,tipoToken);
+	if((yylval = searchSimbol(valor,tipoToken)) == -1){
+		yylval = addToSimbolTable(valor,tipoToken);
 	}
     return tipoToken;
 }
@@ -874,6 +1017,9 @@ int main(int argc,char * argv[])
     //}
 
     fclose(archivo);
+
+	printf("\nArbol:\n");
+	imprimirArbol(programa);
 
     return 0;
 }

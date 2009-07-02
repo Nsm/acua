@@ -222,6 +222,8 @@ struct simbolo{
 
 simbolo * tablaSimbolos = NULL;
 
+simbolo * getSimbolo(int id);
+
 char valor[30];
 
 struct nodo{
@@ -236,7 +238,7 @@ nodo* programa, *cuerpo, *sentencia, *condicion, *condicionsimple,*condicionmult
 nodo * crearNodo(int operacion, nodo * izquierda, nodo * derecha);
 nodo * crearHoja(int numeroSimbolo);
 
-#line 239 "y.tab.cpp"
+#line 241 "y.tab.cpp"
 #define ID 257
 #define NUMBER 258
 #define SUM 259
@@ -512,7 +514,7 @@ static short   *yyss;
 static short   *yysslim;
 static YYSTYPE *yyvs;
 static unsigned yystacksize;
-#line 333 "yacc.y"
+#line 335 "yacc.y"
 
 /* CODIGO */
 
@@ -532,6 +534,135 @@ nodo * crearHoja(int numeroSimbolo){
 	nuevoNodo->identificador = numeroSimbolo;
 	nuevoNodo->simbolo = true;
 	return nuevoNodo;
+}
+
+//Funcion auxiliar para mejorar el debug
+char* getTypeString(int tipoToken){
+	switch (tipoToken) {
+		case ID:
+			return "Id";
+			break;
+		case NUMBER:
+			return "Number";
+			break;
+		case SUM:
+			return "Sum (+)";
+			break;
+		case SUBSTRACTION:
+			return "Substraction (-)";
+			break;
+		case MULTIPLICATION:
+			return "Multiplication (*)";
+			break;
+		case DIVISION:
+			return "Division (/)";
+			break;
+		case AUTOSUM:
+			return "AutoSum (+=)";
+			break;
+		case AUTOSUBSTRACTION:
+			return "AutoSubstraction (-=)";
+			break;
+		case AUTOMULTIPLICATION:
+			return "AutoMultiplication (*=)";
+			break;
+		case AUTODIVISION:
+			return "AutoDivision (/=)";
+			break;
+		case ASIGNATION:
+			return "Asignation (=)";
+			break;
+		case NEGATION:
+			return "Negation (!=)";
+			break;
+		case AND:
+			return "And (&&)";
+			break;
+		case OR:
+			return "Or (||)";
+			break;
+		case STRING:
+			return "String";
+			break;
+		case SEMICOLON:
+			return "Semicolon (;)";
+			break;
+		case COMMA:
+			return "Comma (,)";
+			break;
+		case SEPARATOR:
+			return "Separator (:)";
+			break;
+		case LOWER:
+			return "Lower (<)";
+			break;
+		case UPPER:
+			return "Upper (>)";
+			break;
+		case BRACKET:
+			return "Bracket (()";
+			break;
+		case RIGHTBRACKET:
+			return "RightBracket ())";
+			break;
+		case BRACE:
+			return "Brace ({)";
+			break;
+		case RIGHTBRACE:
+			return "RightBrace (})";
+			break;
+		case EQUAL:
+			return "Equal (==)";
+			break;
+		case EQUALLOWER:
+			return "EqualLower (<=)";
+			break;
+		case EQUALUPPER:
+			return "EqualUpper (>=)";
+			break;
+		case NOTEQUAL:
+			return "NotEqual (!=)";
+			break;
+		case COMMENT:
+			return "Comment";
+			break;
+		case IF:
+			return "If";
+			break;
+		case ELSE:
+			return "Else";
+			break;
+		case WHILE:
+			return "While";
+			break;
+		case DEFINE:
+			return "Define";
+			break;
+		case DISPLAY:
+			return "Display";
+			break;
+		case TYPEFLOAT:
+			return "Float";
+			break;
+		case TYPESTRING:
+			return "String";
+			break;
+		default:
+			return "";
+			break;
+	}
+}
+
+void imprimirArbol(nodo * raiz){
+	if(raiz != NULL){
+		imprimirArbol(raiz->izquierda);
+		if(raiz->simbolo){
+			printf("%d : %s\n",raiz->identificador,getSimbolo(raiz->identificador)->nombre);
+		}else{
+			printf("%s\n",getTypeString(raiz->identificador));
+		}
+		imprimirArbol(raiz->derecha);
+	}
 }
 
 int get_evento (char c){
@@ -658,6 +789,18 @@ int searchSimbol(char * name, int tipo){
 	}
 }
 
+simbolo * getSimbolo(int id){
+	simbolo * nodo = tablaSimbolos;
+	while(nodo->posicion > id){
+		nodo = nodo->siguiente;
+	}
+	if(nodo->posicion == id){
+		return nodo;
+	}else{
+		return NULL;
+	}
+}
+
 int addToSimbolTable(char * name, int tipo){
 	//agrega un nuevo simbolo a la lista
 	simbolo * nuevo = new simbolo;
@@ -684,52 +827,52 @@ int startNumber(char c){
     return 0;
 }
 int startSum(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 
 }
 int startSubstraction(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startMultiplication(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startDivision(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startAutoSum(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startAutoSubstraction(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startAutoMultiplication(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startAutoDivision(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startAsignation(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startNegation(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startAnd(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startOr(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startString(char c){
@@ -737,59 +880,59 @@ int startString(char c){
     return 0;
 }
 int startSemicolon(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startComma(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startSeparator(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startLower(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startUpper(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startBracket(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startRightBracket(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startBrace(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startRightBrace(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startEqual(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startEqualLower(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startEqualUpper(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startNotEqual(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int startComment(char c){
-	yyval = -1;
+	yylval = -1;
     return 0;
 }
 int contId(char c){
@@ -896,8 +1039,8 @@ int endId(char c){
 	if(!reservedWord(valor)){
 		//identificador
 		int tipoToken = ID;
-		if((yyval = searchSimbol(valor,tipoToken)) == -1){
-			yyval = addToSimbolTable(valor,tipoToken);
+		if((yylval = searchSimbol(valor,tipoToken)) == -1){
+			yylval = addToSimbolTable(valor,tipoToken);
 		}
 		return tipoToken;
 	}else{
@@ -907,8 +1050,8 @@ int endId(char c){
 	}
 }
 int endNumber(char c){
-    if((yyval = searchSimbol(valor,2)) == -1){
-        yyval = addToSimbolTable(valor,2);
+    if((yylval = searchSimbol(valor,NUMBER)) == -1){
+        yylval = addToSimbolTable(valor,NUMBER);
     }
     return NUMBER;
 }
@@ -950,8 +1093,8 @@ int endOr(char c){
 }
 int endString(char c){
 	int tipoToken = STRING;
-	if((yyval = searchSimbol(valor,tipoToken)) == -1){
-		yyval = addToSimbolTable(valor,tipoToken);
+	if((yylval = searchSimbol(valor,tipoToken)) == -1){
+		yylval = addToSimbolTable(valor,tipoToken);
 	}
     return tipoToken;
 }
@@ -1058,11 +1201,14 @@ int main(int argc,char * argv[])
 
     fclose(archivo);
 
+	printf("\nArbol:\n");
+	imprimirArbol(programa);
+
     return 0;
 }
 
 
-#line 1065 "y.tab.cpp"
+#line 1211 "y.tab.cpp"
 /* allocate initial stack or double stack size, up to YYMAXDEPTH */
 static int yygrowstack(void)
 {
@@ -1250,166 +1396,166 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 262 "yacc.y"
+#line 264 "yacc.y"
 	{printf( "Reconocido el programa :)\n");programa = crearNodo(PROGRAMA,bloque_declaracion,cuerpo);}
 break;
 case 2:
-#line 263 "yacc.y"
+#line 265 "yacc.y"
 	{printf( "Reconocido el programa :)\n");programa = cuerpo;}
 break;
 case 3:
-#line 265 "yacc.y"
+#line 267 "yacc.y"
 	{printf( "Reconocido el cuerpo\n");cuerpo = sentencia;}
 break;
 case 4:
-#line 266 "yacc.y"
+#line 268 "yacc.y"
 	{cuerpo = crearNodo(CUERPO,cuerpo,sentencia);}
 break;
 case 5:
-#line 268 "yacc.y"
+#line 270 "yacc.y"
 	{sentencia = asig;}
 break;
 case 6:
-#line 269 "yacc.y"
+#line 271 "yacc.y"
 	{sentencia = asig_especial;}
 break;
 case 7:
-#line 270 "yacc.y"
+#line 272 "yacc.y"
 	{sentencia = desicion;}
 break;
 case 8:
-#line 271 "yacc.y"
+#line 273 "yacc.y"
 	{sentencia = mientras;}
 break;
 case 9:
-#line 272 "yacc.y"
+#line 274 "yacc.y"
 	{sentencia = ciclo_hasta;}
 break;
 case 10:
-#line 273 "yacc.y"
+#line 275 "yacc.y"
 	{sentencia = escribir;}
 break;
 case 11:
-#line 276 "yacc.y"
+#line 278 "yacc.y"
 	{printf( "Reconocida una condicion simple\n"); condicion = condicionsimple;}
 break;
 case 12:
-#line 277 "yacc.y"
+#line 279 "yacc.y"
 	{printf( "Reconocida una condicion multiple\n");condicion = condicionmultiple;}
 break;
 case 18:
-#line 285 "yacc.y"
+#line 287 "yacc.y"
 	{condicionmultiple = crearNodo(NEGATION,NULL,condicionsimple);}
 break;
 case 19:
-#line 286 "yacc.y"
-	{}
-break;
-case 20:
-#line 287 "yacc.y"
-	{}
-break;
-case 21:
 #line 288 "yacc.y"
 	{}
 break;
-case 22:
+case 20:
+#line 289 "yacc.y"
+	{}
+break;
+case 21:
 #line 290 "yacc.y"
+	{}
+break;
+case 22:
+#line 292 "yacc.y"
 	{printf( "Reconocido un if\n");desicion = crearNodo(IF,condicion,cuerpo);}
 break;
 case 23:
-#line 291 "yacc.y"
+#line 293 "yacc.y"
 	{printf( "Reconocido un if\n");}
 break;
 case 24:
-#line 293 "yacc.y"
-	{printf( "Reconocida una asignacion\n");asig = crearNodo(ASIGNATION,crearHoja(yyval),exp);}
+#line 295 "yacc.y"
+	{printf( "Reconocida una asignacion\n");asig = crearNodo(ASIGNATION,crearHoja(yyvsp[-2]),exp);}
 break;
 case 25:
-#line 295 "yacc.y"
-	{printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTOSUM,crearHoja(yyval),exp);}
+#line 297 "yacc.y"
+	{printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTOSUM,crearHoja(yyvsp[-2]),exp);}
 break;
 case 26:
-#line 296 "yacc.y"
-	{printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTOSUBSTRACTION,crearHoja(yyval),exp);}
+#line 298 "yacc.y"
+	{printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTOSUBSTRACTION,crearHoja(yyvsp[-2]),exp);}
 break;
 case 27:
-#line 297 "yacc.y"
-	{printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTOMULTIPLICATION,crearHoja(yyval),exp);}
+#line 299 "yacc.y"
+	{printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTOMULTIPLICATION,crearHoja(yyvsp[-2]),exp);}
 break;
 case 28:
-#line 298 "yacc.y"
-	{printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTODIVISION,crearHoja(yyval),exp);}
+#line 300 "yacc.y"
+	{printf( "Reconocida una asignacion especial\n");asig_especial = crearNodo(AUTODIVISION,crearHoja(yyvsp[-2]),exp);}
 break;
 case 29:
-#line 300 "yacc.y"
+#line 302 "yacc.y"
 	{printf( "Reconocida una suma\n"); exp = crearNodo(SUM,exp,termino);}
 break;
 case 30:
-#line 302 "yacc.y"
+#line 304 "yacc.y"
 	{printf( "Reconocida una resta\n");exp = crearNodo(SUBSTRACTION,exp,termino);}
 break;
 case 31:
-#line 304 "yacc.y"
+#line 306 "yacc.y"
 	{exp = termino;}
 break;
 case 32:
-#line 306 "yacc.y"
-	{crearNodo(MULTIPLICATION,termino,factor);}
+#line 308 "yacc.y"
+	{printf( "Reconocida una multiplicacion\n"); termino = crearNodo(MULTIPLICATION,termino,factor);}
 break;
 case 33:
-#line 308 "yacc.y"
-	{crearNodo(DIVISION,termino,factor);}
+#line 310 "yacc.y"
+	{printf( "Reconocida una division\n"); termino = crearNodo(DIVISION,termino,factor);}
 break;
 case 34:
-#line 310 "yacc.y"
+#line 312 "yacc.y"
 	{termino = factor;}
 break;
 case 37:
-#line 314 "yacc.y"
-	{factor = crearHoja(yyval);}
+#line 316 "yacc.y"
+	{factor = crearHoja(yyvsp[0]);}
 break;
 case 38:
-#line 315 "yacc.y"
-	{factor = crearHoja(yyval);}
+#line 317 "yacc.y"
+	{factor = crearHoja(yyvsp[0]);}
 break;
 case 39:
-#line 316 "yacc.y"
-	{factor = crearHoja(yyval);}
+#line 318 "yacc.y"
+	{factor = exp;}
 break;
 case 40:
-#line 318 "yacc.y"
-	{lista_variables = crearHoja(yyval);}
+#line 320 "yacc.y"
+	{lista_variables = crearHoja(yyvsp[0]);}
 break;
 case 41:
-#line 319 "yacc.y"
-	{crearNodo(COMMA,lista_variables,crearHoja(yyval));}
+#line 321 "yacc.y"
+	{crearNodo(COMMA,lista_variables,crearHoja(yyvsp[0]));}
 break;
 case 42:
-#line 321 "yacc.y"
+#line 323 "yacc.y"
 	{declaracion = crearNodo(SEPARATOR,lista_variables,tipo_dato);}
 break;
 case 43:
-#line 322 "yacc.y"
+#line 324 "yacc.y"
 	{}
 break;
 case 44:
-#line 324 "yacc.y"
+#line 326 "yacc.y"
 	{bloque_declaracion = declaracion;}
 break;
 case 45:
-#line 326 "yacc.y"
+#line 328 "yacc.y"
 	{mientras = crearNodo(WHILE,condicion,cuerpo);}
 break;
 case 46:
-#line 328 "yacc.y"
+#line 330 "yacc.y"
 	{ciclo_hasta = crearNodo(REPEAT,cuerpo,condicion);}
 break;
 case 47:
-#line 330 "yacc.y"
-	{printf( "Reconocido un display\n");crearNodo(DISPLAY,NULL,crearHoja(yyval));}
+#line 332 "yacc.y"
+	{printf( "Reconocido un display\n");escribir = crearNodo(DISPLAY,NULL,crearHoja(yyvsp[0]));}
 break;
-#line 1412 "y.tab.cpp"
+#line 1558 "y.tab.cpp"
     }
     yyssp -= yym;
     yystate = *yyssp;
