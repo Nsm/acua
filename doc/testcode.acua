@@ -1,4 +1,6 @@
 if(a > 2){
 	a = (4 + 5) * 7;
 	display "hola";
+}else{
+	a += 5 * 4;
 }

@@ -254,7 +254,7 @@ nodo * crearHoja(int numeroSimbolo);
 %token <ival> REPEAT
 %token <ival> UNTIL
 
-%type <pval> programa cuerpo sentencia condicion condicionsimple condicionmultiple desicion asig asig_especial exp termino tipo_dato factor lista_variables declaracion bloque_declaracion mientras ciclo_hasta escribir
+%type <pval> programa cuerpo sentencia condicion condicionsimple condicionmultiple desicion asig asig_especial exp termino tipo_dato factor lista_variables declaracion bloque_declaracion mientras ciclo_hasta escribir desicion_compuesta
 
 %start programa  /* DEFINE EL START SYMBOL*/
 
@@ -276,6 +276,7 @@ nodo * crearHoja(int numeroSimbolo);
  sentencia : asig SEMICOLON {$$ = $1;};
  | asig_especial SEMICOLON {$$ = $1;};
  | desicion {$$ = $1;};
+ | desicion_compuesta {$$ = $1;};
  | mientras {$$ = $1;};
  | ciclo_hasta {$$ = $1;};
  | escribir SEMICOLON {$$ = $1;};
@@ -296,7 +297,8 @@ nodo * crearHoja(int numeroSimbolo);
  
 
  desicion : IF BRACKET condicion RIGHTBRACKET BRACE cuerpo RIGHTBRACE {printf( "Reconocido un if\n");$$ = crearNodo(IF,$3,$6);};
- | IF BRACKET condicion RIGHTBRACKET BRACE cuerpo RIGHTBRACE ELSE BRACE cuerpo RIGHTBRACE {printf( "Reconocido un if\n");};
+
+ desicion_compuesta : desicion ELSE BRACE cuerpo RIGHTBRACE {printf( "Reconocido un if else\n"); $$ = crearNodo(ELSE,$1,$4);}; 
 
  asig : ID ASIGNATION exp {printf( "Reconocida una asignacion\n");$$ = crearNodo(ASIGNATION,crearHoja($1),$3);};
 
