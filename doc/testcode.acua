@@ -1,2 +1,3 @@
-define{a:float;}
+define{a,b:float;}
 a = 5 + 4;
+b = 3 - 2;

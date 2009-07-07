@@ -236,6 +236,7 @@ resultado * generarAssemblerAutoSum(resultado * derecha);
 resultado * generarAssemblerAutoSubstraction( resultado * derecha);
 resultado * generarAssemblerAutoMultiplication(resultado * derecha);
 resultado * generarAssemblerAutoDivision(resultado * derecha);
+resultado * generarAssemblerCuerpo(resultado * izquierda,resultado * derecha);
 
 
 //DECLARACION DE VARIABLES
@@ -589,6 +590,9 @@ resultado * generarAssembler(nodo * raiz){
 			case AUTODIVISION:
 				return generarAssemblerAutoDivision(derecha);
 				break;
+			case CUERPO:
+				return generarAssemblerCuerpo(izquierda,derecha);
+				break;
 			default:
 				return NULL;
 				break;
@@ -611,7 +615,7 @@ resultado * generarAssemblerSimbolo(nodo * n){
 		exit(1);
 	}else if(sim->tipo == NUMBER){
 		string aux = getAuxVariable();
-		res->codigo = "MOV " + aux +", " + sim->nombre;
+		res->codigo = "MOV " + aux +", " + sim->nombre + '\n';
 		res->variable = aux;
 		res->tipo = TYPEFLOAT;
 	}
@@ -623,11 +627,11 @@ resultado * generarAssemblerSum(resultado * izquierda, resultado * derecha){
 	res->tipo = TYPEFLOAT;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + izquierda->variable;
-	res->codigo += "MOV R2, " + derecha->variable;
-	res->codigo += "ADD R1, R2";
+	res->codigo += "MOV R1, " + izquierda->variable + '\n';
+	res->codigo += "MOV R2, " + derecha->variable + '\n';
+	res->codigo += "ADD R1, R2\n";
 	string aux = getAuxVariable();
-	res->codigo += "MOV " + aux +", R1";
+	res->codigo += "MOV " + aux +", R1\n";
 	res->variable = aux;
 	delete izquierda;
 	delete derecha;
@@ -639,8 +643,8 @@ resultado * generarAssemblerAsignation(resultado * izquierda, resultado * derech
 	res->tipo = TYPEFLOAT;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + derecha->variable;
-	res->codigo += "MOV " + izquierda->variable + ", R1";
+	res->codigo += "MOV R1, " + derecha->variable + '\n';
+	res->codigo += "MOV " + izquierda->variable + ", R1\n";
 	res->variable = izquierda->variable;
 	delete izquierda;
 	delete derecha;
@@ -648,7 +652,19 @@ resultado * generarAssemblerAsignation(resultado * izquierda, resultado * derech
 }
 
 resultado * generarAssemblerSubstraction(resultado * izquierda, resultado * derecha){
-
+	resultado * res = new resultado;
+	res->tipo = TYPEFLOAT;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + izquierda->variable + '\n';
+	res->codigo += "MOV R2, " + derecha->variable + '\n';
+	res->codigo += "SUB R1, R2\n";
+	string aux = getAuxVariable();
+	res->codigo += "MOV " + aux +", R1\n";
+	res->variable = aux;
+	delete izquierda;
+	delete derecha;
+	return res;
 }
 
 resultado * generarAssemblerMultiplication(resultado * izquierda, resultado * derecha){
@@ -673,6 +689,16 @@ resultado * generarAssemblerAutoMultiplication(resultado * derecha){
 
 resultado * generarAssemblerAutoDivision(resultado * derecha){
 
+}
+
+resultado * generarAssemblerCuerpo(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->codigo = izquierda->codigo + derecha->codigo;
+	res->tipo = NULL;
+	res->variable = "";
+	delete izquierda;
+	delete derecha;
+	return res;
 }
 
 int get_evento (char c){
@@ -1222,7 +1248,7 @@ int main(int argc,char * argv[])
 	imprimirArbol(programa);
 
 	resultado * res = generarAssembler(programa);
-	cout << res->codigo;
+	cout << "\nAssembler:\n" << res->codigo;
 
     return 0;
 }
