@@ -236,11 +236,22 @@ resultado * generarAssemblerAutoSum(resultado * derecha);
 resultado * generarAssemblerAutoSubstraction( resultado * derecha);
 resultado * generarAssemblerAutoMultiplication(resultado * derecha);
 resultado * generarAssemblerAutoDivision(resultado * derecha);
+
+
+//DECLARACION DE VARIABLES
+struct variableDeclarada{
+	int posicion;
+	variableDeclarada * siguiente;
+};
+
+void actualizarTipoVariables(variableDeclarada * variables, int tipo);
+
 %}
 
 %union{
 	int  ival;
 	nodo *pval;
+	variableDeclarada *vval;
 }
 
 
@@ -283,7 +294,9 @@ resultado * generarAssemblerAutoDivision(resultado * derecha);
 %token <ival> REPEAT
 %token <ival> UNTIL
 
-%type <pval> programa cuerpo sentencia condicion condicionsimple condicionmultiple desicion asig asig_especial exp termino tipo_dato factor lista_variables declaracion bloque_declaracion mientras ciclo_hasta escribir desicion_compuesta
+%type <pval> programa cuerpo sentencia condicion condicionsimple condicionmultiple desicion asig asig_especial exp termino factor declaracion bloque_declaracion mientras ciclo_hasta escribir desicion_compuesta
+%type <ival> tipo_dato
+%type <vval> lista_variables
 
 %start programa  /* DEFINE EL START SYMBOL*/
 
@@ -348,17 +361,17 @@ resultado * generarAssemblerAutoDivision(resultado * derecha);
 
  termino : factor {$$ = $1;};
 
- tipo_dato : TYPESTRING {$$ = crearHoja($1);};
- | TYPEFLOAT {$$ = crearHoja($1);};
+ tipo_dato : TYPESTRING {$$ = TYPESTRING;};
+ | TYPEFLOAT {$$ = TYPEFLOAT;};
 
  factor : ID {$$ = crearHoja($1);};
  | NUMBER {$$ = crearHoja($1);};
  | BRACKET  exp  RIGHTBRACKET {$$ = $2;};
 
- lista_variables : ID {$$ = crearHoja($1);};
- | lista_variables COMMA ID {$$ = crearNodo(COMMA,$1,crearHoja($3));};
+ lista_variables : ID {variableDeclarada *v = new variableDeclarada; v->posicion = $1;v->siguiente = NULL; $$ = v;};
+ | lista_variables COMMA ID {variableDeclarada *v = new variableDeclarada; v->posicion = $3;v->siguiente = $1; $$ = v;};
 
- declaracion : lista_variables  SEPARATOR  tipo_dato SEMICOLON {};
+ declaracion : lista_variables  SEPARATOR  tipo_dato SEMICOLON {actualizarTipoVariables($1,$3);};
  | declaracion lista_variables  SEPARATOR  tipo_dato SEMICOLON {};
 
  bloque_declaracion : DEFINE BRACE declaracion RIGHTBRACE {};
@@ -372,6 +385,17 @@ resultado * generarAssemblerAutoDivision(resultado * derecha);
 %%
 
 /* CODIGO */
+
+void actualizarTipoVariables(variableDeclarada * variables, int tipo){
+	while(variables){
+		simbolo * s = getSimbolo(variables->posicion);
+		s->tipo = tipo;
+		variableDeclarada * borrar = variables;
+		variables = variables->siguiente;
+		delete borrar;
+	}
+}
+
 
 nodo * crearNodo(int operacion, nodo * izquierda, nodo * derecha){
 	nodo * nuevoNodo = new nodo;
@@ -577,10 +601,14 @@ resultado * generarAssembler(nodo * raiz){
 resultado * generarAssemblerSimbolo(nodo * n){
 	resultado * res = new resultado;
 	simbolo * sim = getSimbolo(n->identificador);
-	if(sim->tipo == TYPEFLOAT || sim->tipo == TYPESTRING || sim->tipo == ID){
+	if(sim->tipo == TYPEFLOAT || sim->tipo == TYPESTRING){
 		res->codigo = "";
 		res->variable = sim->nombre;
 		res->tipo = sim->tipo;
+	}else if(sim->tipo == ID){
+		//Esto significa que se esta usando una variable que no se declaro (sino su tipo deberia haber cambiado a TYPEFLOAT o TYPESTRING)
+		cout << "Variable no declarada: " << sim->nombre << '\n';
+		exit(1);
 	}else if(sim->tipo == NUMBER){
 		string aux = getAuxVariable();
 		res->codigo = "MOV " + aux +", " + sim->nombre;
@@ -761,7 +789,7 @@ int yylex(){
 int searchSimbol(char * name, int tipo){
 	simbolo * actual;
 	actual = tablaSimbolos;
-	while(actual != NULL && !(strcmp(actual->nombre,name) == 0 && (actual->tipo == tipo))){
+	while(actual != NULL && !(strcmp(actual->nombre,name) == 0 && (actual->tipo == tipo || (tipo == ID && (actual->tipo == TYPESTRING || actual->tipo == TYPEFLOAT ))))){
 		actual = actual->siguiente;
 	}
 	if(actual != NULL){

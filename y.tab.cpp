@@ -267,12 +267,23 @@ resultado * generarAssemblerAutoSum(resultado * derecha);
 resultado * generarAssemblerAutoSubstraction( resultado * derecha);
 resultado * generarAssemblerAutoMultiplication(resultado * derecha);
 resultado * generarAssemblerAutoDivision(resultado * derecha);
-#line 241 "yacc.y"
+
+
+/*DECLARACION DE VARIABLES*/
+struct variableDeclarada{
+	int posicion;
+	variableDeclarada * siguiente;
+};
+
+void actualizarTipoVariables(variableDeclarada * variables, int tipo);
+
+#line 251 "yacc.y"
 typedef union{
 	int  ival;
 	nodo *pval;
+	variableDeclarada *vval;
 } YYSTYPE;
-#line 275 "y.tab.cpp"
+#line 286 "y.tab.cpp"
 #define ID 257
 #define NUMBER 258
 #define SUM 259
@@ -315,9 +326,9 @@ typedef union{
 static const short yylhs[] = {                           -1,
     0,    0,    1,    1,    2,    2,    2,    2,    2,    2,
     2,    3,    3,    4,    4,    4,    4,    4,    5,    5,
-    5,    6,   19,    7,    8,    8,    8,    8,    9,    9,
-    9,   10,   10,   10,   11,   11,   12,   12,   12,   13,
-   13,   14,   14,   15,   16,   17,   18,
+    5,    6,   17,    7,    8,    8,    8,    8,    9,    9,
+    9,   10,   10,   10,   18,   18,   11,   11,   11,   19,
+   19,   12,   12,   13,   14,   15,   16,
 };
 static const short yylen[] = {                            2,
     2,    1,    1,    2,    2,    2,    1,    1,    1,    1,
@@ -333,15 +344,15 @@ static const short yydefred[] = {                         0,
     6,    0,   11,   37,   38,    0,    0,    0,   34,    0,
     0,    0,    0,    0,    0,    0,   13,    0,    0,   40,
     0,    0,    0,    0,    0,    0,    0,    0,    0,   19,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,   44,    0,    0,    0,   39,    0,    0,   32,   33,
-    0,   21,   20,    0,    0,    0,    0,    0,    0,   41,
-   36,   35,    0,    0,    0,   23,    0,    0,   42,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,   44,
+    0,    0,    0,    0,    0,   39,    0,    0,   32,   33,
+    0,   21,   20,    0,    0,    0,    0,    0,    0,    0,
+   41,   36,   35,    0,    0,   23,    0,    0,    0,   42,
     0,   22,   45,   43,    0,   46,
 };
 static const short yydgoto[] = {                          7,
     8,    9,   45,   46,   47,   10,   11,   12,   48,   38,
-   93,   39,   51,   52,   13,   14,   15,   16,   17,
+   39,   51,   13,   14,   15,   16,   17,   94,   52,
 };
 static const short yysindex[] = {                      -254,
  -114, -272, -261, -260, -250, -220,    0, -187,    0, -226,
@@ -349,15 +360,15 @@ static const short yysindex[] = {                      -254,
  -244, -244, -240, -240, -185,    0, -187,    0, -194,    0,
     0, -187,    0,    0,    0, -244, -210, -219,    0, -210,
  -210, -210, -210, -244, -203, -189,    0, -101, -190,    0,
- -161, -253, -242, -187, -237, -244, -244, -244, -244,    0,
- -188, -244, -244, -244, -244, -244, -244, -244, -183, -163,
- -159,    0, -109, -196, -228,    0, -219, -219,    0,    0,
- -187,    0,    0, -210, -210, -210, -210, -210, -187,    0,
-    0,    0, -170, -159, -166,    0, -217, -193,    0, -153,
+ -253, -161, -242, -187, -237, -244, -244, -244, -244,    0,
+ -188, -244, -244, -244, -244, -244, -244, -244, -183,    0,
+ -142, -163, -127, -196, -228,    0, -219, -219,    0,    0,
+ -187,    0,    0, -210, -210, -210, -210, -210, -187, -127,
+    0,    0,    0, -170, -166,    0, -217, -193, -153,    0,
  -240,    0,    0,    0, -156,    0,
 };
 static const short yyrindex[] = {                         0,
-    0,    0,    0,    0,    0,    0,    0,  131,    0,    1,
+    0,    0,    0,    0,    0,    0,    0,  133,    0,    1,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,  136,    0,    0,    0,    0, -133, -155,    0, -130,
@@ -371,28 +382,28 @@ static const short yyrindex[] = {                         0,
 };
 static const short yygindex[] = {                         0,
    -7,   -8,  -22,  -32,    0,    0,    0,    0,  -11,  113,
-   83,  114,  126,    0,    0,    0,    0,    0,    0,
+  114,    0,    0,    0,    0,    0,    0,   87,  127,
 };
 #define YYTABLESIZE 294
 static const short yytable[] = {                         28,
     7,   49,    1,   50,   23,   32,   37,   40,   41,   42,
    43,   60,   34,   35,    1,   24,   34,   35,   25,   53,
-   26,   56,   57,   28,   55,   30,   72,   44,    1,   82,
+   26,   56,   57,   28,   55,   30,   70,   44,    1,   82,
    83,    2,   36,    3,    4,    5,   36,   74,    6,    1,
    76,   58,   59,    2,   28,    3,   75,    5,   56,   57,
     6,   96,   84,   85,   86,   87,   88,    2,   27,    3,
    29,    5,  102,    1,    6,   31,   28,   33,    2,    1,
     3,   50,    5,   97,   61,    6,   14,   14,  105,   62,
    63,   98,   15,   15,   54,   14,  103,   69,   28,   28,
-   81,   15,    2,   90,    3,   89,    5,   95,    2,    6,
-    3,   99,    5,   31,   31,    6,   18,   18,   16,   16,
-  101,   70,   71,   31,   31,   18,   31,   16,  104,   31,
+   81,   15,    2,   91,    3,   89,    5,   95,    2,    6,
+    3,  100,    5,   31,   31,    6,   18,   18,   16,   16,
+  101,   72,   73,   31,   31,   18,   31,   16,  104,   31,
    31,  106,   31,   29,   29,   31,   31,   31,   17,   17,
-    2,   91,   92,   29,   29,    1,   29,   17,   25,   29,
+   72,   90,    2,   29,   29,    1,   29,   17,   25,   29,
    29,   26,   29,   30,   30,   29,   29,   29,   18,   19,
    20,   21,   22,   30,   30,   27,   30,   56,   57,   30,
-   30,   28,   30,   70,   94,   30,   30,   30,   77,   78,
-   12,   79,   80,   64,   65,   24,  100,   73,    0,   66,
+   30,   28,   30,   92,   93,   30,   30,   30,   77,   78,
+   12,   79,   80,   64,   65,   24,   99,   71,    0,   66,
    67,   68,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
@@ -420,11 +431,11 @@ static const short yycheck[] = {                          8,
   288,  272,  290,  259,  260,  293,  269,  270,  269,  270,
   277,  273,  274,  269,  270,  278,  272,  278,  272,  275,
   276,  278,  278,  259,  260,  281,  282,  283,  269,  270,
-    0,  291,  292,  269,  270,    0,  272,  278,  272,  275,
+  273,  274,    0,  269,  270,    0,  272,  278,  272,  275,
   276,  272,  278,  259,  260,  281,  282,  283,  263,  264,
   265,  266,  267,  269,  270,  272,  272,  259,  260,  275,
-  276,  272,  278,  273,  274,  281,  282,  283,   56,   57,
-  278,   58,   59,  275,  276,  272,   94,   52,   -1,  281,
+  276,  272,  278,  291,  292,  281,  282,  283,   56,   57,
+  278,   58,   59,  275,  276,  272,   90,   51,   -1,  281,
   282,  283,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
@@ -545,9 +556,20 @@ static short   *yyss;
 static short   *yysslim;
 static YYSTYPE *yyvs;
 static unsigned yystacksize;
-#line 373 "yacc.y"
+#line 386 "yacc.y"
 
 /* CODIGO */
+
+void actualizarTipoVariables(variableDeclarada * variables, int tipo){
+	while(variables){
+		simbolo * s = getSimbolo(variables->posicion);
+		s->tipo = tipo;
+		variableDeclarada * borrar = variables;
+		variables = variables->siguiente;
+		delete borrar;
+	}
+}
+
 
 nodo * crearNodo(int operacion, nodo * izquierda, nodo * derecha){
 	nodo * nuevoNodo = new nodo;
@@ -753,10 +775,14 @@ resultado * generarAssembler(nodo * raiz){
 resultado * generarAssemblerSimbolo(nodo * n){
 	resultado * res = new resultado;
 	simbolo * sim = getSimbolo(n->identificador);
-	if(sim->tipo == TYPEFLOAT || sim->tipo == TYPESTRING || sim->tipo == ID){
+	if(sim->tipo == TYPEFLOAT || sim->tipo == TYPESTRING){
 		res->codigo = "";
 		res->variable = sim->nombre;
 		res->tipo = sim->tipo;
+	}else if(sim->tipo == ID){
+		//Esto significa que se esta usando una variable que no se declaro (sino su tipo deberia haber cambiado a TYPEFLOAT o TYPESTRING)
+		cout << "Variable no declarada: " << sim->nombre << '\n';
+		exit(1);
 	}else if(sim->tipo == NUMBER){
 		string aux = getAuxVariable();
 		res->codigo = "MOV " + aux +", " + sim->nombre;
@@ -937,7 +963,7 @@ int yylex(){
 int searchSimbol(char * name, int tipo){
 	simbolo * actual;
 	actual = tablaSimbolos;
-	while(actual != NULL && !(strcmp(actual->nombre,name) == 0 && (actual->tipo == tipo))){
+	while(actual != NULL && !(strcmp(actual->nombre,name) == 0 && (actual->tipo == tipo || (tipo == ID && (actual->tipo == TYPESTRING || actual->tipo == TYPEFLOAT ))))){
 		actual = actual->siguiente;
 	}
 	if(actual != NULL){
@@ -1376,7 +1402,7 @@ int main(int argc,char * argv[])
 }
 
 
-#line 1379 "y.tab.cpp"
+#line 1405 "y.tab.cpp"
 /* allocate initial stack or double stack size, up to YYMAXDEPTH */
 static int yygrowstack(void)
 {
@@ -1564,194 +1590,194 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 299 "yacc.y"
+#line 312 "yacc.y"
 	{printf( "Reconocido el programa :)\n");programa = yyvsp[0].pval;}
 break;
 case 2:
-#line 300 "yacc.y"
+#line 313 "yacc.y"
 	{printf( "Reconocido el programa :)\n");programa = yyvsp[0].pval;}
 break;
 case 3:
-#line 302 "yacc.y"
+#line 315 "yacc.y"
 	{printf( "Reconocido el cuerpo\n");yyval.pval = yyvsp[0].pval;}
 break;
 case 4:
-#line 303 "yacc.y"
+#line 316 "yacc.y"
 	{yyval.pval = crearNodo(CUERPO,yyvsp[-1].pval,yyvsp[0].pval);}
 break;
 case 5:
-#line 305 "yacc.y"
+#line 318 "yacc.y"
 	{yyval.pval = yyvsp[-1].pval;}
 break;
 case 6:
-#line 306 "yacc.y"
+#line 319 "yacc.y"
 	{yyval.pval = yyvsp[-1].pval;}
 break;
 case 7:
-#line 307 "yacc.y"
+#line 320 "yacc.y"
 	{yyval.pval = yyvsp[0].pval;}
 break;
 case 8:
-#line 308 "yacc.y"
+#line 321 "yacc.y"
 	{yyval.pval = yyvsp[0].pval;}
 break;
 case 9:
-#line 309 "yacc.y"
+#line 322 "yacc.y"
 	{yyval.pval = yyvsp[0].pval;}
 break;
 case 10:
-#line 310 "yacc.y"
+#line 323 "yacc.y"
 	{yyval.pval = yyvsp[0].pval;}
 break;
 case 11:
-#line 311 "yacc.y"
+#line 324 "yacc.y"
 	{yyval.pval = yyvsp[-1].pval;}
 break;
 case 12:
-#line 314 "yacc.y"
+#line 327 "yacc.y"
 	{printf( "Reconocida una condicion simple\n"); yyval.pval = yyvsp[0].pval;}
 break;
 case 13:
-#line 315 "yacc.y"
+#line 328 "yacc.y"
 	{printf( "Reconocida una condicion multiple\n");yyval.pval = yyvsp[0].pval;}
 break;
 case 14:
-#line 317 "yacc.y"
+#line 330 "yacc.y"
 	{yyval.pval = crearNodo(LOWER,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 15:
-#line 318 "yacc.y"
+#line 331 "yacc.y"
 	{yyval.pval = crearNodo(UPPER,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 16:
-#line 319 "yacc.y"
+#line 332 "yacc.y"
 	{yyval.pval = crearNodo(EQUALLOWER,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 17:
-#line 320 "yacc.y"
+#line 333 "yacc.y"
 	{yyval.pval = crearNodo(EQUALUPPER,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 18:
-#line 321 "yacc.y"
+#line 334 "yacc.y"
 	{yyval.pval = crearNodo(EQUAL,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 19:
-#line 323 "yacc.y"
+#line 336 "yacc.y"
 	{yyval.pval = crearNodo(NEGATION,NULL,yyvsp[0].pval);}
 break;
 case 20:
-#line 324 "yacc.y"
+#line 337 "yacc.y"
 	{yyval.pval = crearNodo(OR,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 21:
-#line 325 "yacc.y"
+#line 338 "yacc.y"
 	{yyval.pval = crearNodo(AND,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 22:
-#line 328 "yacc.y"
+#line 341 "yacc.y"
 	{printf( "Reconocido un if\n");yyval.pval = crearNodo(IF,yyvsp[-4].pval,yyvsp[-1].pval);}
 break;
 case 23:
-#line 330 "yacc.y"
+#line 343 "yacc.y"
 	{printf( "Reconocido un if else\n"); yyval.pval = crearNodo(ELSE,yyvsp[-4].pval,yyvsp[-1].pval);}
 break;
 case 24:
-#line 332 "yacc.y"
+#line 345 "yacc.y"
 	{printf( "Reconocida una asignacion\n");yyval.pval = crearNodo(ASIGNATION,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
 break;
 case 25:
-#line 334 "yacc.y"
+#line 347 "yacc.y"
 	{printf( "Reconocida una asignacion especial\n");yyval.pval = crearNodo(AUTOSUM,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
 break;
 case 26:
-#line 335 "yacc.y"
+#line 348 "yacc.y"
 	{printf( "Reconocida una asignacion especial\n");yyval.pval = crearNodo(AUTOSUBSTRACTION,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
 break;
 case 27:
-#line 336 "yacc.y"
+#line 349 "yacc.y"
 	{printf( "Reconocida una asignacion especial\n");yyval.pval = crearNodo(AUTOMULTIPLICATION,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
 break;
 case 28:
-#line 337 "yacc.y"
+#line 350 "yacc.y"
 	{printf( "Reconocida una asignacion especial\n");yyval.pval = crearNodo(AUTODIVISION,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
 break;
 case 29:
-#line 339 "yacc.y"
+#line 352 "yacc.y"
 	{printf( "Reconocida una suma\n"); yyval.pval = crearNodo(SUM,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 30:
-#line 341 "yacc.y"
+#line 354 "yacc.y"
 	{printf( "Reconocida una resta\n");yyval.pval = crearNodo(SUBSTRACTION,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 31:
-#line 343 "yacc.y"
+#line 356 "yacc.y"
 	{yyval.pval = yyvsp[0].pval;}
 break;
 case 32:
-#line 345 "yacc.y"
+#line 358 "yacc.y"
 	{printf( "Reconocida una multiplicacion\n"); yyval.pval = crearNodo(MULTIPLICATION,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 33:
-#line 347 "yacc.y"
+#line 360 "yacc.y"
 	{printf( "Reconocida una division\n"); yyval.pval = crearNodo(DIVISION,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 34:
-#line 349 "yacc.y"
+#line 362 "yacc.y"
 	{yyval.pval = yyvsp[0].pval;}
 break;
 case 35:
-#line 351 "yacc.y"
-	{yyval.pval = crearHoja(yyvsp[0].ival);}
+#line 364 "yacc.y"
+	{yyval.ival = TYPESTRING;}
 break;
 case 36:
-#line 352 "yacc.y"
-	{yyval.pval = crearHoja(yyvsp[0].ival);}
+#line 365 "yacc.y"
+	{yyval.ival = TYPEFLOAT;}
 break;
 case 37:
-#line 354 "yacc.y"
+#line 367 "yacc.y"
 	{yyval.pval = crearHoja(yyvsp[0].ival);}
 break;
 case 38:
-#line 355 "yacc.y"
+#line 368 "yacc.y"
 	{yyval.pval = crearHoja(yyvsp[0].ival);}
 break;
 case 39:
-#line 356 "yacc.y"
+#line 369 "yacc.y"
 	{yyval.pval = yyvsp[-1].pval;}
 break;
 case 40:
-#line 358 "yacc.y"
-	{yyval.pval = crearHoja(yyvsp[0].ival);}
+#line 371 "yacc.y"
+	{variableDeclarada *v = new variableDeclarada; v->posicion = yyvsp[0].ival;v->siguiente = NULL; yyval.vval = v;}
 break;
 case 41:
-#line 359 "yacc.y"
-	{yyval.pval = crearNodo(COMMA,yyvsp[-2].pval,crearHoja(yyvsp[0].ival));}
+#line 372 "yacc.y"
+	{variableDeclarada *v = new variableDeclarada; v->posicion = yyvsp[0].ival;v->siguiente = yyvsp[-2].vval; yyval.vval = v;}
 break;
 case 42:
-#line 361 "yacc.y"
-	{}
+#line 374 "yacc.y"
+	{actualizarTipoVariables(yyvsp[-3].vval,yyvsp[-1].ival);}
 break;
 case 43:
-#line 362 "yacc.y"
+#line 375 "yacc.y"
 	{}
 break;
 case 44:
-#line 364 "yacc.y"
+#line 377 "yacc.y"
 	{}
 break;
 case 45:
-#line 366 "yacc.y"
+#line 379 "yacc.y"
 	{yyval.pval = crearNodo(WHILE,yyvsp[-4].pval,yyvsp[-1].pval);}
 break;
 case 46:
-#line 368 "yacc.y"
+#line 381 "yacc.y"
 	{yyval.pval = crearNodo(REPEAT,yyvsp[-5].pval,yyvsp[-1].pval);}
 break;
 case 47:
-#line 370 "yacc.y"
+#line 383 "yacc.y"
 	{printf( "Reconocido un display\n");yyval.pval = crearNodo(DISPLAY,NULL,crearHoja(yyvsp[0].ival));}
 break;
-#line 1754 "y.tab.cpp"
+#line 1780 "y.tab.cpp"
     }
     yyssp -= yym;
     yystate = *yyssp;

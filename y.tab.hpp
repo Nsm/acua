@@ -39,5 +39,6 @@
 typedef union{
 	int  ival;
 	nodo *pval;
+	variableDeclarada *vval;
 } YYSTYPE;
 extern YYSTYPE yylval;
