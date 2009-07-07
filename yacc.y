@@ -579,16 +579,16 @@ resultado * generarAssembler(nodo * raiz){
 				return generarAssemblerDivision(izquierda, derecha);
 				break;
 			case AUTOSUM:
-				return generarAssemblerAutoSum(derecha);
+				return generarAssemblerAutoSum(izquierda,derecha);
 				break;
 			case AUTOSUBSTRACTION:
-				return generarAssemblerAutoSubstraction(derecha);
+				return generarAssemblerAutoSubstraction(izquierda, derecha);
 				break;
 			case AUTOMULTIPLICATION:
-				return generarAssemblerAutoMultiplication(derecha);
+				return generarAssemblerAutoMultiplication(izquierda, derecha);
 				break;
 			case AUTODIVISION:
-				return generarAssemblerAutoDivision(derecha);
+				return generarAssemblerAutoDivision(izquierda, derecha);
 				break;
 			case CUERPO:
 				return generarAssemblerCuerpo(izquierda,derecha);
@@ -668,27 +668,96 @@ resultado * generarAssemblerSubstraction(resultado * izquierda, resultado * dere
 }
 
 resultado * generarAssemblerMultiplication(resultado * izquierda, resultado * derecha){
-
+    resultado * res = new resultado;
+	res->tipo = TYPEFLOAT;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + izquierda->variable + '\n';
+	res->codigo += "MOV R2, " + derecha->variable + '\n';
+	res->codigo += "MUL R2\n";
+	string aux = getAuxVariable();
+	res->codigo += "MOV " + aux +", R1\n";
+	res->variable = aux;
+	delete izquierda;
+	delete derecha;
+	return res;
 }
 
 resultado * generarAssemblerDivision(resultado * izquierda, resultado * derecha){
+    resultado * res = new resultado;
+	res->tipo = TYPEFLOAT;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + izquierda->variable + '\n';
+	res->codigo += "MOV R2, " + derecha->variable + '\n';
+	res->codigo += "DIV R2\n";
+	res->codigo += "MOV " + aux +", R1\n";
+	string aux = getAuxVariable();
+	res->variable = aux;
+	delete izquierda;
+	delete derecha;
+	return res;
 
 }
 
-resultado * generarAssemblerAutoSum(resultado * derecha){
-
+resultado * generarAssemblerAutoSum(resultado * izquierda, resultado * derecha){
+    resultado * res = new resultado;
+	res->tipo = TYPEFLOAT;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + izquierda->variable + '\n';
+	res->codigo += "MOV R2, " + derecha->variable + '\n';
+	res->codigo += "ADD R1,R2\n";
+	res->codigo += "MOV " + izquierda->variable +", R1\n";
+	res->variable = izquierda->variable;
+	delete izquierda;
+	delete derecha;
+	return res;
 }
 
-resultado * generarAssemblerAutoSubstraction( resultado * derecha){
-
+resultado * generarAssemblerAutoSubstraction(resultado * izquierda, resultado * derecha){
+    resultado * res = new resultado;
+	res->tipo = TYPEFLOAT;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + izquierda->variable + '\n';
+	res->codigo += "MOV R2, " + derecha->variable + '\n';
+	res->codigo += "SUB R1,R2\n";
+	res->codigo += "MOV " + izquierda->variable +", R1\n";
+	res->variable = izquierda->variable;
+	delete izquierda;
+	delete derecha;
+	return res;
 }
 
-resultado * generarAssemblerAutoMultiplication(resultado * derecha){
-
+resultado * generarAssemblerAutoMultiplication(resultado * izquierda, resultado * derecha){
+    resultado * res = new resultado;
+	res->tipo = TYPEFLOAT;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + izquierda->variable + '\n';
+	res->codigo += "MOV R2, " + derecha->variable + '\n';
+	res->codigo += "MUL R2\n";
+	res->codigo += "MOV " + izquierda->variable +", R1\n";
+	res->variable = izquierda->variable;
+	delete izquierda;
+	delete derecha;
+	return res;
 }
 
-resultado * generarAssemblerAutoDivision(resultado * derecha){
-
+resultado * generarAssemblerAutoDivision(resultado * izquierda, resultado * derecha){
+    resultado * res = new resultado;
+	res->tipo = TYPEFLOAT;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + izquierda->variable + '\n';
+	res->codigo += "MOV R2, " + derecha->variable + '\n';
+	res->codigo += "DIV R2\n";
+	res->codigo += "MOV " + izquierda->variable +", R1\n";
+	res->variable = izquierda->variable;
+	delete izquierda;
+	delete derecha;
+	return res;
 }
 
 resultado * generarAssemblerCuerpo(resultado * izquierda,resultado * derecha){
