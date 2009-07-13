@@ -38,6 +38,7 @@ static int yygrowstack(void);
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -231,6 +232,8 @@ simbolo * tablaSimbolos = NULL;
 
 simbolo * getSimbolo(int id);
 
+int addToSimbolTable(char * name, int tipo);
+
 char valor[40];
 
 /*ARBOL*/
@@ -296,13 +299,13 @@ struct variableDeclarada{
 
 void actualizarTipoVariables(variableDeclarada * variables, int tipo);
 
-#line 270 "yacc.y"
+#line 273 "yacc.y"
 typedef union{
 	int  ival;
 	nodo *pval;
 	variableDeclarada *vval;
 } YYSTYPE;
-#line 305 "y.tab.cpp"
+#line 308 "y.tab.cpp"
 #define ID 257
 #define NUMBER 258
 #define SUM 259
@@ -344,87 +347,87 @@ typedef union{
 #define YYERRCODE 256
 static const short yylhs[] = {                           -1,
     0,    0,    1,    1,    2,    2,    2,    2,    2,    2,
-    2,    3,    3,    4,    4,    4,    4,    4,    5,    5,
-    5,    6,   17,    7,    8,    8,    8,    8,    9,    9,
-    9,   10,   10,   10,   18,   18,   11,   11,   11,   19,
-   19,   12,   12,   13,   14,   15,   16,
+    2,    3,    3,    4,    4,    4,    4,    4,    4,    5,
+    5,    5,    6,   17,    7,    8,    8,    8,    8,    9,
+    9,    9,   10,   10,   10,   18,   18,   11,   11,   11,
+   19,   19,   12,   12,   13,   14,   15,   16,
 };
 static const short yylen[] = {                            2,
     2,    1,    1,    2,    2,    2,    1,    1,    1,    1,
-    2,    1,    1,    3,    3,    3,    3,    3,    2,    3,
-    3,    7,    5,    3,    3,    3,    3,    3,    3,    3,
-    1,    3,    3,    1,    1,    1,    1,    1,    3,    1,
-    3,    4,    5,    4,    7,    8,    2,
+    2,    1,    1,    3,    3,    3,    3,    3,    3,    2,
+    3,    3,    7,    5,    3,    3,    3,    3,    3,    3,
+    3,    1,    3,    3,    1,    1,    1,    1,    1,    3,
+    1,    3,    4,    5,    4,    7,    8,    2,
 };
 static const short yydefred[] = {                         0,
     0,    0,    0,    0,    0,    0,    0,    0,    3,    0,
     0,    0,    0,    9,   10,    0,    8,    0,    0,    0,
-    0,    0,    0,    0,    0,   47,    0,    4,    0,    5,
-    6,    0,   11,   37,   38,    0,    0,    0,   34,    0,
-    0,    0,    0,    0,    0,    0,   13,    0,    0,   40,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,   19,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,   44,
-    0,    0,    0,    0,    0,   39,    0,    0,   32,   33,
-    0,   21,   20,    0,    0,    0,    0,    0,    0,    0,
-   41,   36,   35,    0,    0,   23,    0,    0,    0,   42,
-    0,   22,   45,   43,    0,   46,
+    0,    0,    0,    0,    0,   48,    0,    4,    0,    5,
+    6,    0,   11,   38,   39,    0,    0,    0,   35,    0,
+    0,    0,    0,    0,    0,    0,   13,    0,    0,   41,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,   20,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+   45,    0,    0,    0,    0,    0,   40,    0,    0,   33,
+   34,    0,   22,   21,    0,    0,    0,    0,    0,    0,
+    0,    0,   42,   37,   36,    0,    0,   24,    0,    0,
+    0,   43,    0,   23,   46,   44,    0,   47,
 };
 static const short yydgoto[] = {                          7,
     8,    9,   45,   46,   47,   10,   11,   12,   48,   38,
-   39,   51,   13,   14,   15,   16,   17,   94,   52,
+   39,   51,   13,   14,   15,   16,   17,   96,   52,
 };
 static const short yysindex[] = {                      -254,
- -114, -272, -261, -260, -250, -220,    0, -187,    0, -226,
- -246, -206, -187,    0,    0, -204,    0, -244, -244, -244,
- -244, -244, -240, -240, -185,    0, -187,    0, -194,    0,
-    0, -187,    0,    0,    0, -244, -210, -219,    0, -210,
- -210, -210, -210, -244, -203, -189,    0, -101, -190,    0,
- -253, -161, -242, -187, -237, -244, -244, -244, -244,    0,
- -188, -244, -244, -244, -244, -244, -244, -244, -183,    0,
- -142, -163, -127, -196, -228,    0, -219, -219,    0,    0,
- -187,    0,    0, -210, -210, -210, -210, -210, -187, -127,
-    0,    0,    0, -170, -166,    0, -217, -193, -153,    0,
- -240,    0,    0,    0, -156,    0,
+  -90, -272, -261, -260, -248, -250,    0, -208,    0, -237,
+ -246, -220, -208,    0,    0, -213,    0, -244, -244, -244,
+ -244, -244, -240, -240, -195,    0, -208,    0, -196,    0,
+    0, -208,    0,    0,    0, -244, -238, -219,    0, -238,
+ -238, -238, -238, -244, -185, -203,    0, -116, -181,    0,
+ -253, -156, -242, -208, -199, -244, -244, -244, -244,    0,
+ -172, -244, -244, -244, -244, -244, -244, -244, -244, -158,
+    0, -138, -134, -188, -167, -217,    0, -219, -219,    0,
+    0, -208,    0,    0, -238, -238, -238, -238, -238, -238,
+ -208, -188,    0,    0,    0, -131,  -96,    0, -216, -192,
+ -125,    0, -240,    0,    0,    0, -121,    0,
 };
 static const short yyrindex[] = {                         0,
-    0,    0,    0,    0,    0,    0,    0,  133,    0,    1,
+    0,    0,    0,    0,    0,    0,    0,  163,    0,    1,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,  136,    0,    0,    0,    0, -133, -155,    0, -130,
- -116, -110,  -96,    0,    0, -107,    0,    0,    0,    0,
+    0,  169,    0,    0,    0,    0,  -89, -170,    0,  -88,
+  -87,  -86,  -85,    0,    0,  -84,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0, -135, -115,    0,    0,
-    0,    0,    0, -192, -186, -162, -160, -140,    0,    0,
+    0,    0,    0,    0,    0,    0,    0, -150, -130,    0,
+    0,    0,    0,    0, -183, -154, -120, -114, -108,  -98,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,
 };
 static const short yygindex[] = {                         0,
-   -7,   -8,  -22,  -32,    0,    0,    0,    0,  -11,  113,
-  114,    0,    0,    0,    0,    0,    0,   87,  127,
+   -7,   -8,  -22,  -32,    0,    0,    0,    0,  -11,   81,
+  120,    0,    0,    0,    0,    0,    0,   90,  137,
 };
 #define YYTABLESIZE 294
 static const short yytable[] = {                         28,
     7,   49,    1,   50,   23,   32,   37,   40,   41,   42,
    43,   60,   34,   35,    1,   24,   34,   35,   25,   53,
-   26,   56,   57,   28,   55,   30,   70,   44,    1,   82,
-   83,    2,   36,    3,    4,    5,   36,   74,    6,    1,
-   76,   58,   59,    2,   28,    3,   75,    5,   56,   57,
-    6,   96,   84,   85,   86,   87,   88,    2,   27,    3,
-   29,    5,  102,    1,    6,   31,   28,   33,    2,    1,
-    3,   50,    5,   97,   61,    6,   14,   14,  105,   62,
-   63,   98,   15,   15,   54,   14,  103,   69,   28,   28,
-   81,   15,    2,   91,    3,   89,    5,   95,    2,    6,
-    3,  100,    5,   31,   31,    6,   18,   18,   16,   16,
-  101,   72,   73,   31,   31,   18,   31,   16,  104,   31,
-   31,  106,   31,   29,   29,   31,   31,   31,   17,   17,
-   72,   90,    2,   29,   29,    1,   29,   17,   25,   29,
-   29,   26,   29,   30,   30,   29,   29,   29,   18,   19,
-   20,   21,   22,   30,   30,   27,   30,   56,   57,   30,
-   30,   28,   30,   92,   93,   30,   30,   30,   77,   78,
-   12,   79,   80,   64,   65,   24,   99,   71,    0,   66,
-   67,   68,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+   56,   57,   26,   28,   55,   30,   71,   44,   27,   83,
+   84,    2,   36,    3,    4,    5,   36,   75,    6,    1,
+    1,   58,   59,    2,   28,    3,   76,    5,    1,   29,
+    6,   31,   85,   86,   87,   88,   89,   90,   33,   56,
+   57,   50,   98,  104,    1,   62,   63,   28,    2,    2,
+    3,    3,    5,    5,   99,    6,    6,    2,   77,    3,
+  107,    5,   54,  100,    6,   14,   14,  105,   32,   32,
+   28,   28,   61,    2,   14,    3,   70,    5,   32,   32,
+    6,   32,   94,   95,   32,   32,   82,   32,   30,   30,
+   32,   32,   32,   32,   15,   15,   73,   74,   30,   30,
+   91,   30,   93,   15,   30,   30,   97,   30,   31,   31,
+   30,   30,   30,   30,   73,   92,   78,   79,   31,   31,
+  102,   31,   56,   57,   31,   31,  106,   31,   18,   18,
+   31,   31,   31,   31,   16,   16,  108,   18,   64,   65,
+   17,   17,    2,   16,   66,   67,   68,   69,    1,   17,
+   19,   19,   18,   19,   20,   21,   22,   80,   81,   19,
+  103,  101,   26,   27,   28,   29,   25,   72,    0,    0,
+    0,    0,    0,   12,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
@@ -439,24 +442,24 @@ static const short yytable[] = {                         28,
 static const short yycheck[] = {                          8,
     0,   24,  257,  257,  277,   13,   18,   19,   20,   21,
    22,   44,  257,  258,  257,  277,  257,  258,  279,   27,
-  271,  259,  260,   32,   36,  272,  280,  268,  257,   62,
+  259,  260,  271,   32,   36,  272,  280,  268,  279,   62,
    63,  286,  277,  288,  289,  290,  277,  280,  293,  257,
-  278,  261,  262,  286,   53,  288,   54,  290,  259,  260,
-  293,  280,   64,   65,   66,   67,   68,  286,  279,  288,
-  287,  290,  280,  257,  293,  272,   75,  272,  286,  257,
-  288,  257,  290,   81,  278,  293,  269,  270,  101,  269,
-  270,   89,  269,  270,  279,  278,  280,  278,   97,   98,
-  279,  278,  286,  257,  288,  279,  290,  294,  286,  293,
-  288,  272,  290,  259,  260,  293,  269,  270,  269,  270,
-  277,  273,  274,  269,  270,  278,  272,  278,  272,  275,
-  276,  278,  278,  259,  260,  281,  282,  283,  269,  270,
-  273,  274,    0,  269,  270,    0,  272,  278,  272,  275,
-  276,  272,  278,  259,  260,  281,  282,  283,  263,  264,
-  265,  266,  267,  269,  270,  272,  272,  259,  260,  275,
-  276,  272,  278,  291,  292,  281,  282,  283,   56,   57,
-  278,   58,   59,  275,  276,  272,   90,   51,   -1,  281,
-  282,  283,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+  257,  261,  262,  286,   53,  288,   54,  290,  257,  287,
+  293,  272,   64,   65,   66,   67,   68,   69,  272,  259,
+  260,  257,  280,  280,  257,  269,  270,   76,  286,  286,
+  288,  288,  290,  290,   82,  293,  293,  286,  278,  288,
+  103,  290,  279,   91,  293,  269,  270,  280,  259,  260,
+   99,  100,  278,  286,  278,  288,  278,  290,  269,  270,
+  293,  272,  291,  292,  275,  276,  279,  278,  259,  260,
+  281,  282,  283,  284,  269,  270,  273,  274,  269,  270,
+  279,  272,  257,  278,  275,  276,  294,  278,  259,  260,
+  281,  282,  283,  284,  273,  274,   56,   57,  269,  270,
+  272,  272,  259,  260,  275,  276,  272,  278,  269,  270,
+  281,  282,  283,  284,  269,  270,  278,  278,  275,  276,
+  269,  270,    0,  278,  281,  282,  283,  284,    0,  278,
+  269,  270,  263,  264,  265,  266,  267,   58,   59,  278,
+  277,   92,  272,  272,  272,  272,  272,   51,   -1,   -1,
+   -1,   -1,   -1,  278,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
@@ -510,6 +513,7 @@ static const char *yyrule[] = {
 "condicionsimple : exp EQUALLOWER exp",
 "condicionsimple : exp EQUALUPPER exp",
 "condicionsimple : exp EQUAL exp",
+"condicionsimple : exp NOTEQUAL exp",
 "condicionmultiple : NEGATION condicionsimple",
 "condicionmultiple : condicionsimple OR condicionsimple",
 "condicionmultiple : condicionsimple AND condicionsimple",
@@ -575,7 +579,7 @@ static short   *yyss;
 static short   *yysslim;
 static YYSTYPE *yyvs;
 static unsigned yystacksize;
-#line 405 "yacc.y"
+#line 409 "yacc.y"
 
 /* CODIGO */
 
@@ -737,13 +741,12 @@ void imprimirArbol(nodo * raiz){
 	}
 }
 
-string getAuxVariable(){
-	auxiliarCount ++;
+string getAuxVariable(){	
 	stringstream out;
-	out << auxiliarCount;
-	string s = "aux";
-	s += out.str();
-	return s;
+	char s[] = "_aux";
+	int pos = addToSimbolTable(s,TYPEFLOAT);
+	out << pos;
+	return "v" + out.str();
 }
 
 string getEtiqueta(){
@@ -862,6 +865,12 @@ string generarEncabezadoAssembler(){
 			string nombre = "v";
 			nombre += out.str();
 			bss +=  nombre + ":	resq 1 \n";
+		}else if(actual->tipo == NUMBER){
+			stringstream out;
+			out << actual->posicion;
+			string nombre = "c";
+			nombre += out.str();
+			data +=  nombre + ":	dq " + actual->nombre + "\n";
 		}
 		actual = actual->siguiente;
 	}
@@ -874,7 +883,9 @@ resultado * generarAssemblerSimbolo(nodo * n){
 	simbolo * sim = getSimbolo(n->identificador);
 	if(sim->tipo == TYPEFLOAT || sim->tipo == TYPESTRING){
 		res->codigo = "";
-		res->variable = sim->nombre;
+		stringstream out;
+		out << sim->posicion;
+		res->variable = "v" + out.str();
 		res->tipo = sim->tipo;
 	}else if(sim->tipo == STRING){
 		stringstream out1;
@@ -889,9 +900,10 @@ resultado * generarAssemblerSimbolo(nodo * n){
 		cout << "Variable no declarada: " << sim->nombre << '\n';
 		exit(1);
 	}else if(sim->tipo == NUMBER){
-		string aux = getAuxVariable();
-		res->codigo = "MOV " + aux +", " + sim->nombre + '\n';
-		res->variable = aux;
+		stringstream out;
+		res->codigo = "";
+		out << n->identificador;
+		res->variable = "c" + out.str();
 		res->tipo = TYPEFLOAT;
 	}
 	return res;
@@ -902,11 +914,10 @@ resultado * generarAssemblerSum(resultado * izquierda, resultado * derecha){
 	res->tipo = TYPEFLOAT;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + izquierda->variable + '\n';
-	res->codigo += "MOV R2, " + derecha->variable + '\n';
-	res->codigo += "ADD R1, R2\n";
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fadd qword [" + derecha->variable + "]\n";
 	string aux = getAuxVariable();
-	res->codigo += "MOV " + aux +", R1\n";
+	res->codigo += "fstp qword ["+aux+"]\n";
 	res->variable = aux;
 	delete izquierda;
 	delete derecha;
@@ -918,8 +929,8 @@ resultado * generarAssemblerAsignation(resultado * izquierda, resultado * derech
 	res->tipo = TYPEFLOAT;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + derecha->variable + '\n';
-	res->codigo += "MOV " + izquierda->variable + ", R1\n";
+	res->codigo += "fld qword [" + derecha->variable + "]\n";
+	res->codigo += "fstp qword [" + izquierda->variable + "]\n";
 	res->variable = izquierda->variable;
 	delete izquierda;
 	delete derecha;
@@ -931,11 +942,10 @@ resultado * generarAssemblerSubstraction(resultado * izquierda, resultado * dere
 	res->tipo = TYPEFLOAT;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + izquierda->variable + '\n';
-	res->codigo += "MOV R2, " + derecha->variable + '\n';
-	res->codigo += "SUB R1, R2\n";
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fsub qword [" + derecha->variable + "]\n";
 	string aux = getAuxVariable();
-	res->codigo += "MOV " + aux +", R1\n";
+	res->codigo += "fstp qword ["+aux+"]\n";
 	res->variable = aux;
 	delete izquierda;
 	delete derecha;
@@ -947,11 +957,10 @@ resultado * generarAssemblerMultiplication(resultado * izquierda, resultado * de
 	res->tipo = TYPEFLOAT;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + izquierda->variable + '\n';
-	res->codigo += "MOV R2, " + derecha->variable + '\n';
-	res->codigo += "MUL R2\n";
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fmul qword [" + derecha->variable + "]\n";
 	string aux = getAuxVariable();
-	res->codigo += "MOV " + aux +", R1\n";
+	res->codigo += "fstp qword ["+aux+"]\n";
 	res->variable = aux;
 	delete izquierda;
 	delete derecha;
@@ -963,11 +972,10 @@ resultado * generarAssemblerDivision(resultado * izquierda, resultado * derecha)
 	res->tipo = TYPEFLOAT;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + izquierda->variable + '\n';
-	res->codigo += "MOV R2, " + derecha->variable + '\n';
-	res->codigo += "DIV R2\n";
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fdiv qword [" + derecha->variable + "]\n";
 	string aux = getAuxVariable();
-	res->codigo += "MOV " + aux +", R1\n";
+	res->codigo += "fstp qword ["+aux+"]\n";
 	res->variable = aux;
 	delete izquierda;
 	delete derecha;
@@ -980,10 +988,9 @@ resultado * generarAssemblerAutoSum(resultado * izquierda, resultado * derecha){
 	res->tipo = TYPEFLOAT;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + izquierda->variable + '\n';
-	res->codigo += "MOV R2, " + derecha->variable + '\n';
-	res->codigo += "ADD R1,R2\n";
-	res->codigo += "MOV " + izquierda->variable +", R1\n";
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fadd qword [" + derecha->variable + "]\n";
+	res->codigo += "fstp qword ["+izquierda->variable+"]\n";
 	res->variable = izquierda->variable;
 	delete izquierda;
 	delete derecha;
@@ -995,10 +1002,9 @@ resultado * generarAssemblerAutoSubstraction(resultado * izquierda, resultado * 
 	res->tipo = TYPEFLOAT;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + izquierda->variable + '\n';
-	res->codigo += "MOV R2, " + derecha->variable + '\n';
-	res->codigo += "SUB R1,R2\n";
-	res->codigo += "MOV " + izquierda->variable +", R1\n";
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fsub qword [" + derecha->variable + "]\n";
+	res->codigo += "fstp qword ["+izquierda->variable+"]\n";
 	res->variable = izquierda->variable;
 	delete izquierda;
 	delete derecha;
@@ -1010,10 +1016,9 @@ resultado * generarAssemblerAutoMultiplication(resultado * izquierda, resultado 
 	res->tipo = TYPEFLOAT;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + izquierda->variable + '\n';
-	res->codigo += "MOV R2, " + derecha->variable + '\n';
-	res->codigo += "MUL R2\n";
-	res->codigo += "MOV " + izquierda->variable +", R1\n";
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fmul qword [" + derecha->variable + "]\n";
+	res->codigo += "fstp qword ["+izquierda->variable+"]\n";
 	res->variable = izquierda->variable;
 	delete izquierda;
 	delete derecha;
@@ -1025,10 +1030,9 @@ resultado * generarAssemblerAutoDivision(resultado * izquierda, resultado * dere
 	res->tipo = TYPEFLOAT;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + izquierda->variable + '\n';
-	res->codigo += "MOV R2, " + derecha->variable + '\n';
-	res->codigo += "DIV R2\n";
-	res->codigo += "MOV " + izquierda->variable +", R1\n";
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fdiv qword [" + derecha->variable + "]\n";
+	res->codigo += "fstp qword ["+izquierda->variable+"]\n";
 	res->variable = izquierda->variable;
 	delete izquierda;
 	delete derecha;
@@ -1052,15 +1056,17 @@ resultado * generarAssemblerLower(resultado * izquierda,resultado * derecha){
 	res->variable = aux;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + derecha->variable + '\n';
-	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fcomp qword [" + derecha->variable + "]\n";
+	res->codigo += "fnstsw  ax\n";
+	res->codigo += "sahf\n";
 	string etiquetaFalso = getEtiqueta();
-	res->codigo += "JGE " + etiquetaFalso + '\n';
-	res->codigo += "MOV " + aux + ", 1" + '\n';
+	res->codigo += "jnb " + etiquetaFalso + '\n';
+	res->codigo += "mov dword [" + aux + "], 1h" + '\n';
 	string etiquetaFin = getEtiqueta();
-	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += "jmp " + etiquetaFin + '\n';
 	res->codigo += etiquetaFalso + ":\n";
-	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += "mov dword [" + aux + "], 0h" + '\n';
 	res->codigo += etiquetaFin + ":\n";
 	delete izquierda;
 	delete derecha;
@@ -1074,15 +1080,17 @@ resultado * generarAssemblerUpper(resultado * izquierda,resultado * derecha){
 	res->variable = aux;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + derecha->variable + '\n';
-	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fcomp qword [" + derecha->variable + "]\n";
+	res->codigo += "fnstsw  ax\n";
+	res->codigo += "sahf\n";
 	string etiquetaFalso = getEtiqueta();
-	res->codigo += "JLE " + etiquetaFalso + '\n';
-	res->codigo += "MOV " + aux + ", 1" + '\n';
+	res->codigo += "jna " + etiquetaFalso + '\n';
+	res->codigo += "mov dword [" + aux + "], 1h" + '\n';
 	string etiquetaFin = getEtiqueta();
-	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += "jmp " + etiquetaFin + '\n';
 	res->codigo += etiquetaFalso + ":\n";
-	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += "mov dword [" + aux + "], 0h" + '\n';
 	res->codigo += etiquetaFin + ":\n";
 	delete izquierda;
 	delete derecha;
@@ -1096,15 +1104,17 @@ resultado * generarAssemblerEqual(resultado * izquierda,resultado * derecha){
 	res->variable = aux;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + derecha->variable + '\n';
-	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fcomp qword [" + derecha->variable + "]\n";
+	res->codigo += "fnstsw  ax\n";
+	res->codigo += "sahf\n";
 	string etiquetaFalso = getEtiqueta();
-	res->codigo += "JNE " + etiquetaFalso + '\n';
-	res->codigo += "MOV " + aux + ", 1" + '\n';
+	res->codigo += "jne " + etiquetaFalso + '\n';
+	res->codigo += "mov dword [" + aux + "], 1h" + '\n';
 	string etiquetaFin = getEtiqueta();
-	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += "jmp " + etiquetaFin + '\n';
 	res->codigo += etiquetaFalso + ":\n";
-	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += "mov dword [" + aux + "], 0h" + '\n';
 	res->codigo += etiquetaFin + ":\n";
 	delete izquierda;
 	delete derecha;
@@ -1118,15 +1128,17 @@ resultado * generarAssemblerEqualLower(resultado * izquierda,resultado * derecha
 	res->variable = aux;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + derecha->variable + '\n';
-	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fcomp qword [" + derecha->variable + "]\n";
+	res->codigo += "fnstsw  ax\n";
+	res->codigo += "sahf\n";
 	string etiquetaFalso = getEtiqueta();
-	res->codigo += "JG " + etiquetaFalso + '\n';
-	res->codigo += "MOV " + aux + ", 1" + '\n';
+	res->codigo += "ja " + etiquetaFalso + '\n';
+	res->codigo += "mov dword [" + aux + "], 1h" + '\n';
 	string etiquetaFin = getEtiqueta();
-	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += "jmp " + etiquetaFin + '\n';
 	res->codigo += etiquetaFalso + ":\n";
-	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += "mov dword [" + aux + "], 0h" + '\n';
 	res->codigo += etiquetaFin + ":\n";
 	delete izquierda;
 	delete derecha;
@@ -1140,15 +1152,17 @@ resultado * generarAssemblerEqualUpper(resultado * izquierda,resultado * derecha
 	res->variable = aux;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + derecha->variable + '\n';
-	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fcomp qword [" + derecha->variable + "]\n";
+	res->codigo += "fnstsw  ax\n";
+	res->codigo += "sahf\n";
 	string etiquetaFalso = getEtiqueta();
-	res->codigo += "JL " + etiquetaFalso + '\n';
-	res->codigo += "MOV " + aux + ", 1" + '\n';
+	res->codigo += "jb " + etiquetaFalso + '\n';
+	res->codigo += "mov dword [" + aux + "], 1h" + '\n';
 	string etiquetaFin = getEtiqueta();
-	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += "jmp " + etiquetaFin + '\n';
 	res->codigo += etiquetaFalso + ":\n";
-	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += "mov dword [" + aux + "], 0h" + '\n';
 	res->codigo += etiquetaFin + ":\n";
 	delete izquierda;
 	delete derecha;
@@ -1163,15 +1177,17 @@ resultado * generarAssemblerNotEqual(resultado * izquierda,resultado * derecha){
 	res->variable = aux;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + derecha->variable + '\n';
-	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fcomp qword [" + derecha->variable + "]\n";
+	res->codigo += "fnstsw  ax\n";
+	res->codigo += "sahf\n";
 	string etiquetaFalso = getEtiqueta();
-	res->codigo += "JE " + etiquetaFalso + '\n';
-	res->codigo += "MOV " + aux + ", 1" + '\n';
+	res->codigo += "je " + etiquetaFalso + '\n';
+	res->codigo += "mov dword [" + aux + "], 1h" + '\n';
 	string etiquetaFin = getEtiqueta();
-	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += "jmp " + etiquetaFin + '\n';
 	res->codigo += etiquetaFalso + ":\n";
-	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += "mov dword [" + aux + "], 0h" + '\n';
 	res->codigo += etiquetaFin + ":\n";
 	delete izquierda;
 	delete derecha;
@@ -1183,9 +1199,10 @@ resultado * generarAssemblerIf(resultado * izquierda,resultado * derecha){
 	res->tipo = BOOL;
 	res->variable = izquierda->variable;
 	res->codigo = izquierda->codigo;
-	res->codigo += "MOV AX, " + izquierda->variable + '\n';
+	res->codigo += "mov ax, word [" + izquierda->variable + "]\n";
+	res->codigo += "cmp ax, 0h\n";
 	string etiquetaFalso = getEtiqueta();
-	res->codigo += "JZ " + etiquetaFalso + '\n';
+	res->codigo += "je " + etiquetaFalso + '\n';
 	res->codigo += derecha->codigo;
 	res->codigo += etiquetaFalso + ":\n";
 	delete izquierda;
@@ -1198,9 +1215,10 @@ resultado * generarAssemblerElse(resultado * izquierda,resultado * derecha){
 	res->tipo = NULL;
 	res->variable = "";
 	res->codigo = izquierda->codigo;
-	res->codigo += "MOV AX, " + izquierda->variable + '\n';
+	res->codigo += "mov ax, word [" + izquierda->variable + "]\n";
+	res->codigo += "cmp ax, 0h\n";
 	string etiquetaFalso = getEtiqueta();
-	res->codigo += "JNZ " + etiquetaFalso + '\n';
+	res->codigo += "jne " + etiquetaFalso + '\n';
 	res->codigo += derecha->codigo;
 	res->codigo += etiquetaFalso + ":\n";
 	delete izquierda;
@@ -1847,15 +1865,27 @@ int main(int argc,char * argv[])
 	imprimirArbol(programa);
 
 	resultado * res = generarAssembler(programa);
-	res->codigo = "mov eax,1\nmov ebx,0\nint 80h";
+	string pie = "mov eax,1\nmov ebx,0\nint 80h";
 	string encabezado = generarEncabezadoAssembler();
-	cout << "\nAssembler:\n" << encabezado << '\n' << res->codigo;
-
+	cout << "\nAssembler:\n" << encabezado << '\n' << res->codigo << pie;
+	
+	ofstream asmfile;
+  	asmfile.open ("out.asm");
+  	asmfile << encabezado << '\n' << res->codigo << pie;
+  	asmfile.close();
+	system("nasm -f elf out.asm");
+	system("ld -s -o out out.o");
+	remove("out.asm");
+	remove("out.o");
+	
+	
+	printf("\n\nSalida:\n");
+	system("./out");
     return 0;
 }
 
 
-#line 1858 "y.tab.cpp"
+#line 1888 "y.tab.cpp"
 /* allocate initial stack or double stack size, up to YYMAXDEPTH */
 static int yygrowstack(void)
 {
@@ -2043,194 +2073,198 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 331 "yacc.y"
+#line 334 "yacc.y"
 	{printf( "Reconocido el programa :)\n");programa = yyvsp[0].pval;}
 break;
 case 2:
-#line 332 "yacc.y"
+#line 335 "yacc.y"
 	{printf( "Reconocido el programa :)\n");programa = yyvsp[0].pval;}
 break;
 case 3:
-#line 334 "yacc.y"
+#line 337 "yacc.y"
 	{printf( "Reconocido el cuerpo\n");yyval.pval = yyvsp[0].pval;}
 break;
 case 4:
-#line 335 "yacc.y"
+#line 338 "yacc.y"
 	{yyval.pval = crearNodo(CUERPO,yyvsp[-1].pval,yyvsp[0].pval);}
 break;
 case 5:
-#line 337 "yacc.y"
+#line 340 "yacc.y"
 	{yyval.pval = yyvsp[-1].pval;}
 break;
 case 6:
-#line 338 "yacc.y"
+#line 341 "yacc.y"
 	{yyval.pval = yyvsp[-1].pval;}
 break;
 case 7:
-#line 339 "yacc.y"
-	{yyval.pval = yyvsp[0].pval;}
-break;
-case 8:
-#line 340 "yacc.y"
-	{yyval.pval = yyvsp[0].pval;}
-break;
-case 9:
-#line 341 "yacc.y"
-	{yyval.pval = yyvsp[0].pval;}
-break;
-case 10:
 #line 342 "yacc.y"
 	{yyval.pval = yyvsp[0].pval;}
 break;
-case 11:
+case 8:
 #line 343 "yacc.y"
+	{yyval.pval = yyvsp[0].pval;}
+break;
+case 9:
+#line 344 "yacc.y"
+	{yyval.pval = yyvsp[0].pval;}
+break;
+case 10:
+#line 345 "yacc.y"
+	{yyval.pval = yyvsp[0].pval;}
+break;
+case 11:
+#line 346 "yacc.y"
 	{yyval.pval = yyvsp[-1].pval;}
 break;
 case 12:
-#line 346 "yacc.y"
+#line 349 "yacc.y"
 	{printf( "Reconocida una condicion simple\n"); yyval.pval = yyvsp[0].pval;}
 break;
 case 13:
-#line 347 "yacc.y"
+#line 350 "yacc.y"
 	{printf( "Reconocida una condicion multiple\n");yyval.pval = yyvsp[0].pval;}
 break;
 case 14:
-#line 349 "yacc.y"
+#line 352 "yacc.y"
 	{yyval.pval = crearNodo(LOWER,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 15:
-#line 350 "yacc.y"
+#line 353 "yacc.y"
 	{yyval.pval = crearNodo(UPPER,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 16:
-#line 351 "yacc.y"
+#line 354 "yacc.y"
 	{yyval.pval = crearNodo(EQUALLOWER,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 17:
-#line 352 "yacc.y"
+#line 355 "yacc.y"
 	{yyval.pval = crearNodo(EQUALUPPER,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 18:
-#line 353 "yacc.y"
+#line 356 "yacc.y"
 	{yyval.pval = crearNodo(EQUAL,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 19:
-#line 355 "yacc.y"
-	{yyval.pval = crearNodo(NEGATION,NULL,yyvsp[0].pval);}
+#line 357 "yacc.y"
+	{yyval.pval = crearNodo(NOTEQUAL,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 20:
-#line 356 "yacc.y"
-	{yyval.pval = crearNodo(OR,yyvsp[-2].pval,yyvsp[0].pval);}
+#line 359 "yacc.y"
+	{yyval.pval = crearNodo(NEGATION,NULL,yyvsp[0].pval);}
 break;
 case 21:
-#line 357 "yacc.y"
-	{yyval.pval = crearNodo(AND,yyvsp[-2].pval,yyvsp[0].pval);}
+#line 360 "yacc.y"
+	{yyval.pval = crearNodo(OR,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 22:
-#line 360 "yacc.y"
-	{printf( "Reconocido un if\n");yyval.pval = crearNodo(IF,yyvsp[-4].pval,yyvsp[-1].pval);}
+#line 361 "yacc.y"
+	{yyval.pval = crearNodo(AND,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 23:
-#line 362 "yacc.y"
-	{printf( "Reconocido un if else\n"); yyval.pval = crearNodo(ELSE,yyvsp[-4].pval,yyvsp[-1].pval);}
+#line 364 "yacc.y"
+	{printf( "Reconocido un if\n");yyval.pval = crearNodo(IF,yyvsp[-4].pval,yyvsp[-1].pval);}
 break;
 case 24:
-#line 364 "yacc.y"
-	{printf( "Reconocida una asignacion\n");yyval.pval = crearNodo(ASIGNATION,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
+#line 366 "yacc.y"
+	{printf( "Reconocido un if else\n"); yyval.pval = crearNodo(ELSE,yyvsp[-4].pval,yyvsp[-1].pval);}
 break;
 case 25:
-#line 366 "yacc.y"
-	{printf( "Reconocida una asignacion especial\n");yyval.pval = crearNodo(AUTOSUM,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
+#line 368 "yacc.y"
+	{printf( "Reconocida una asignacion\n");yyval.pval = crearNodo(ASIGNATION,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
 break;
 case 26:
-#line 367 "yacc.y"
-	{printf( "Reconocida una asignacion especial\n");yyval.pval = crearNodo(AUTOSUBSTRACTION,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
+#line 370 "yacc.y"
+	{printf( "Reconocida una asignacion especial\n");yyval.pval = crearNodo(AUTOSUM,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
 break;
 case 27:
-#line 368 "yacc.y"
-	{printf( "Reconocida una asignacion especial\n");yyval.pval = crearNodo(AUTOMULTIPLICATION,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
+#line 371 "yacc.y"
+	{printf( "Reconocida una asignacion especial\n");yyval.pval = crearNodo(AUTOSUBSTRACTION,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
 break;
 case 28:
-#line 369 "yacc.y"
-	{printf( "Reconocida una asignacion especial\n");yyval.pval = crearNodo(AUTODIVISION,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
+#line 372 "yacc.y"
+	{printf( "Reconocida una asignacion especial\n");yyval.pval = crearNodo(AUTOMULTIPLICATION,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
 break;
 case 29:
-#line 371 "yacc.y"
-	{printf( "Reconocida una suma\n"); yyval.pval = crearNodo(SUM,yyvsp[-2].pval,yyvsp[0].pval);}
+#line 373 "yacc.y"
+	{printf( "Reconocida una asignacion especial\n");yyval.pval = crearNodo(AUTODIVISION,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
 break;
 case 30:
-#line 373 "yacc.y"
-	{printf( "Reconocida una resta\n");yyval.pval = crearNodo(SUBSTRACTION,yyvsp[-2].pval,yyvsp[0].pval);}
+#line 375 "yacc.y"
+	{printf( "Reconocida una suma\n"); yyval.pval = crearNodo(SUM,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 31:
-#line 375 "yacc.y"
-	{yyval.pval = yyvsp[0].pval;}
+#line 377 "yacc.y"
+	{printf( "Reconocida una resta\n");yyval.pval = crearNodo(SUBSTRACTION,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 32:
-#line 377 "yacc.y"
-	{printf( "Reconocida una multiplicacion\n"); yyval.pval = crearNodo(MULTIPLICATION,yyvsp[-2].pval,yyvsp[0].pval);}
-break;
-case 33:
 #line 379 "yacc.y"
-	{printf( "Reconocida una division\n"); yyval.pval = crearNodo(DIVISION,yyvsp[-2].pval,yyvsp[0].pval);}
-break;
-case 34:
-#line 381 "yacc.y"
 	{yyval.pval = yyvsp[0].pval;}
 break;
-case 35:
+case 33:
+#line 381 "yacc.y"
+	{printf( "Reconocida una multiplicacion\n"); yyval.pval = crearNodo(MULTIPLICATION,yyvsp[-2].pval,yyvsp[0].pval);}
+break;
+case 34:
 #line 383 "yacc.y"
-	{yyval.ival = TYPESTRING;}
+	{printf( "Reconocida una division\n"); yyval.pval = crearNodo(DIVISION,yyvsp[-2].pval,yyvsp[0].pval);}
+break;
+case 35:
+#line 385 "yacc.y"
+	{yyval.pval = yyvsp[0].pval;}
 break;
 case 36:
-#line 384 "yacc.y"
-	{yyval.ival = TYPEFLOAT;}
+#line 387 "yacc.y"
+	{yyval.ival = TYPESTRING;}
 break;
 case 37:
-#line 386 "yacc.y"
-	{yyval.pval = crearHoja(yyvsp[0].ival);}
+#line 388 "yacc.y"
+	{yyval.ival = TYPEFLOAT;}
 break;
 case 38:
-#line 387 "yacc.y"
+#line 390 "yacc.y"
 	{yyval.pval = crearHoja(yyvsp[0].ival);}
 break;
 case 39:
-#line 388 "yacc.y"
-	{yyval.pval = yyvsp[-1].pval;}
+#line 391 "yacc.y"
+	{yyval.pval = crearHoja(yyvsp[0].ival);}
 break;
 case 40:
-#line 390 "yacc.y"
-	{variableDeclarada *v = new variableDeclarada; v->posicion = yyvsp[0].ival;v->siguiente = NULL; yyval.vval = v;}
+#line 392 "yacc.y"
+	{yyval.pval = yyvsp[-1].pval;}
 break;
 case 41:
-#line 391 "yacc.y"
-	{variableDeclarada *v = new variableDeclarada; v->posicion = yyvsp[0].ival;v->siguiente = yyvsp[-2].vval; yyval.vval = v;}
+#line 394 "yacc.y"
+	{variableDeclarada *v = new variableDeclarada; v->posicion = yyvsp[0].ival;v->siguiente = NULL; yyval.vval = v;}
 break;
 case 42:
-#line 393 "yacc.y"
-	{actualizarTipoVariables(yyvsp[-3].vval,yyvsp[-1].ival);}
+#line 395 "yacc.y"
+	{variableDeclarada *v = new variableDeclarada; v->posicion = yyvsp[0].ival;v->siguiente = yyvsp[-2].vval; yyval.vval = v;}
 break;
 case 43:
-#line 394 "yacc.y"
-	{}
+#line 397 "yacc.y"
+	{actualizarTipoVariables(yyvsp[-3].vval,yyvsp[-1].ival);}
 break;
 case 44:
-#line 396 "yacc.y"
+#line 398 "yacc.y"
 	{}
 break;
 case 45:
-#line 398 "yacc.y"
-	{yyval.pval = crearNodo(WHILE,yyvsp[-4].pval,yyvsp[-1].pval);}
+#line 400 "yacc.y"
+	{}
 break;
 case 46:
-#line 400 "yacc.y"
-	{yyval.pval = crearNodo(REPEAT,yyvsp[-5].pval,yyvsp[-1].pval);}
+#line 402 "yacc.y"
+	{yyval.pval = crearNodo(WHILE,yyvsp[-4].pval,yyvsp[-1].pval);}
 break;
 case 47:
-#line 402 "yacc.y"
+#line 404 "yacc.y"
+	{yyval.pval = crearNodo(REPEAT,yyvsp[-5].pval,yyvsp[-1].pval);}
+break;
+case 48:
+#line 406 "yacc.y"
 	{printf( "Reconocido un display\n");yyval.pval = crearNodo(DISPLAY,NULL,crearHoja(yyvsp[0].ival));}
 break;
-#line 2233 "y.tab.cpp"
+#line 2267 "y.tab.cpp"
     }
     yyssp -= yym;
     yystate = *yyssp;

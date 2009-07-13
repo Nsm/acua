@@ -7,6 +7,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -200,6 +201,8 @@ simbolo * tablaSimbolos = NULL;
 
 simbolo * getSimbolo(int id);
 
+int addToSimbolTable(char * name, int tipo);
+
 char valor[40];
 
 //ARBOL
@@ -351,6 +354,7 @@ void actualizarTipoVariables(variableDeclarada * variables, int tipo);
  | exp EQUALLOWER exp {$$ = crearNodo(EQUALLOWER,$1,$3);};
  | exp EQUALUPPER exp {$$ = crearNodo(EQUALUPPER,$1,$3);};
  | exp EQUAL exp {$$ = crearNodo(EQUAL,$1,$3);};
+ | exp NOTEQUAL exp {$$ = crearNodo(NOTEQUAL,$1,$3);};
 
  condicionmultiple : NEGATION condicionsimple {$$ = crearNodo(NEGATION,NULL,$2);};
  | condicionsimple OR condicionsimple {$$ = crearNodo(OR,$1,$3);};
@@ -563,13 +567,12 @@ void imprimirArbol(nodo * raiz){
 	}
 }
 
-string getAuxVariable(){
-	auxiliarCount ++;
+string getAuxVariable(){	
 	stringstream out;
-	out << auxiliarCount;
-	string s = "aux";
-	s += out.str();
-	return s;
+	char s[] = "_aux";
+	int pos = addToSimbolTable(s,TYPEFLOAT);
+	out << pos;
+	return "v" + out.str();
 }
 
 string getEtiqueta(){
@@ -688,6 +691,12 @@ string generarEncabezadoAssembler(){
 			string nombre = "v";
 			nombre += out.str();
 			bss +=  nombre + ":	resq 1 \n";
+		}else if(actual->tipo == NUMBER){
+			stringstream out;
+			out << actual->posicion;
+			string nombre = "c";
+			nombre += out.str();
+			data +=  nombre + ":	dq " + actual->nombre + "\n";
 		}
 		actual = actual->siguiente;
 	}
@@ -700,7 +709,9 @@ resultado * generarAssemblerSimbolo(nodo * n){
 	simbolo * sim = getSimbolo(n->identificador);
 	if(sim->tipo == TYPEFLOAT || sim->tipo == TYPESTRING){
 		res->codigo = "";
-		res->variable = sim->nombre;
+		stringstream out;
+		out << sim->posicion;
+		res->variable = "v" + out.str();
 		res->tipo = sim->tipo;
 	}else if(sim->tipo == STRING){
 		stringstream out1;
@@ -715,9 +726,10 @@ resultado * generarAssemblerSimbolo(nodo * n){
 		cout << "Variable no declarada: " << sim->nombre << '\n';
 		exit(1);
 	}else if(sim->tipo == NUMBER){
-		string aux = getAuxVariable();
-		res->codigo = "MOV " + aux +", " + sim->nombre + '\n';
-		res->variable = aux;
+		stringstream out;
+		res->codigo = "";
+		out << n->identificador;
+		res->variable = "c" + out.str();
 		res->tipo = TYPEFLOAT;
 	}
 	return res;
@@ -728,11 +740,10 @@ resultado * generarAssemblerSum(resultado * izquierda, resultado * derecha){
 	res->tipo = TYPEFLOAT;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + izquierda->variable + '\n';
-	res->codigo += "MOV R2, " + derecha->variable + '\n';
-	res->codigo += "ADD R1, R2\n";
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fadd qword [" + derecha->variable + "]\n";
 	string aux = getAuxVariable();
-	res->codigo += "MOV " + aux +", R1\n";
+	res->codigo += "fstp qword ["+aux+"]\n";
 	res->variable = aux;
 	delete izquierda;
 	delete derecha;
@@ -744,8 +755,8 @@ resultado * generarAssemblerAsignation(resultado * izquierda, resultado * derech
 	res->tipo = TYPEFLOAT;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + derecha->variable + '\n';
-	res->codigo += "MOV " + izquierda->variable + ", R1\n";
+	res->codigo += "fld qword [" + derecha->variable + "]\n";
+	res->codigo += "fstp qword [" + izquierda->variable + "]\n";
 	res->variable = izquierda->variable;
 	delete izquierda;
 	delete derecha;
@@ -757,11 +768,10 @@ resultado * generarAssemblerSubstraction(resultado * izquierda, resultado * dere
 	res->tipo = TYPEFLOAT;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + izquierda->variable + '\n';
-	res->codigo += "MOV R2, " + derecha->variable + '\n';
-	res->codigo += "SUB R1, R2\n";
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fsub qword [" + derecha->variable + "]\n";
 	string aux = getAuxVariable();
-	res->codigo += "MOV " + aux +", R1\n";
+	res->codigo += "fstp qword ["+aux+"]\n";
 	res->variable = aux;
 	delete izquierda;
 	delete derecha;
@@ -773,11 +783,10 @@ resultado * generarAssemblerMultiplication(resultado * izquierda, resultado * de
 	res->tipo = TYPEFLOAT;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + izquierda->variable + '\n';
-	res->codigo += "MOV R2, " + derecha->variable + '\n';
-	res->codigo += "MUL R2\n";
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fmul qword [" + derecha->variable + "]\n";
 	string aux = getAuxVariable();
-	res->codigo += "MOV " + aux +", R1\n";
+	res->codigo += "fstp qword ["+aux+"]\n";
 	res->variable = aux;
 	delete izquierda;
 	delete derecha;
@@ -789,11 +798,10 @@ resultado * generarAssemblerDivision(resultado * izquierda, resultado * derecha)
 	res->tipo = TYPEFLOAT;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + izquierda->variable + '\n';
-	res->codigo += "MOV R2, " + derecha->variable + '\n';
-	res->codigo += "DIV R2\n";
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fdiv qword [" + derecha->variable + "]\n";
 	string aux = getAuxVariable();
-	res->codigo += "MOV " + aux +", R1\n";
+	res->codigo += "fstp qword ["+aux+"]\n";
 	res->variable = aux;
 	delete izquierda;
 	delete derecha;
@@ -806,10 +814,9 @@ resultado * generarAssemblerAutoSum(resultado * izquierda, resultado * derecha){
 	res->tipo = TYPEFLOAT;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + izquierda->variable + '\n';
-	res->codigo += "MOV R2, " + derecha->variable + '\n';
-	res->codigo += "ADD R1,R2\n";
-	res->codigo += "MOV " + izquierda->variable +", R1\n";
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fadd qword [" + derecha->variable + "]\n";
+	res->codigo += "fstp qword ["+izquierda->variable+"]\n";
 	res->variable = izquierda->variable;
 	delete izquierda;
 	delete derecha;
@@ -821,10 +828,9 @@ resultado * generarAssemblerAutoSubstraction(resultado * izquierda, resultado * 
 	res->tipo = TYPEFLOAT;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + izquierda->variable + '\n';
-	res->codigo += "MOV R2, " + derecha->variable + '\n';
-	res->codigo += "SUB R1,R2\n";
-	res->codigo += "MOV " + izquierda->variable +", R1\n";
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fsub qword [" + derecha->variable + "]\n";
+	res->codigo += "fstp qword ["+izquierda->variable+"]\n";
 	res->variable = izquierda->variable;
 	delete izquierda;
 	delete derecha;
@@ -836,10 +842,9 @@ resultado * generarAssemblerAutoMultiplication(resultado * izquierda, resultado 
 	res->tipo = TYPEFLOAT;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + izquierda->variable + '\n';
-	res->codigo += "MOV R2, " + derecha->variable + '\n';
-	res->codigo += "MUL R2\n";
-	res->codigo += "MOV " + izquierda->variable +", R1\n";
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fmul qword [" + derecha->variable + "]\n";
+	res->codigo += "fstp qword ["+izquierda->variable+"]\n";
 	res->variable = izquierda->variable;
 	delete izquierda;
 	delete derecha;
@@ -851,10 +856,9 @@ resultado * generarAssemblerAutoDivision(resultado * izquierda, resultado * dere
 	res->tipo = TYPEFLOAT;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + izquierda->variable + '\n';
-	res->codigo += "MOV R2, " + derecha->variable + '\n';
-	res->codigo += "DIV R2\n";
-	res->codigo += "MOV " + izquierda->variable +", R1\n";
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fdiv qword [" + derecha->variable + "]\n";
+	res->codigo += "fstp qword ["+izquierda->variable+"]\n";
 	res->variable = izquierda->variable;
 	delete izquierda;
 	delete derecha;
@@ -878,15 +882,17 @@ resultado * generarAssemblerLower(resultado * izquierda,resultado * derecha){
 	res->variable = aux;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + derecha->variable + '\n';
-	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fcomp qword [" + derecha->variable + "]\n";
+	res->codigo += "fnstsw  ax\n";
+	res->codigo += "sahf\n";
 	string etiquetaFalso = getEtiqueta();
-	res->codigo += "JGE " + etiquetaFalso + '\n';
-	res->codigo += "MOV " + aux + ", 1" + '\n';
+	res->codigo += "jnb " + etiquetaFalso + '\n';
+	res->codigo += "mov dword [" + aux + "], 1h" + '\n';
 	string etiquetaFin = getEtiqueta();
-	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += "jmp " + etiquetaFin + '\n';
 	res->codigo += etiquetaFalso + ":\n";
-	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += "mov dword [" + aux + "], 0h" + '\n';
 	res->codigo += etiquetaFin + ":\n";
 	delete izquierda;
 	delete derecha;
@@ -900,15 +906,17 @@ resultado * generarAssemblerUpper(resultado * izquierda,resultado * derecha){
 	res->variable = aux;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + derecha->variable + '\n';
-	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fcomp qword [" + derecha->variable + "]\n";
+	res->codigo += "fnstsw  ax\n";
+	res->codigo += "sahf\n";
 	string etiquetaFalso = getEtiqueta();
-	res->codigo += "JLE " + etiquetaFalso + '\n';
-	res->codigo += "MOV " + aux + ", 1" + '\n';
+	res->codigo += "jna " + etiquetaFalso + '\n';
+	res->codigo += "mov dword [" + aux + "], 1h" + '\n';
 	string etiquetaFin = getEtiqueta();
-	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += "jmp " + etiquetaFin + '\n';
 	res->codigo += etiquetaFalso + ":\n";
-	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += "mov dword [" + aux + "], 0h" + '\n';
 	res->codigo += etiquetaFin + ":\n";
 	delete izquierda;
 	delete derecha;
@@ -922,15 +930,17 @@ resultado * generarAssemblerEqual(resultado * izquierda,resultado * derecha){
 	res->variable = aux;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + derecha->variable + '\n';
-	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fcomp qword [" + derecha->variable + "]\n";
+	res->codigo += "fnstsw  ax\n";
+	res->codigo += "sahf\n";
 	string etiquetaFalso = getEtiqueta();
-	res->codigo += "JNE " + etiquetaFalso + '\n';
-	res->codigo += "MOV " + aux + ", 1" + '\n';
+	res->codigo += "jne " + etiquetaFalso + '\n';
+	res->codigo += "mov dword [" + aux + "], 1h" + '\n';
 	string etiquetaFin = getEtiqueta();
-	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += "jmp " + etiquetaFin + '\n';
 	res->codigo += etiquetaFalso + ":\n";
-	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += "mov dword [" + aux + "], 0h" + '\n';
 	res->codigo += etiquetaFin + ":\n";
 	delete izquierda;
 	delete derecha;
@@ -944,15 +954,17 @@ resultado * generarAssemblerEqualLower(resultado * izquierda,resultado * derecha
 	res->variable = aux;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + derecha->variable + '\n';
-	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fcomp qword [" + derecha->variable + "]\n";
+	res->codigo += "fnstsw  ax\n";
+	res->codigo += "sahf\n";
 	string etiquetaFalso = getEtiqueta();
-	res->codigo += "JG " + etiquetaFalso + '\n';
-	res->codigo += "MOV " + aux + ", 1" + '\n';
+	res->codigo += "ja " + etiquetaFalso + '\n';
+	res->codigo += "mov dword [" + aux + "], 1h" + '\n';
 	string etiquetaFin = getEtiqueta();
-	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += "jmp " + etiquetaFin + '\n';
 	res->codigo += etiquetaFalso + ":\n";
-	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += "mov dword [" + aux + "], 0h" + '\n';
 	res->codigo += etiquetaFin + ":\n";
 	delete izquierda;
 	delete derecha;
@@ -966,15 +978,17 @@ resultado * generarAssemblerEqualUpper(resultado * izquierda,resultado * derecha
 	res->variable = aux;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + derecha->variable + '\n';
-	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fcomp qword [" + derecha->variable + "]\n";
+	res->codigo += "fnstsw  ax\n";
+	res->codigo += "sahf\n";
 	string etiquetaFalso = getEtiqueta();
-	res->codigo += "JL " + etiquetaFalso + '\n';
-	res->codigo += "MOV " + aux + ", 1" + '\n';
+	res->codigo += "jb " + etiquetaFalso + '\n';
+	res->codigo += "mov dword [" + aux + "], 1h" + '\n';
 	string etiquetaFin = getEtiqueta();
-	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += "jmp " + etiquetaFin + '\n';
 	res->codigo += etiquetaFalso + ":\n";
-	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += "mov dword [" + aux + "], 0h" + '\n';
 	res->codigo += etiquetaFin + ":\n";
 	delete izquierda;
 	delete derecha;
@@ -989,15 +1003,17 @@ resultado * generarAssemblerNotEqual(resultado * izquierda,resultado * derecha){
 	res->variable = aux;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV R1, " + derecha->variable + '\n';
-	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	res->codigo += "fld qword [" + izquierda->variable + "]\n";
+	res->codigo += "fcomp qword [" + derecha->variable + "]\n";
+	res->codigo += "fnstsw  ax\n";
+	res->codigo += "sahf\n";
 	string etiquetaFalso = getEtiqueta();
-	res->codigo += "JE " + etiquetaFalso + '\n';
-	res->codigo += "MOV " + aux + ", 1" + '\n';
+	res->codigo += "je " + etiquetaFalso + '\n';
+	res->codigo += "mov dword [" + aux + "], 1h" + '\n';
 	string etiquetaFin = getEtiqueta();
-	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += "jmp " + etiquetaFin + '\n';
 	res->codigo += etiquetaFalso + ":\n";
-	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += "mov dword [" + aux + "], 0h" + '\n';
 	res->codigo += etiquetaFin + ":\n";
 	delete izquierda;
 	delete derecha;
@@ -1009,9 +1025,10 @@ resultado * generarAssemblerIf(resultado * izquierda,resultado * derecha){
 	res->tipo = BOOL;
 	res->variable = izquierda->variable;
 	res->codigo = izquierda->codigo;
-	res->codigo += "MOV AX, " + izquierda->variable + '\n';
+	res->codigo += "mov ax, word [" + izquierda->variable + "]\n";
+	res->codigo += "cmp ax, 0h\n";
 	string etiquetaFalso = getEtiqueta();
-	res->codigo += "JZ " + etiquetaFalso + '\n';
+	res->codigo += "je " + etiquetaFalso + '\n';
 	res->codigo += derecha->codigo;
 	res->codigo += etiquetaFalso + ":\n";
 	delete izquierda;
@@ -1024,9 +1041,10 @@ resultado * generarAssemblerElse(resultado * izquierda,resultado * derecha){
 	res->tipo = NULL;
 	res->variable = "";
 	res->codigo = izquierda->codigo;
-	res->codigo += "MOV AX, " + izquierda->variable + '\n';
+	res->codigo += "mov ax, word [" + izquierda->variable + "]\n";
+	res->codigo += "cmp ax, 0h\n";
 	string etiquetaFalso = getEtiqueta();
-	res->codigo += "JNZ " + etiquetaFalso + '\n';
+	res->codigo += "jne " + etiquetaFalso + '\n';
 	res->codigo += derecha->codigo;
 	res->codigo += etiquetaFalso + ":\n";
 	delete izquierda;
@@ -1673,10 +1691,22 @@ int main(int argc,char * argv[])
 	imprimirArbol(programa);
 
 	resultado * res = generarAssembler(programa);
-	res->codigo += "mov eax,1\nmov ebx,0\nint 80h";
+	string pie = "mov eax,1\nmov ebx,0\nint 80h";
 	string encabezado = generarEncabezadoAssembler();
-	cout << "\nAssembler:\n" << encabezado << '\n' << res->codigo;
-
+	cout << "\nAssembler:\n" << encabezado << '\n' << res->codigo << pie;
+	
+	ofstream asmfile;
+  	asmfile.open ("out.asm");
+  	asmfile << encabezado << '\n' << res->codigo << pie;
+  	asmfile.close();
+	system("nasm -f elf out.asm");
+	system("ld -s -o out out.o");
+	remove("out.asm");
+	remove("out.o");
+	
+	
+	printf("\n\nSalida:\n");
+	system("./out");
     return 0;
 }
 

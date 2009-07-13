@@ -1,1 +1,21 @@
-display "hola";
+if(2 != 1){
+	display "funciona!=";
+}
+if(1 < 2){
+	display "funciona<";
+}
+if(2 == 2){
+	display "funciona==";
+}
+if(2 > 1){
+	display "funciona>";
+}
+if(2 < 2){
+	display "no funciona<";
+}
+if(2 > 2){
+	display "no funciona>";
+}
+if(2 == 3){
+	display "no funciona==";
+}
