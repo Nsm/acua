@@ -45,6 +45,7 @@ using namespace std;
 #define CANT_ENTRADAS  22
 #define CUERPO 1
 #define PROGRAMA 2
+#define BOOL 3
 
 int nuevo_estado[CANT_ESTADOS - 1][CANT_ENTRADAS] = {{4, 2, 9, 11, 7, 30, 5, 17, 23, 21, 1, 27, 29, 28, 13, 15, 19, 20, 25, 26, 3, 0},
 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 34, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -256,6 +257,7 @@ struct resultado{
 };
 
 int auxiliarCount = 0;
+int etiquetaCount = 0;
 
 resultado * generarAssemblerSimbolo(nodo * n);
 resultado * generarAssemblerSum(resultado * izquierda, resultado * derecha);
@@ -263,11 +265,27 @@ resultado * generarAssemblerAsignation(resultado * izquierda, resultado * derech
 resultado * generarAssemblerSubstraction(resultado * izquierda, resultado * derecha);
 resultado * generarAssemblerMultiplication(resultado * izquierda, resultado * derecha);
 resultado * generarAssemblerDivision(resultado * izquierda, resultado * derecha);
-resultado * generarAssemblerAutoSum(resultado * derecha);
-resultado * generarAssemblerAutoSubstraction( resultado * derecha);
-resultado * generarAssemblerAutoMultiplication(resultado * derecha);
-resultado * generarAssemblerAutoDivision(resultado * derecha);
+resultado * generarAssemblerAutoSum(resultado * izquierda, resultado * derecha);
+resultado * generarAssemblerAutoSubstraction(resultado * izquierda, resultado * derecha);
+resultado * generarAssemblerAutoMultiplication(resultado * izquierda, resultado * derecha);
+resultado * generarAssemblerAutoDivision(resultado * izquierda, resultado * derecha);
 resultado * generarAssemblerCuerpo(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerLower(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerUpper(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerEqual(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerEqualLower(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerEqualUpper(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerNotEqual(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerIf(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerElse(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerAnd(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerOr(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerNegation(resultado * derecha);
+resultado * generarAssemblerWhile(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerRepeat(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerDisplay(resultado * derecha);
+
+
 
 
 /*DECLARACION DE VARIABLES*/
@@ -278,13 +296,13 @@ struct variableDeclarada{
 
 void actualizarTipoVariables(variableDeclarada * variables, int tipo);
 
-#line 252 "yacc.y"
+#line 270 "yacc.y"
 typedef union{
 	int  ival;
 	nodo *pval;
 	variableDeclarada *vval;
 } YYSTYPE;
-#line 287 "y.tab.cpp"
+#line 305 "y.tab.cpp"
 #define ID 257
 #define NUMBER 258
 #define SUM 259
@@ -557,7 +575,7 @@ static short   *yyss;
 static short   *yysslim;
 static YYSTYPE *yyvs;
 static unsigned yystacksize;
-#line 387 "yacc.y"
+#line 405 "yacc.y"
 
 /* CODIGO */
 
@@ -726,7 +744,15 @@ string getAuxVariable(){
 	string s = "aux";
 	s += out.str();
 	return s;
+}
 
+string getEtiqueta(){
+	etiquetaCount ++;
+	stringstream out;
+	out << etiquetaCount;
+	string s = "e";
+	s += out.str();
+	return s;
 }
 
 resultado * generarAssembler(nodo * raiz){
@@ -753,19 +779,61 @@ resultado * generarAssembler(nodo * raiz){
 				return generarAssemblerDivision(izquierda, derecha);
 				break;
 			case AUTOSUM:
-				return generarAssemblerAutoSum(derecha);
+				return generarAssemblerAutoSum(izquierda,derecha);
 				break;
 			case AUTOSUBSTRACTION:
-				return generarAssemblerAutoSubstraction(derecha);
+				return generarAssemblerAutoSubstraction(izquierda, derecha);
 				break;
 			case AUTOMULTIPLICATION:
-				return generarAssemblerAutoMultiplication(derecha);
+				return generarAssemblerAutoMultiplication(izquierda, derecha);
 				break;
 			case AUTODIVISION:
-				return generarAssemblerAutoDivision(derecha);
+				return generarAssemblerAutoDivision(izquierda, derecha);
 				break;
 			case CUERPO:
 				return generarAssemblerCuerpo(izquierda,derecha);
+				break;
+			case LOWER:
+				return generarAssemblerLower(izquierda,derecha);
+				break;
+			case UPPER:
+				return generarAssemblerUpper(izquierda,derecha);
+				break;
+			case EQUAL:
+				return generarAssemblerEqual(izquierda,derecha);
+				break;
+			case EQUALLOWER:
+				return generarAssemblerEqualLower(izquierda,derecha);
+				break;
+			case EQUALUPPER:
+				return generarAssemblerEqualUpper(izquierda,derecha);
+				break;
+			case NOTEQUAL:
+				return generarAssemblerNotEqual(izquierda,derecha);
+				break;
+			case IF:
+				return generarAssemblerIf(izquierda,derecha);
+				break;
+			case ELSE:
+				return generarAssemblerElse(izquierda,derecha);
+				break;
+			case AND:
+				return generarAssemblerAnd(izquierda,derecha);
+				break;
+			case OR:
+				return generarAssemblerOr(izquierda,derecha);
+				break;
+			case NEGATION:
+				return generarAssemblerNegation(derecha);
+				break;
+			case WHILE:
+				return generarAssemblerWhile(izquierda,derecha);
+				break;
+			case REPEAT:
+				return generarAssemblerRepeat(izquierda,derecha);
+				break;
+			case DISPLAY:
+				return generarAssemblerDisplay(derecha);
 				break;
 			default:
 				return NULL;
@@ -776,6 +844,31 @@ resultado * generarAssembler(nodo * raiz){
 	}
 }
 
+string generarEncabezadoAssembler(){
+	string data, bss;
+	data = "section .data\n";
+	bss = "section .bss\n";
+	simbolo * actual =  tablaSimbolos;
+	while(actual != NULL ){
+		if(actual->tipo == STRING){
+			stringstream out;
+			out << actual->posicion;
+			string nombre = "c";
+			nombre += out.str();
+			data +=  nombre + ":	db '" + actual->nombre + "'\n";
+		}else if(actual->tipo == TYPEFLOAT){
+			stringstream out;
+			out << actual->posicion;
+			string nombre = "v";
+			nombre += out.str();
+			bss +=  nombre + ":	resq 1 \n";
+		}
+		actual = actual->siguiente;
+	}
+	string code = "section .text\nglobal _start\n_start:";
+	return data + bss + code;
+}
+
 resultado * generarAssemblerSimbolo(nodo * n){
 	resultado * res = new resultado;
 	simbolo * sim = getSimbolo(n->identificador);
@@ -783,6 +876,14 @@ resultado * generarAssemblerSimbolo(nodo * n){
 		res->codigo = "";
 		res->variable = sim->nombre;
 		res->tipo = sim->tipo;
+	}else if(sim->tipo == STRING){
+		stringstream out1;
+		stringstream out2;
+		out1 << strlen(sim->nombre);
+		res->codigo = out1.str();
+		out2 << n->identificador;
+		res->variable = "c" + out2.str();
+		res->tipo = sim->tipo; 
 	}else if(sim->tipo == ID){
 		//Esto significa que se esta usando una variable que no se declaro (sino su tipo deberia haber cambiado a TYPEFLOAT o TYPESTRING)
 		cout << "Variable no declarada: " << sim->nombre << '\n';
@@ -842,27 +943,96 @@ resultado * generarAssemblerSubstraction(resultado * izquierda, resultado * dere
 }
 
 resultado * generarAssemblerMultiplication(resultado * izquierda, resultado * derecha){
-
+    resultado * res = new resultado;
+	res->tipo = TYPEFLOAT;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + izquierda->variable + '\n';
+	res->codigo += "MOV R2, " + derecha->variable + '\n';
+	res->codigo += "MUL R2\n";
+	string aux = getAuxVariable();
+	res->codigo += "MOV " + aux +", R1\n";
+	res->variable = aux;
+	delete izquierda;
+	delete derecha;
+	return res;
 }
 
 resultado * generarAssemblerDivision(resultado * izquierda, resultado * derecha){
+    resultado * res = new resultado;
+	res->tipo = TYPEFLOAT;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + izquierda->variable + '\n';
+	res->codigo += "MOV R2, " + derecha->variable + '\n';
+	res->codigo += "DIV R2\n";
+	string aux = getAuxVariable();
+	res->codigo += "MOV " + aux +", R1\n";
+	res->variable = aux;
+	delete izquierda;
+	delete derecha;
+	return res;
 
 }
 
-resultado * generarAssemblerAutoSum(resultado * derecha){
-
+resultado * generarAssemblerAutoSum(resultado * izquierda, resultado * derecha){
+    resultado * res = new resultado;
+	res->tipo = TYPEFLOAT;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + izquierda->variable + '\n';
+	res->codigo += "MOV R2, " + derecha->variable + '\n';
+	res->codigo += "ADD R1,R2\n";
+	res->codigo += "MOV " + izquierda->variable +", R1\n";
+	res->variable = izquierda->variable;
+	delete izquierda;
+	delete derecha;
+	return res;
 }
 
-resultado * generarAssemblerAutoSubstraction( resultado * derecha){
-
+resultado * generarAssemblerAutoSubstraction(resultado * izquierda, resultado * derecha){
+    resultado * res = new resultado;
+	res->tipo = TYPEFLOAT;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + izquierda->variable + '\n';
+	res->codigo += "MOV R2, " + derecha->variable + '\n';
+	res->codigo += "SUB R1,R2\n";
+	res->codigo += "MOV " + izquierda->variable +", R1\n";
+	res->variable = izquierda->variable;
+	delete izquierda;
+	delete derecha;
+	return res;
 }
 
-resultado * generarAssemblerAutoMultiplication(resultado * derecha){
-
+resultado * generarAssemblerAutoMultiplication(resultado * izquierda, resultado * derecha){
+    resultado * res = new resultado;
+	res->tipo = TYPEFLOAT;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + izquierda->variable + '\n';
+	res->codigo += "MOV R2, " + derecha->variable + '\n';
+	res->codigo += "MUL R2\n";
+	res->codigo += "MOV " + izquierda->variable +", R1\n";
+	res->variable = izquierda->variable;
+	delete izquierda;
+	delete derecha;
+	return res;
 }
 
-resultado * generarAssemblerAutoDivision(resultado * derecha){
-
+resultado * generarAssemblerAutoDivision(resultado * izquierda, resultado * derecha){
+    resultado * res = new resultado;
+	res->tipo = TYPEFLOAT;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + izquierda->variable + '\n';
+	res->codigo += "MOV R2, " + derecha->variable + '\n';
+	res->codigo += "DIV R2\n";
+	res->codigo += "MOV " + izquierda->variable +", R1\n";
+	res->variable = izquierda->variable;
+	delete izquierda;
+	delete derecha;
+	return res;
 }
 
 resultado * generarAssemblerCuerpo(resultado * izquierda,resultado * derecha){
@@ -871,6 +1041,261 @@ resultado * generarAssemblerCuerpo(resultado * izquierda,resultado * derecha){
 	res->tipo = NULL;
 	res->variable = "";
 	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerLower(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = BOOL;
+	string aux = getAuxVariable();
+	res->variable = aux;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + derecha->variable + '\n';
+	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	string etiquetaFalso = getEtiqueta();
+	res->codigo += "JGE " + etiquetaFalso + '\n';
+	res->codigo += "MOV " + aux + ", 1" + '\n';
+	string etiquetaFin = getEtiqueta();
+	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += etiquetaFalso + ":\n";
+	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += etiquetaFin + ":\n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerUpper(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = BOOL;
+	string aux = getAuxVariable();
+	res->variable = aux;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + derecha->variable + '\n';
+	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	string etiquetaFalso = getEtiqueta();
+	res->codigo += "JLE " + etiquetaFalso + '\n';
+	res->codigo += "MOV " + aux + ", 1" + '\n';
+	string etiquetaFin = getEtiqueta();
+	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += etiquetaFalso + ":\n";
+	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += etiquetaFin + ":\n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerEqual(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = BOOL;
+	string aux = getAuxVariable();
+	res->variable = aux;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + derecha->variable + '\n';
+	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	string etiquetaFalso = getEtiqueta();
+	res->codigo += "JNE " + etiquetaFalso + '\n';
+	res->codigo += "MOV " + aux + ", 1" + '\n';
+	string etiquetaFin = getEtiqueta();
+	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += etiquetaFalso + ":\n";
+	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += etiquetaFin + ":\n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerEqualLower(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = BOOL;
+	string aux = getAuxVariable();
+	res->variable = aux;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + derecha->variable + '\n';
+	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	string etiquetaFalso = getEtiqueta();
+	res->codigo += "JG " + etiquetaFalso + '\n';
+	res->codigo += "MOV " + aux + ", 1" + '\n';
+	string etiquetaFin = getEtiqueta();
+	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += etiquetaFalso + ":\n";
+	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += etiquetaFin + ":\n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerEqualUpper(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = BOOL;
+	string aux = getAuxVariable();
+	res->variable = aux;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + derecha->variable + '\n';
+	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	string etiquetaFalso = getEtiqueta();
+	res->codigo += "JL " + etiquetaFalso + '\n';
+	res->codigo += "MOV " + aux + ", 1" + '\n';
+	string etiquetaFin = getEtiqueta();
+	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += etiquetaFalso + ":\n";
+	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += etiquetaFin + ":\n";
+	delete izquierda;
+	delete derecha;
+	return res;
+
+}
+
+resultado * generarAssemblerNotEqual(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = BOOL;
+	string aux = getAuxVariable();
+	res->variable = aux;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + derecha->variable + '\n';
+	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	string etiquetaFalso = getEtiqueta();
+	res->codigo += "JE " + etiquetaFalso + '\n';
+	res->codigo += "MOV " + aux + ", 1" + '\n';
+	string etiquetaFin = getEtiqueta();
+	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += etiquetaFalso + ":\n";
+	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += etiquetaFin + ":\n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerIf(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = BOOL;
+	res->variable = izquierda->variable;
+	res->codigo = izquierda->codigo;
+	res->codigo += "MOV AX, " + izquierda->variable + '\n';
+	string etiquetaFalso = getEtiqueta();
+	res->codigo += "JZ " + etiquetaFalso + '\n';
+	res->codigo += derecha->codigo;
+	res->codigo += etiquetaFalso + ":\n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerElse(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = NULL;
+	res->variable = "";
+	res->codigo = izquierda->codigo;
+	res->codigo += "MOV AX, " + izquierda->variable + '\n';
+	string etiquetaFalso = getEtiqueta();
+	res->codigo += "JNZ " + etiquetaFalso + '\n';
+	res->codigo += derecha->codigo;
+	res->codigo += etiquetaFalso + ":\n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerAnd(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = BOOL;
+	string aux = getAuxVariable();
+	res->variable = aux;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV AX, " + derecha->variable + '\n';
+	res->codigo += "AND AX, " + izquierda->variable + '\n';
+	res->codigo += "MOV " + aux + ", AX \n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerOr(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = BOOL;
+	string aux = getAuxVariable();
+	res->variable = aux;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV AX, " + derecha->variable + '\n';
+	res->codigo += "OR AX, " + izquierda->variable + '\n';
+	res->codigo += "MOV " + aux + ", AX \n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerNegation(resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = BOOL;
+	string aux = getAuxVariable();
+	res->variable = aux;
+	res->codigo += derecha->codigo;
+	res->codigo += "NOT " + derecha->variable + '\n';
+	res->codigo += "MOV " + aux + ", AX \n";
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerWhile(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = NULL;
+	res->variable = "";
+	string etiquetaWhile = getEtiqueta();
+	res->codigo = etiquetaWhile + ":\n";
+	res->codigo += izquierda->codigo;
+	res->codigo += "MOV AX, " + izquierda->variable + '\n';
+	string etiquetaAfuera = getEtiqueta();
+	res->codigo += "JNZ " + etiquetaAfuera + '\n';
+	res->codigo += derecha->codigo;
+	res->codigo += "JMP " + etiquetaWhile + '\n';
+	res->codigo = etiquetaAfuera + ":\n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerRepeat(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = NULL;
+	res->variable = "";
+	string etiquetaRepeat = getEtiqueta();
+	res->codigo = etiquetaRepeat + ":\n";
+	res->codigo += derecha->codigo;
+	res->codigo += izquierda->codigo;
+	res->codigo += "MOV AX, " + izquierda->variable + '\n';
+	string etiquetaAfuera = getEtiqueta();
+	res->codigo += "JNZ " + etiquetaAfuera + '\n';
+	res->codigo += "JMP " + etiquetaRepeat + '\n';
+	res->codigo += etiquetaAfuera + ":\n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerDisplay(resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = NULL;
+	res->variable = "";
+	res->codigo = "mov eax,4 \n";
+	res->codigo += "mov ebx,1 \n";
+	res->codigo += "mov ecx," + derecha->variable +" \n";
+	res->codigo += "mov edx," + derecha->codigo + " \n"; 
+	res->codigo += "int 80h \n";
+
 	delete derecha;
 	return res;
 }
@@ -1422,13 +1847,15 @@ int main(int argc,char * argv[])
 	imprimirArbol(programa);
 
 	resultado * res = generarAssembler(programa);
-	cout << "\nAssembler:\n" << res->codigo;
+	res->codigo = "mov eax,1\nmov ebx,0\nint 80h";
+	string encabezado = generarEncabezadoAssembler();
+	cout << "\nAssembler:\n" << encabezado << '\n' << res->codigo;
 
     return 0;
 }
 
 
-#line 1431 "y.tab.cpp"
+#line 1858 "y.tab.cpp"
 /* allocate initial stack or double stack size, up to YYMAXDEPTH */
 static int yygrowstack(void)
 {
@@ -1616,194 +2043,194 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 313 "yacc.y"
+#line 331 "yacc.y"
 	{printf( "Reconocido el programa :)\n");programa = yyvsp[0].pval;}
 break;
 case 2:
-#line 314 "yacc.y"
+#line 332 "yacc.y"
 	{printf( "Reconocido el programa :)\n");programa = yyvsp[0].pval;}
 break;
 case 3:
-#line 316 "yacc.y"
+#line 334 "yacc.y"
 	{printf( "Reconocido el cuerpo\n");yyval.pval = yyvsp[0].pval;}
 break;
 case 4:
-#line 317 "yacc.y"
+#line 335 "yacc.y"
 	{yyval.pval = crearNodo(CUERPO,yyvsp[-1].pval,yyvsp[0].pval);}
 break;
 case 5:
-#line 319 "yacc.y"
+#line 337 "yacc.y"
 	{yyval.pval = yyvsp[-1].pval;}
 break;
 case 6:
-#line 320 "yacc.y"
+#line 338 "yacc.y"
 	{yyval.pval = yyvsp[-1].pval;}
 break;
 case 7:
-#line 321 "yacc.y"
+#line 339 "yacc.y"
 	{yyval.pval = yyvsp[0].pval;}
 break;
 case 8:
-#line 322 "yacc.y"
+#line 340 "yacc.y"
 	{yyval.pval = yyvsp[0].pval;}
 break;
 case 9:
-#line 323 "yacc.y"
+#line 341 "yacc.y"
 	{yyval.pval = yyvsp[0].pval;}
 break;
 case 10:
-#line 324 "yacc.y"
+#line 342 "yacc.y"
 	{yyval.pval = yyvsp[0].pval;}
 break;
 case 11:
-#line 325 "yacc.y"
+#line 343 "yacc.y"
 	{yyval.pval = yyvsp[-1].pval;}
 break;
 case 12:
-#line 328 "yacc.y"
+#line 346 "yacc.y"
 	{printf( "Reconocida una condicion simple\n"); yyval.pval = yyvsp[0].pval;}
 break;
 case 13:
-#line 329 "yacc.y"
+#line 347 "yacc.y"
 	{printf( "Reconocida una condicion multiple\n");yyval.pval = yyvsp[0].pval;}
 break;
 case 14:
-#line 331 "yacc.y"
+#line 349 "yacc.y"
 	{yyval.pval = crearNodo(LOWER,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 15:
-#line 332 "yacc.y"
+#line 350 "yacc.y"
 	{yyval.pval = crearNodo(UPPER,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 16:
-#line 333 "yacc.y"
+#line 351 "yacc.y"
 	{yyval.pval = crearNodo(EQUALLOWER,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 17:
-#line 334 "yacc.y"
+#line 352 "yacc.y"
 	{yyval.pval = crearNodo(EQUALUPPER,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 18:
-#line 335 "yacc.y"
+#line 353 "yacc.y"
 	{yyval.pval = crearNodo(EQUAL,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 19:
-#line 337 "yacc.y"
+#line 355 "yacc.y"
 	{yyval.pval = crearNodo(NEGATION,NULL,yyvsp[0].pval);}
 break;
 case 20:
-#line 338 "yacc.y"
+#line 356 "yacc.y"
 	{yyval.pval = crearNodo(OR,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 21:
-#line 339 "yacc.y"
+#line 357 "yacc.y"
 	{yyval.pval = crearNodo(AND,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 22:
-#line 342 "yacc.y"
+#line 360 "yacc.y"
 	{printf( "Reconocido un if\n");yyval.pval = crearNodo(IF,yyvsp[-4].pval,yyvsp[-1].pval);}
 break;
 case 23:
-#line 344 "yacc.y"
+#line 362 "yacc.y"
 	{printf( "Reconocido un if else\n"); yyval.pval = crearNodo(ELSE,yyvsp[-4].pval,yyvsp[-1].pval);}
 break;
 case 24:
-#line 346 "yacc.y"
+#line 364 "yacc.y"
 	{printf( "Reconocida una asignacion\n");yyval.pval = crearNodo(ASIGNATION,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
 break;
 case 25:
-#line 348 "yacc.y"
+#line 366 "yacc.y"
 	{printf( "Reconocida una asignacion especial\n");yyval.pval = crearNodo(AUTOSUM,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
 break;
 case 26:
-#line 349 "yacc.y"
+#line 367 "yacc.y"
 	{printf( "Reconocida una asignacion especial\n");yyval.pval = crearNodo(AUTOSUBSTRACTION,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
 break;
 case 27:
-#line 350 "yacc.y"
+#line 368 "yacc.y"
 	{printf( "Reconocida una asignacion especial\n");yyval.pval = crearNodo(AUTOMULTIPLICATION,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
 break;
 case 28:
-#line 351 "yacc.y"
+#line 369 "yacc.y"
 	{printf( "Reconocida una asignacion especial\n");yyval.pval = crearNodo(AUTODIVISION,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
 break;
 case 29:
-#line 353 "yacc.y"
+#line 371 "yacc.y"
 	{printf( "Reconocida una suma\n"); yyval.pval = crearNodo(SUM,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 30:
-#line 355 "yacc.y"
+#line 373 "yacc.y"
 	{printf( "Reconocida una resta\n");yyval.pval = crearNodo(SUBSTRACTION,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 31:
-#line 357 "yacc.y"
+#line 375 "yacc.y"
 	{yyval.pval = yyvsp[0].pval;}
 break;
 case 32:
-#line 359 "yacc.y"
+#line 377 "yacc.y"
 	{printf( "Reconocida una multiplicacion\n"); yyval.pval = crearNodo(MULTIPLICATION,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 33:
-#line 361 "yacc.y"
+#line 379 "yacc.y"
 	{printf( "Reconocida una division\n"); yyval.pval = crearNodo(DIVISION,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 34:
-#line 363 "yacc.y"
+#line 381 "yacc.y"
 	{yyval.pval = yyvsp[0].pval;}
 break;
 case 35:
-#line 365 "yacc.y"
+#line 383 "yacc.y"
 	{yyval.ival = TYPESTRING;}
 break;
 case 36:
-#line 366 "yacc.y"
+#line 384 "yacc.y"
 	{yyval.ival = TYPEFLOAT;}
 break;
 case 37:
-#line 368 "yacc.y"
+#line 386 "yacc.y"
 	{yyval.pval = crearHoja(yyvsp[0].ival);}
 break;
 case 38:
-#line 369 "yacc.y"
+#line 387 "yacc.y"
 	{yyval.pval = crearHoja(yyvsp[0].ival);}
 break;
 case 39:
-#line 370 "yacc.y"
+#line 388 "yacc.y"
 	{yyval.pval = yyvsp[-1].pval;}
 break;
 case 40:
-#line 372 "yacc.y"
+#line 390 "yacc.y"
 	{variableDeclarada *v = new variableDeclarada; v->posicion = yyvsp[0].ival;v->siguiente = NULL; yyval.vval = v;}
 break;
 case 41:
-#line 373 "yacc.y"
+#line 391 "yacc.y"
 	{variableDeclarada *v = new variableDeclarada; v->posicion = yyvsp[0].ival;v->siguiente = yyvsp[-2].vval; yyval.vval = v;}
 break;
 case 42:
-#line 375 "yacc.y"
+#line 393 "yacc.y"
 	{actualizarTipoVariables(yyvsp[-3].vval,yyvsp[-1].ival);}
 break;
 case 43:
-#line 376 "yacc.y"
+#line 394 "yacc.y"
 	{}
 break;
 case 44:
-#line 378 "yacc.y"
+#line 396 "yacc.y"
 	{}
 break;
 case 45:
-#line 380 "yacc.y"
+#line 398 "yacc.y"
 	{yyval.pval = crearNodo(WHILE,yyvsp[-4].pval,yyvsp[-1].pval);}
 break;
 case 46:
-#line 382 "yacc.y"
+#line 400 "yacc.y"
 	{yyval.pval = crearNodo(REPEAT,yyvsp[-5].pval,yyvsp[-1].pval);}
 break;
 case 47:
-#line 384 "yacc.y"
+#line 402 "yacc.y"
 	{printf( "Reconocido un display\n");yyval.pval = crearNodo(DISPLAY,NULL,crearHoja(yyvsp[0].ival));}
 break;
-#line 1806 "y.tab.cpp"
+#line 2233 "y.tab.cpp"
     }
     yyssp -= yym;
     yystate = *yyssp;

@@ -14,6 +14,7 @@ using namespace std;
 #define CANT_ENTRADAS  22
 #define CUERPO 1
 #define PROGRAMA 2
+#define BOOL 3
 
 int nuevo_estado[CANT_ESTADOS - 1][CANT_ENTRADAS] = {{4, 2, 9, 11, 7, 30, 5, 17, 23, 21, 1, 27, 29, 28, 13, 15, 19, 20, 25, 26, 3, 0},
 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 34, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -225,6 +226,7 @@ struct resultado{
 };
 
 int auxiliarCount = 0;
+int etiquetaCount = 0;
 
 resultado * generarAssemblerSimbolo(nodo * n);
 resultado * generarAssemblerSum(resultado * izquierda, resultado * derecha);
@@ -232,11 +234,27 @@ resultado * generarAssemblerAsignation(resultado * izquierda, resultado * derech
 resultado * generarAssemblerSubstraction(resultado * izquierda, resultado * derecha);
 resultado * generarAssemblerMultiplication(resultado * izquierda, resultado * derecha);
 resultado * generarAssemblerDivision(resultado * izquierda, resultado * derecha);
-resultado * generarAssemblerAutoSum(resultado * derecha);
-resultado * generarAssemblerAutoSubstraction( resultado * derecha);
-resultado * generarAssemblerAutoMultiplication(resultado * derecha);
-resultado * generarAssemblerAutoDivision(resultado * derecha);
+resultado * generarAssemblerAutoSum(resultado * izquierda, resultado * derecha);
+resultado * generarAssemblerAutoSubstraction(resultado * izquierda, resultado * derecha);
+resultado * generarAssemblerAutoMultiplication(resultado * izquierda, resultado * derecha);
+resultado * generarAssemblerAutoDivision(resultado * izquierda, resultado * derecha);
 resultado * generarAssemblerCuerpo(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerLower(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerUpper(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerEqual(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerEqualLower(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerEqualUpper(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerNotEqual(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerIf(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerElse(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerAnd(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerOr(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerNegation(resultado * derecha);
+resultado * generarAssemblerWhile(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerRepeat(resultado * izquierda,resultado * derecha);
+resultado * generarAssemblerDisplay(resultado * derecha);
+
+
 
 
 //DECLARACION DE VARIABLES
@@ -552,7 +570,15 @@ string getAuxVariable(){
 	string s = "aux";
 	s += out.str();
 	return s;
+}
 
+string getEtiqueta(){
+	etiquetaCount ++;
+	stringstream out;
+	out << etiquetaCount;
+	string s = "e";
+	s += out.str();
+	return s;
 }
 
 resultado * generarAssembler(nodo * raiz){
@@ -593,6 +619,48 @@ resultado * generarAssembler(nodo * raiz){
 			case CUERPO:
 				return generarAssemblerCuerpo(izquierda,derecha);
 				break;
+			case LOWER:
+				return generarAssemblerLower(izquierda,derecha);
+				break;
+			case UPPER:
+				return generarAssemblerUpper(izquierda,derecha);
+				break;
+			case EQUAL:
+				return generarAssemblerEqual(izquierda,derecha);
+				break;
+			case EQUALLOWER:
+				return generarAssemblerEqualLower(izquierda,derecha);
+				break;
+			case EQUALUPPER:
+				return generarAssemblerEqualUpper(izquierda,derecha);
+				break;
+			case NOTEQUAL:
+				return generarAssemblerNotEqual(izquierda,derecha);
+				break;
+			case IF:
+				return generarAssemblerIf(izquierda,derecha);
+				break;
+			case ELSE:
+				return generarAssemblerElse(izquierda,derecha);
+				break;
+			case AND:
+				return generarAssemblerAnd(izquierda,derecha);
+				break;
+			case OR:
+				return generarAssemblerOr(izquierda,derecha);
+				break;
+			case NEGATION:
+				return generarAssemblerNegation(derecha);
+				break;
+			case WHILE:
+				return generarAssemblerWhile(izquierda,derecha);
+				break;
+			case REPEAT:
+				return generarAssemblerRepeat(izquierda,derecha);
+				break;
+			case DISPLAY:
+				return generarAssemblerDisplay(derecha);
+				break;
 			default:
 				return NULL;
 				break;
@@ -602,6 +670,31 @@ resultado * generarAssembler(nodo * raiz){
 	}
 }
 
+string generarEncabezadoAssembler(){
+	string data, bss;
+	data = "section .data\n";
+	bss = "section .bss\n";
+	simbolo * actual =  tablaSimbolos;
+	while(actual != NULL ){
+		if(actual->tipo == STRING){
+			stringstream out;
+			out << actual->posicion;
+			string nombre = "c";
+			nombre += out.str();
+			data +=  nombre + ":	db '" + actual->nombre + "'\n";
+		}else if(actual->tipo == TYPEFLOAT){
+			stringstream out;
+			out << actual->posicion;
+			string nombre = "v";
+			nombre += out.str();
+			bss +=  nombre + ":	resq 1 \n";
+		}
+		actual = actual->siguiente;
+	}
+	string code = "section .text\nglobal _start\n_start:";
+	return data + bss + code;
+}
+
 resultado * generarAssemblerSimbolo(nodo * n){
 	resultado * res = new resultado;
 	simbolo * sim = getSimbolo(n->identificador);
@@ -609,6 +702,14 @@ resultado * generarAssemblerSimbolo(nodo * n){
 		res->codigo = "";
 		res->variable = sim->nombre;
 		res->tipo = sim->tipo;
+	}else if(sim->tipo == STRING){
+		stringstream out1;
+		stringstream out2;
+		out1 << strlen(sim->nombre);
+		res->codigo = out1.str();
+		out2 << n->identificador;
+		res->variable = "c" + out2.str();
+		res->tipo = sim->tipo; 
 	}else if(sim->tipo == ID){
 		//Esto significa que se esta usando una variable que no se declaro (sino su tipo deberia haber cambiado a TYPEFLOAT o TYPESTRING)
 		cout << "Variable no declarada: " << sim->nombre << '\n';
@@ -691,8 +792,8 @@ resultado * generarAssemblerDivision(resultado * izquierda, resultado * derecha)
 	res->codigo += "MOV R1, " + izquierda->variable + '\n';
 	res->codigo += "MOV R2, " + derecha->variable + '\n';
 	res->codigo += "DIV R2\n";
-	res->codigo += "MOV " + aux +", R1\n";
 	string aux = getAuxVariable();
+	res->codigo += "MOV " + aux +", R1\n";
 	res->variable = aux;
 	delete izquierda;
 	delete derecha;
@@ -766,6 +867,261 @@ resultado * generarAssemblerCuerpo(resultado * izquierda,resultado * derecha){
 	res->tipo = NULL;
 	res->variable = "";
 	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerLower(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = BOOL;
+	string aux = getAuxVariable();
+	res->variable = aux;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + derecha->variable + '\n';
+	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	string etiquetaFalso = getEtiqueta();
+	res->codigo += "JGE " + etiquetaFalso + '\n';
+	res->codigo += "MOV " + aux + ", 1" + '\n';
+	string etiquetaFin = getEtiqueta();
+	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += etiquetaFalso + ":\n";
+	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += etiquetaFin + ":\n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerUpper(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = BOOL;
+	string aux = getAuxVariable();
+	res->variable = aux;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + derecha->variable + '\n';
+	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	string etiquetaFalso = getEtiqueta();
+	res->codigo += "JLE " + etiquetaFalso + '\n';
+	res->codigo += "MOV " + aux + ", 1" + '\n';
+	string etiquetaFin = getEtiqueta();
+	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += etiquetaFalso + ":\n";
+	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += etiquetaFin + ":\n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerEqual(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = BOOL;
+	string aux = getAuxVariable();
+	res->variable = aux;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + derecha->variable + '\n';
+	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	string etiquetaFalso = getEtiqueta();
+	res->codigo += "JNE " + etiquetaFalso + '\n';
+	res->codigo += "MOV " + aux + ", 1" + '\n';
+	string etiquetaFin = getEtiqueta();
+	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += etiquetaFalso + ":\n";
+	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += etiquetaFin + ":\n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerEqualLower(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = BOOL;
+	string aux = getAuxVariable();
+	res->variable = aux;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + derecha->variable + '\n';
+	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	string etiquetaFalso = getEtiqueta();
+	res->codigo += "JG " + etiquetaFalso + '\n';
+	res->codigo += "MOV " + aux + ", 1" + '\n';
+	string etiquetaFin = getEtiqueta();
+	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += etiquetaFalso + ":\n";
+	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += etiquetaFin + ":\n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerEqualUpper(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = BOOL;
+	string aux = getAuxVariable();
+	res->variable = aux;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + derecha->variable + '\n';
+	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	string etiquetaFalso = getEtiqueta();
+	res->codigo += "JL " + etiquetaFalso + '\n';
+	res->codigo += "MOV " + aux + ", 1" + '\n';
+	string etiquetaFin = getEtiqueta();
+	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += etiquetaFalso + ":\n";
+	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += etiquetaFin + ":\n";
+	delete izquierda;
+	delete derecha;
+	return res;
+
+}
+
+resultado * generarAssemblerNotEqual(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = BOOL;
+	string aux = getAuxVariable();
+	res->variable = aux;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV R1, " + derecha->variable + '\n';
+	res->codigo += "CMP R1, " + izquierda->variable + '\n';
+	string etiquetaFalso = getEtiqueta();
+	res->codigo += "JE " + etiquetaFalso + '\n';
+	res->codigo += "MOV " + aux + ", 1" + '\n';
+	string etiquetaFin = getEtiqueta();
+	res->codigo += "JMP " + etiquetaFin + '\n';
+	res->codigo += etiquetaFalso + ":\n";
+	res->codigo += "MOV " + aux + ", 0" + '\n';
+	res->codigo += etiquetaFin + ":\n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerIf(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = BOOL;
+	res->variable = izquierda->variable;
+	res->codigo = izquierda->codigo;
+	res->codigo += "MOV AX, " + izquierda->variable + '\n';
+	string etiquetaFalso = getEtiqueta();
+	res->codigo += "JZ " + etiquetaFalso + '\n';
+	res->codigo += derecha->codigo;
+	res->codigo += etiquetaFalso + ":\n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerElse(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = NULL;
+	res->variable = "";
+	res->codigo = izquierda->codigo;
+	res->codigo += "MOV AX, " + izquierda->variable + '\n';
+	string etiquetaFalso = getEtiqueta();
+	res->codigo += "JNZ " + etiquetaFalso + '\n';
+	res->codigo += derecha->codigo;
+	res->codigo += etiquetaFalso + ":\n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerAnd(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = BOOL;
+	string aux = getAuxVariable();
+	res->variable = aux;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV AX, " + derecha->variable + '\n';
+	res->codigo += "AND AX, " + izquierda->variable + '\n';
+	res->codigo += "MOV " + aux + ", AX \n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerOr(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = BOOL;
+	string aux = getAuxVariable();
+	res->variable = aux;
+	res->codigo = izquierda->codigo;
+	res->codigo += derecha->codigo;
+	res->codigo += "MOV AX, " + derecha->variable + '\n';
+	res->codigo += "OR AX, " + izquierda->variable + '\n';
+	res->codigo += "MOV " + aux + ", AX \n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerNegation(resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = BOOL;
+	string aux = getAuxVariable();
+	res->variable = aux;
+	res->codigo += derecha->codigo;
+	res->codigo += "NOT " + derecha->variable + '\n';
+	res->codigo += "MOV " + aux + ", AX \n";
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerWhile(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = NULL;
+	res->variable = "";
+	string etiquetaWhile = getEtiqueta();
+	res->codigo = etiquetaWhile + ":\n";
+	res->codigo += izquierda->codigo;
+	res->codigo += "MOV AX, " + izquierda->variable + '\n';
+	string etiquetaAfuera = getEtiqueta();
+	res->codigo += "JNZ " + etiquetaAfuera + '\n';
+	res->codigo += derecha->codigo;
+	res->codigo += "JMP " + etiquetaWhile + '\n';
+	res->codigo = etiquetaAfuera + ":\n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerRepeat(resultado * izquierda,resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = NULL;
+	res->variable = "";
+	string etiquetaRepeat = getEtiqueta();
+	res->codigo = etiquetaRepeat + ":\n";
+	res->codigo += derecha->codigo;
+	res->codigo += izquierda->codigo;
+	res->codigo += "MOV AX, " + izquierda->variable + '\n';
+	string etiquetaAfuera = getEtiqueta();
+	res->codigo += "JNZ " + etiquetaAfuera + '\n';
+	res->codigo += "JMP " + etiquetaRepeat + '\n';
+	res->codigo += etiquetaAfuera + ":\n";
+	delete izquierda;
+	delete derecha;
+	return res;
+}
+
+resultado * generarAssemblerDisplay(resultado * derecha){
+	resultado * res = new resultado;
+	res->tipo = NULL;
+	res->variable = "";
+	res->codigo = "mov eax,4 \n";
+	res->codigo += "mov ebx,1 \n";
+	res->codigo += "mov ecx," + derecha->variable +" \n";
+	res->codigo += "mov edx," + derecha->codigo + " \n"; 
+	res->codigo += "int 80h \n";
+
 	delete derecha;
 	return res;
 }
@@ -1317,7 +1673,9 @@ int main(int argc,char * argv[])
 	imprimirArbol(programa);
 
 	resultado * res = generarAssembler(programa);
-	cout << "\nAssembler:\n" << res->codigo;
+	res->codigo += "mov eax,1\nmov ebx,0\nint 80h";
+	string encabezado = generarEncabezadoAssembler();
+	cout << "\nAssembler:\n" << encabezado << '\n' << res->codigo;
 
     return 0;
 }
