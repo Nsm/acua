@@ -1,21 +1,20 @@
-if(2 != 1){
+define{a,b:float;}
+a = 2;
+b = 2;
+if(a != b){
 	display "funciona!=";
 }
-if(1 < 2){
+b += 2;
+if(a < b){
 	display "funciona<";
 }
-if(2 == 2){
+a = b;
+if(a == b){
 	display "funciona==";
 }
-if(2 > 1){
+
+b -= a;
+
+if(a > b){
 	display "funciona>";
-}
-if(2 < 2){
-	display "no funciona<";
-}
-if(2 > 2){
-	display "no funciona>";
-}
-if(2 == 3){
-	display "no funciona==";
 }
