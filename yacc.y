@@ -14,6 +14,15 @@ using namespace std;
 #define CUERPO 1
 #define PROGRAMA 2
 #define BOOL 3
+#define LINUX 1
+#define WINDOWS 2
+
+#ifdef WIN32
+int targetOs = WINDOWS;
+#else
+int targetOs = LINUX;
+#endif
+
 
 int nuevo_estado[CANT_ESTADOS - 1][CANT_ENTRADAS] = {{4, 2, 9, 11, 7, 30, 5, 17, 23, 21, 1, 27, 29, 28, 13, 15, 19, 20, 25, 26, 3, 0},
 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 34, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -382,8 +391,7 @@ void actualizarTipoVariables(variableDeclarada * variables, int tipo);
 
  termino : factor {$$ = $1;};
 
- tipo_dato : TYPESTRING {$$ = TYPESTRING;};
- | TYPEFLOAT {$$ = TYPEFLOAT;};
+ tipo_dato : TYPEFLOAT {$$ = TYPEFLOAT;};
 
  factor : ID {$$ = crearHoja($1);};
  | NUMBER {$$ = crearHoja($1);};
@@ -673,17 +681,28 @@ resultado * generarAssembler(nodo * raiz){
 
 string generarEncabezadoAssembler(){
 	string data, bss;
-	data = "section .data\n";
-	bss = "section .bss\n";
+	if(targetOs == LINUX){
+		data = "section .data\n";
+		bss = "section .bss\n";
+	}else{
+		data = "segment data\n";
+		bss = "segment stack stack\n";
+	}
 	simbolo * actual =  tablaSimbolos;
+	int sizeStack = 0;
 	while(actual != NULL ){
 		if(actual->tipo == STRING){
 			stringstream out;
 			out << actual->posicion;
 			string nombre = "c";
 			nombre += out.str();
-			data +=  nombre + ":	db '" + actual->nombre + "'\n";
+			if(targetOs == LINUX){
+				data +=  nombre + ":	db '" + actual->nombre + "',10\n";
+			}else{
+				data +=  nombre + ":	db '" + actual->nombre + "',13,10,'$'\n";
+			}
 		}else if(actual->tipo == TYPEFLOAT){
+			sizeStack ++;
 			stringstream out;
 			out << actual->posicion;
 			string nombre = "v";
@@ -698,7 +717,15 @@ string generarEncabezadoAssembler(){
 		}
 		actual = actual->siguiente;
 	}
-	string code = "section .text\nglobal _start\n_start:";
+	string code;
+	if(targetOs == LINUX){
+		code = "section .text\nglobal _start\n_start:";
+	}else{
+		stringstream out;
+		out << sizeStack;
+		data = "resq " + out.str() + "\n" + data; 
+		code = "segment code\n..start:\nmov ax,data\nmov ds,ax";
+	}
 	return data + bss + code;
 }
 
@@ -714,7 +741,7 @@ resultado * generarAssemblerSimbolo(nodo * n){
 	}else if(sim->tipo == STRING){
 		stringstream out1;
 		stringstream out2;
-		out1 << strlen(sim->nombre);
+		out1 << strlen(sim->nombre) + 1;
 		res->codigo = out1.str();
 		out2 << n->identificador;
 		res->variable = "c" + out2.str();
@@ -1136,12 +1163,18 @@ resultado * generarAssemblerDisplay(resultado * derecha){
 	resultado * res = new resultado;
 	res->tipo = NULL;
 	res->variable = "";
-	res->codigo = "mov eax,4 \n";
-	res->codigo += "mov ebx,1 \n";
-	res->codigo += "mov ecx," + derecha->variable +" \n";
-	res->codigo += "mov edx," + derecha->codigo + " \n";
-	res->codigo += "int 80h \n";
-
+	if(targetOs == WINDOWS){
+		res->codigo = "mov ax,0x0\n";
+		res->codigo += "mov ah,0x09 \n";
+		res->codigo += "mov dx, " + derecha->variable +" \n";
+		res->codigo += "int 0x21 \n";
+	}else{
+		res->codigo = "mov eax,4 \n";
+		res->codigo += "mov ebx,1 \n";
+		res->codigo += "mov ecx," + derecha->variable +" \n";
+		res->codigo += "mov edx," + derecha->codigo + " \n";
+		res->codigo += "int 80h \n";
+	}
 	delete derecha;
 	return res;
 }
@@ -1220,6 +1253,10 @@ int get_evento (char c){
     }
 }
 
+void yyerror (char *s) {
+	fprintf (stderr, "%s\n", s);
+	exit(1);
+}
 
 
 int yylex(){
@@ -1666,13 +1703,6 @@ int reservedWord(char * id){
 }
 
 
-void yyerror(char *s)
-{
-    fprintf(stderr,"%s\n",s);
-    return;
-}
-
-
 int main(int argc,char * argv[])
 {
 	printf("Bienvenido al compilador: acua\n");
@@ -1693,7 +1723,13 @@ int main(int argc,char * argv[])
 	imprimirArbol(programa);
 
 	resultado * res = generarAssembler(programa);
-	string pie = "mov eax,1\nmov ebx,0\nint 80h";
+	string pie;
+	if(targetOs == WINDOWS){
+		pie = "mov ah,0x4C\nint 0x21";
+	}else{
+		pie = "mov eax,1\nmov ebx,0\nint 80h";
+	}
+	
 	string encabezado = generarEncabezadoAssembler();
 	cout << "\nAssembler:\n" << encabezado << '\n' << res->codigo << pie;
 
@@ -1701,14 +1737,22 @@ int main(int argc,char * argv[])
   	asmfile.open ("out.asm");
   	asmfile << encabezado << '\n' << res->codigo << pie;
   	asmfile.close();
-	system("nasm -f elf out.asm");
-	system("ld -s -o out out.o");
-	remove("out.asm");
-	remove("out.o");
-
-
-	printf("\n\nSalida:\n");
-	system("./out");
+  	
+  	if(targetOs == WINDOWS){
+  		//windows
+		system("nasm -f obj out.asm");
+		system("alink out.obj");
+		remove("out.asm");
+		remove("out.obj");
+	}else{
+		//linux		
+		system("nasm -f elf out.asm");
+		system("ld -s -o out out.o");
+		remove("out.asm");
+		remove("out.o");
+	}
+	
+	
     return 0;
 }
 

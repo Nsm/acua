@@ -1,6 +1,6 @@
 define{a:float;}
-a = 0;
-repeat{
-	a += 1;
-	display "Hola";
-}until(a > 5)
+a=0;
+while(a<=10){
+	display "hola";
+	a+=1;
+}
