@@ -565,7 +565,7 @@ void imprimirArbol(nodo * raiz){
 	}
 }
 
-string getAuxVariable(){	
+string getAuxVariable(){
 	stringstream out;
 	char s[] = "_aux";
 	int pos = addToSimbolTable(s,TYPEFLOAT);
@@ -718,7 +718,7 @@ resultado * generarAssemblerSimbolo(nodo * n){
 		res->codigo = out1.str();
 		out2 << n->identificador;
 		res->variable = "c" + out2.str();
-		res->tipo = sim->tipo; 
+		res->tipo = sim->tipo;
 	}else if(sim->tipo == ID){
 		//Esto significa que se esta usando una variable que no se declaro (sino su tipo deberia haber cambiado a TYPEFLOAT o TYPESTRING)
 		cout << "Variable no declarada: " << sim->nombre << '\n';
@@ -1099,11 +1099,12 @@ resultado * generarAssemblerWhile(resultado * izquierda,resultado * derecha){
 	string etiquetaWhile = getEtiqueta();
 	res->codigo = etiquetaWhile + ":\n";
 	res->codigo += izquierda->codigo;
-	res->codigo += "MOV AX, " + izquierda->variable + '\n';
+	res->codigo += "mov ax, word [" + izquierda->variable + "]\n";
+	res->codigo += "cmp ax, 0h\n";
 	string etiquetaAfuera = getEtiqueta();
-	res->codigo += "JNZ " + etiquetaAfuera + '\n';
+	res->codigo += "jnz " + etiquetaAfuera + '\n';
 	res->codigo += derecha->codigo;
-	res->codigo += "JMP " + etiquetaWhile + '\n';
+	res->codigo += "jmp " + etiquetaWhile + '\n';
 	res->codigo = etiquetaAfuera + ":\n";
 	delete izquierda;
 	delete derecha;
@@ -1118,10 +1119,11 @@ resultado * generarAssemblerRepeat(resultado * izquierda,resultado * derecha){
 	res->codigo = etiquetaRepeat + ":\n";
 	res->codigo += derecha->codigo;
 	res->codigo += izquierda->codigo;
-	res->codigo += "MOV AX, " + izquierda->variable + '\n';
+	res->codigo += "mov ax, word [" + izquierda->variable + "]\n";
+	res->codigo += "cmp ax, 0h\n";
 	string etiquetaAfuera = getEtiqueta();
-	res->codigo += "JNZ " + etiquetaAfuera + '\n';
-	res->codigo += "JMP " + etiquetaRepeat + '\n';
+	res->codigo += "jnz " + etiquetaAfuera + '\n';
+	res->codigo += "jmp " + etiquetaRepeat + '\n';
 	res->codigo += etiquetaAfuera + ":\n";
 	delete izquierda;
 	delete derecha;
@@ -1135,7 +1137,7 @@ resultado * generarAssemblerDisplay(resultado * derecha){
 	res->codigo = "mov eax,4 \n";
 	res->codigo += "mov ebx,1 \n";
 	res->codigo += "mov ecx," + derecha->variable +" \n";
-	res->codigo += "mov edx," + derecha->codigo + " \n"; 
+	res->codigo += "mov edx," + derecha->codigo + " \n";
 	res->codigo += "int 80h \n";
 
 	delete derecha;
@@ -1692,7 +1694,7 @@ int main(int argc,char * argv[])
 	string pie = "mov eax,1\nmov ebx,0\nint 80h";
 	string encabezado = generarEncabezadoAssembler();
 	cout << "\nAssembler:\n" << encabezado << '\n' << res->codigo << pie;
-	
+
 	ofstream asmfile;
   	asmfile.open ("out.asm");
   	asmfile << encabezado << '\n' << res->codigo << pie;
@@ -1701,8 +1703,8 @@ int main(int argc,char * argv[])
 	system("ld -s -o out out.o");
 	remove("out.asm");
 	remove("out.o");
-	
-	
+
+
 	printf("\n\nSalida:\n");
 	system("./out");
     return 0;
