@@ -1117,9 +1117,9 @@ resultado * generarAssemblerRepeat(resultado * izquierda,resultado * derecha){
 	res->variable = "";
 	string etiquetaRepeat = getEtiqueta();
 	res->codigo = etiquetaRepeat + ":\n";
-	res->codigo += derecha->codigo;
 	res->codigo += izquierda->codigo;
-	res->codigo += "mov ax, word [" + izquierda->variable + "]\n";
+	res->codigo += derecha->codigo;
+	res->codigo += "mov ax, word [" + derecha->variable + "]\n";
 	res->codigo += "cmp ax, 0h\n";
 	string etiquetaAfuera = getEtiqueta();
 	res->codigo += "jnz " + etiquetaAfuera + '\n';
