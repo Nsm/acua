@@ -1104,10 +1104,10 @@ resultado * generarAssemblerWhile(resultado * izquierda,resultado * derecha){
 	res->codigo += "mov ax, word [" + izquierda->variable + "]\n";
 	res->codigo += "cmp ax, 0h\n";
 	string etiquetaAfuera = getEtiqueta();
-	res->codigo += "jnz " + etiquetaAfuera + '\n';
+	res->codigo += "je " + etiquetaAfuera + '\n';
 	res->codigo += derecha->codigo;
 	res->codigo += "jmp " + etiquetaWhile + '\n';
-	res->codigo = etiquetaAfuera + ":\n";
+	res->codigo += etiquetaAfuera + ":\n";
 	delete izquierda;
 	delete derecha;
 	return res;
@@ -1124,7 +1124,7 @@ resultado * generarAssemblerRepeat(resultado * izquierda,resultado * derecha){
 	res->codigo += "mov ax, word [" + derecha->variable + "]\n";
 	res->codigo += "cmp ax, 0h\n";
 	string etiquetaAfuera = getEtiqueta();
-	res->codigo += "jnz " + etiquetaAfuera + '\n';
+	res->codigo += "je " + etiquetaAfuera + '\n';
 	res->codigo += "jmp " + etiquetaRepeat + '\n';
 	res->codigo += etiquetaAfuera + ":\n";
 	delete izquierda;

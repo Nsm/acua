@@ -1,5 +1,6 @@
-if(!2 != 2){
-	display "bien";
-}else{
-	display "mal";
-}
+define{a:float;}
+a = 0;
+repeat{
+	a += 1;
+	display "Hola";
+}until(a > 5)
