@@ -1057,9 +1057,9 @@ resultado * generarAssemblerAnd(resultado * izquierda,resultado * derecha){
 	res->variable = aux;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV AX, " + derecha->variable + '\n';
-	res->codigo += "AND AX, " + izquierda->variable + '\n';
-	res->codigo += "MOV " + aux + ", AX \n";
+	res->codigo += "mov ax, word [" + derecha->variable + "]\n";
+	res->codigo += "and ax, word [" + izquierda->variable + "]\n";
+	res->codigo += "mov word [" + aux + "], ax \n";
 	delete izquierda;
 	delete derecha;
 	return res;
@@ -1072,9 +1072,9 @@ resultado * generarAssemblerOr(resultado * izquierda,resultado * derecha){
 	res->variable = aux;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV AX, " + derecha->variable + '\n';
-	res->codigo += "OR AX, " + izquierda->variable + '\n';
-	res->codigo += "MOV " + aux + ", AX \n";
+	res->codigo += "mov ax, word [" + derecha->variable + "]\n";
+	res->codigo += "or ax, word [" + izquierda->variable + "]\n";
+	res->codigo += "mov word [" + aux + "], ax \n";
 	delete izquierda;
 	delete derecha;
 	return res;
@@ -1086,8 +1086,10 @@ resultado * generarAssemblerNegation(resultado * derecha){
 	string aux = getAuxVariable();
 	res->variable = aux;
 	res->codigo += derecha->codigo;
-	res->codigo += "NOT " + derecha->variable + '\n';
-	res->codigo += "MOV " + aux + ", AX \n";
+	res->codigo += "mov ax, word [" + derecha->variable + "]\n";
+	res->codigo += "not ax\n";
+	res->codigo += "and ax, 1h\n";
+	res->codigo += "mov word [" + aux + "], ax\n";
 	delete derecha;
 	return res;
 }

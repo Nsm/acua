@@ -31,7 +31,7 @@ extern int YYPARSE_DECL();
 
 static int yygrowstack(void);
 #define YYPREFIX "yy"
-#line 4 "yacc.y"
+#line 2 "yacc.y"
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -299,7 +299,7 @@ struct variableDeclarada{
 
 void actualizarTipoVariables(variableDeclarada * variables, int tipo);
 
-#line 273 "yacc.y"
+#line 271 "yacc.y"
 typedef union{
 	int  ival;
 	nodo *pval;
@@ -579,7 +579,7 @@ static short   *yyss;
 static short   *yysslim;
 static YYSTYPE *yyvs;
 static unsigned yystacksize;
-#line 409 "yacc.y"
+#line 407 "yacc.y"
 
 /* CODIGO */
 
@@ -1233,9 +1233,9 @@ resultado * generarAssemblerAnd(resultado * izquierda,resultado * derecha){
 	res->variable = aux;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV AX, " + derecha->variable + '\n';
-	res->codigo += "AND AX, " + izquierda->variable + '\n';
-	res->codigo += "MOV " + aux + ", AX \n";
+	res->codigo += "mov ax, word [" + derecha->variable + "]\n";
+	res->codigo += "and ax, word [" + izquierda->variable + "]\n";
+	res->codigo += "mov word [" + aux + "], ax \n";
 	delete izquierda;
 	delete derecha;
 	return res;
@@ -1248,9 +1248,9 @@ resultado * generarAssemblerOr(resultado * izquierda,resultado * derecha){
 	res->variable = aux;
 	res->codigo = izquierda->codigo;
 	res->codigo += derecha->codigo;
-	res->codigo += "MOV AX, " + derecha->variable + '\n';
-	res->codigo += "OR AX, " + izquierda->variable + '\n';
-	res->codigo += "MOV " + aux + ", AX \n";
+	res->codigo += "mov ax, word [" + derecha->variable + "]\n";
+	res->codigo += "or ax, word [" + izquierda->variable + "]\n";
+	res->codigo += "mov word [" + aux + "], ax \n";
 	delete izquierda;
 	delete derecha;
 	return res;
@@ -1262,8 +1262,10 @@ resultado * generarAssemblerNegation(resultado * derecha){
 	string aux = getAuxVariable();
 	res->variable = aux;
 	res->codigo += derecha->codigo;
-	res->codigo += "NOT " + derecha->variable + '\n';
-	res->codigo += "MOV " + aux + ", AX \n";
+	res->codigo += "mov ax, word [" + derecha->variable + "]\n";
+	res->codigo += "not ax\n";
+	res->codigo += "and ax, 1h\n";
+	res->codigo += "mov word [" + aux + "], ax\n";
 	delete derecha;
 	return res;
 }
@@ -1885,7 +1887,7 @@ int main(int argc,char * argv[])
 }
 
 
-#line 1888 "y.tab.cpp"
+#line 1890 "y.tab.cpp"
 /* allocate initial stack or double stack size, up to YYMAXDEPTH */
 static int yygrowstack(void)
 {
@@ -2073,198 +2075,198 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 334 "yacc.y"
+#line 332 "yacc.y"
 	{printf( "Reconocido el programa :)\n");programa = yyvsp[0].pval;}
 break;
 case 2:
-#line 335 "yacc.y"
+#line 333 "yacc.y"
 	{printf( "Reconocido el programa :)\n");programa = yyvsp[0].pval;}
 break;
 case 3:
-#line 337 "yacc.y"
+#line 335 "yacc.y"
 	{printf( "Reconocido el cuerpo\n");yyval.pval = yyvsp[0].pval;}
 break;
 case 4:
-#line 338 "yacc.y"
+#line 336 "yacc.y"
 	{yyval.pval = crearNodo(CUERPO,yyvsp[-1].pval,yyvsp[0].pval);}
 break;
 case 5:
-#line 340 "yacc.y"
+#line 338 "yacc.y"
 	{yyval.pval = yyvsp[-1].pval;}
 break;
 case 6:
-#line 341 "yacc.y"
+#line 339 "yacc.y"
 	{yyval.pval = yyvsp[-1].pval;}
 break;
 case 7:
-#line 342 "yacc.y"
+#line 340 "yacc.y"
 	{yyval.pval = yyvsp[0].pval;}
 break;
 case 8:
-#line 343 "yacc.y"
+#line 341 "yacc.y"
 	{yyval.pval = yyvsp[0].pval;}
 break;
 case 9:
-#line 344 "yacc.y"
+#line 342 "yacc.y"
 	{yyval.pval = yyvsp[0].pval;}
 break;
 case 10:
-#line 345 "yacc.y"
+#line 343 "yacc.y"
 	{yyval.pval = yyvsp[0].pval;}
 break;
 case 11:
-#line 346 "yacc.y"
+#line 344 "yacc.y"
 	{yyval.pval = yyvsp[-1].pval;}
 break;
 case 12:
-#line 349 "yacc.y"
+#line 347 "yacc.y"
 	{printf( "Reconocida una condicion simple\n"); yyval.pval = yyvsp[0].pval;}
 break;
 case 13:
-#line 350 "yacc.y"
+#line 348 "yacc.y"
 	{printf( "Reconocida una condicion multiple\n");yyval.pval = yyvsp[0].pval;}
 break;
 case 14:
-#line 352 "yacc.y"
+#line 350 "yacc.y"
 	{yyval.pval = crearNodo(LOWER,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 15:
-#line 353 "yacc.y"
+#line 351 "yacc.y"
 	{yyval.pval = crearNodo(UPPER,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 16:
-#line 354 "yacc.y"
+#line 352 "yacc.y"
 	{yyval.pval = crearNodo(EQUALLOWER,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 17:
-#line 355 "yacc.y"
+#line 353 "yacc.y"
 	{yyval.pval = crearNodo(EQUALUPPER,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 18:
-#line 356 "yacc.y"
+#line 354 "yacc.y"
 	{yyval.pval = crearNodo(EQUAL,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 19:
-#line 357 "yacc.y"
+#line 355 "yacc.y"
 	{yyval.pval = crearNodo(NOTEQUAL,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 20:
-#line 359 "yacc.y"
+#line 357 "yacc.y"
 	{yyval.pval = crearNodo(NEGATION,NULL,yyvsp[0].pval);}
 break;
 case 21:
-#line 360 "yacc.y"
+#line 358 "yacc.y"
 	{yyval.pval = crearNodo(OR,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 22:
-#line 361 "yacc.y"
+#line 359 "yacc.y"
 	{yyval.pval = crearNodo(AND,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 23:
-#line 364 "yacc.y"
+#line 362 "yacc.y"
 	{printf( "Reconocido un if\n");yyval.pval = crearNodo(IF,yyvsp[-4].pval,yyvsp[-1].pval);}
 break;
 case 24:
-#line 366 "yacc.y"
+#line 364 "yacc.y"
 	{printf( "Reconocido un if else\n"); yyval.pval = crearNodo(ELSE,yyvsp[-4].pval,yyvsp[-1].pval);}
 break;
 case 25:
-#line 368 "yacc.y"
+#line 366 "yacc.y"
 	{printf( "Reconocida una asignacion\n");yyval.pval = crearNodo(ASIGNATION,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
 break;
 case 26:
-#line 370 "yacc.y"
+#line 368 "yacc.y"
 	{printf( "Reconocida una asignacion especial\n");yyval.pval = crearNodo(AUTOSUM,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
 break;
 case 27:
-#line 371 "yacc.y"
+#line 369 "yacc.y"
 	{printf( "Reconocida una asignacion especial\n");yyval.pval = crearNodo(AUTOSUBSTRACTION,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
 break;
 case 28:
-#line 372 "yacc.y"
+#line 370 "yacc.y"
 	{printf( "Reconocida una asignacion especial\n");yyval.pval = crearNodo(AUTOMULTIPLICATION,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
 break;
 case 29:
-#line 373 "yacc.y"
+#line 371 "yacc.y"
 	{printf( "Reconocida una asignacion especial\n");yyval.pval = crearNodo(AUTODIVISION,crearHoja(yyvsp[-2].ival),yyvsp[0].pval);}
 break;
 case 30:
-#line 375 "yacc.y"
+#line 373 "yacc.y"
 	{printf( "Reconocida una suma\n"); yyval.pval = crearNodo(SUM,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 31:
-#line 377 "yacc.y"
+#line 375 "yacc.y"
 	{printf( "Reconocida una resta\n");yyval.pval = crearNodo(SUBSTRACTION,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 32:
-#line 379 "yacc.y"
+#line 377 "yacc.y"
 	{yyval.pval = yyvsp[0].pval;}
 break;
 case 33:
-#line 381 "yacc.y"
+#line 379 "yacc.y"
 	{printf( "Reconocida una multiplicacion\n"); yyval.pval = crearNodo(MULTIPLICATION,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 34:
-#line 383 "yacc.y"
+#line 381 "yacc.y"
 	{printf( "Reconocida una division\n"); yyval.pval = crearNodo(DIVISION,yyvsp[-2].pval,yyvsp[0].pval);}
 break;
 case 35:
-#line 385 "yacc.y"
+#line 383 "yacc.y"
 	{yyval.pval = yyvsp[0].pval;}
 break;
 case 36:
-#line 387 "yacc.y"
+#line 385 "yacc.y"
 	{yyval.ival = TYPESTRING;}
 break;
 case 37:
-#line 388 "yacc.y"
+#line 386 "yacc.y"
 	{yyval.ival = TYPEFLOAT;}
 break;
 case 38:
-#line 390 "yacc.y"
+#line 388 "yacc.y"
 	{yyval.pval = crearHoja(yyvsp[0].ival);}
 break;
 case 39:
-#line 391 "yacc.y"
+#line 389 "yacc.y"
 	{yyval.pval = crearHoja(yyvsp[0].ival);}
 break;
 case 40:
-#line 392 "yacc.y"
+#line 390 "yacc.y"
 	{yyval.pval = yyvsp[-1].pval;}
 break;
 case 41:
-#line 394 "yacc.y"
+#line 392 "yacc.y"
 	{variableDeclarada *v = new variableDeclarada; v->posicion = yyvsp[0].ival;v->siguiente = NULL; yyval.vval = v;}
 break;
 case 42:
-#line 395 "yacc.y"
+#line 393 "yacc.y"
 	{variableDeclarada *v = new variableDeclarada; v->posicion = yyvsp[0].ival;v->siguiente = yyvsp[-2].vval; yyval.vval = v;}
 break;
 case 43:
-#line 397 "yacc.y"
+#line 395 "yacc.y"
 	{actualizarTipoVariables(yyvsp[-3].vval,yyvsp[-1].ival);}
 break;
 case 44:
-#line 398 "yacc.y"
+#line 396 "yacc.y"
 	{}
 break;
 case 45:
-#line 400 "yacc.y"
+#line 398 "yacc.y"
 	{}
 break;
 case 46:
-#line 402 "yacc.y"
+#line 400 "yacc.y"
 	{yyval.pval = crearNodo(WHILE,yyvsp[-4].pval,yyvsp[-1].pval);}
 break;
 case 47:
-#line 404 "yacc.y"
+#line 402 "yacc.y"
 	{yyval.pval = crearNodo(REPEAT,yyvsp[-5].pval,yyvsp[-1].pval);}
 break;
 case 48:
-#line 406 "yacc.y"
+#line 404 "yacc.y"
 	{printf( "Reconocido un display\n");yyval.pval = crearNodo(DISPLAY,NULL,crearHoja(yyvsp[0].ival));}
 break;
-#line 2267 "y.tab.cpp"
+#line 2269 "y.tab.cpp"
     }
     yyssp -= yym;
     yystate = *yyssp;

@@ -1,20 +1,5 @@
-define{a,b:float;}
-a = 2;
-b = 2;
-if(a != b){
-	display "funciona!=";
-}
-b += 2;
-if(a < b){
-	display "funciona<";
-}
-a = b;
-if(a == b){
-	display "funciona==";
-}
-
-b -= a;
-
-if(a > b){
-	display "funciona>";
+if(!2 != 2){
+	display "bien";
+}else{
+	display "mal";
 }
