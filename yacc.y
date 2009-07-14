@@ -1,5 +1,3 @@
-hola esto es asi
-
 %{
 #include <errno.h>
 #include <stdio.h>
