@@ -1,6 +1,85 @@
-define{a:float;}
-a=0;
-while(a<=10){
+
+/* definicion de variables y asignaciones*/
+
+define{a,c,b:float;}
+
+a=2;
+c=5
+b=0;
+
+
+/* prueba para el while y operaciones matematicas*/
+
+while(b<=10){
 	display "hola";
-	a+=1;
+	b += 1;
+	a -= 1;
+	a *= b;
+	a /= b;
+	a = c - 3;
+	a = c + 3;
+	a = b * a;
+	a = b / a;
 }
+
+
+/* prueba para las condiciones, tanto multiples como simples */
+
+a=1;
+if(a==1){
+ display "a==1";
+}
+
+if(a<=1){
+ display "a<=1";
+}
+
+if(a<1){
+ display "a<=1";
+}
+
+a=2;
+if(a>=1){
+ display "a>=1";
+}
+
+if(a>2){
+ display "a>2";
+}
+
+if(a!=1){
+ display "a!=1";
+}
+
+
+a=1;
+b=1;
+if(a==1 && b==1){
+ display "AND";
+}
+
+
+if(a==1 || b==3){
+ display "OR";
+}
+
+
+a=2;
+if(a==1 || a==3){
+ display "a==1";
+}else{
+	display "anda el else";
+}
+
+
+/* prueba para el repeat */
+
+a=0;
+repeat{
+	a+=1;
+	display "repeat"
+until(a==10)
+}
+
+
+
