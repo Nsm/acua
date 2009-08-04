@@ -713,7 +713,12 @@ string generarEncabezadoAssembler(){
 			out << actual->posicion;
 			string nombre = "c";
 			nombre += out.str();
-			data +=  nombre + ":	dq " + actual->nombre + "\n";
+			string valor = actual->nombre;
+			if(valor.find('.') == string::npos){
+				//si no tiene un punto se le agrega .0 ya que los valores enteros generan problemas
+				valor += ".0";	
+			}			
+			data +=  nombre + ":	dq " + valor + "\n";
 		}
 		actual = actual->siguiente;
 	}
@@ -1151,7 +1156,7 @@ resultado * generarAssemblerRepeat(resultado * izquierda,resultado * derecha){
 	res->codigo += "mov ax, word [" + derecha->variable + "]\n";
 	res->codigo += "cmp ax, 0h\n";
 	string etiquetaAfuera = getEtiqueta();
-	res->codigo += "je " + etiquetaAfuera + '\n';
+	res->codigo += "jne " + etiquetaAfuera + '\n';
 	res->codigo += "jmp " + etiquetaRepeat + '\n';
 	res->codigo += etiquetaAfuera + ":\n";
 	delete izquierda;
@@ -1737,18 +1742,27 @@ int main(int argc,char * argv[])
   	asmfile.open ("out.asm");
   	asmfile << encabezado << '\n' << res->codigo << pie;
   	asmfile.close();
-  	
+
+	string nombre = argv[1];
+	if(nombre.find('.') != string::npos){
+		nombre = nombre.substr(0,nombre.find_last_of('.'));
+	}
+	cout << "Nombre:" << nombre;
+
   	if(targetOs == WINDOWS){
   		//windows
+		nombre += ".exe";
 		system("nasm -f obj out.asm");
-		system("alink out.obj");
-		remove("out.asm");
+		string linkCommand = "alink -o \"" + nombre + "\" out.obj";
+		system(linkCommand.c_str());
+		//remove("out.asm");
 		remove("out.obj");
 	}else{
 		//linux		
 		system("nasm -f elf out.asm");
-		system("ld -s -o out out.o");
-		remove("out.asm");
+		string linkCommand = "ld -s -o " + nombre +" out.o";
+		system(linkCommand.c_str());
+		//remove("out.asm");
 		remove("out.o");
 	}
 	

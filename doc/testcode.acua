@@ -1,10 +1,8 @@
-
+define{a,c,b:float;}
 /* definicion de variables y asignaciones*/
 
-define{a,c,b:float;}
-
 a=2;
-c=5
+c=5;
 b=0;
 
 
@@ -77,9 +75,9 @@ if(a==1 || a==3){
 a=0;
 repeat{
 	a+=1;
-	display "repeat"
-until(a==10)
-}
+	display "repeat";
+}until(a==10)
+
 
 
 
